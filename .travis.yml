@@ -1,0 +1,32 @@
+sudo: false
+
+language: python
+
+python:
+  - "3.8"
+
+node_js: 8
+
+cache:
+  directories:
+    - node_modules
+
+install:
+  - pip install -r requirements.txt
+
+env:
+  # One build will be triggered for each line in the env array.
+  - SECRET_KEY="THREPOSE" DEBUG=True
+
+before_script:
+  - python manage.py migrate
+  - python manage.py tailwind install
+  - python manage.py tailwind build
+
+script:
+  - flake8 --config config.cfg
+  - coverage run manage.py test
+
+# send the result to Codecov
+after_script:
+  - bash <(curl -s https://codecov.io/bash)

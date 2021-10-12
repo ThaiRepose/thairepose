@@ -1,2 +1,2 @@
-# thairepose
+# ThaiRepose
 Website for attractions searching.

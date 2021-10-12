@@ -6,6 +6,7 @@ chardet==4.0.0
 charset-normalizer==2.0.6
 click==8.0.3
 cookiecutter==1.7.3
+coverage==6.0.2
 Django==3.2.8
 django-tailwind==2.2.1
 idna==3.2

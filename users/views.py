@@ -41,3 +41,21 @@ def register(request):
 
     context = {'form':form}
     return render(request, "users/register.html", context)
+
+def loginPage(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            if not user.customer.is_email_verified:
+                messages.info(request, 'Email is not verified, please check your email inbox')
+            else:
+                login(request, user)
+                return redirect('temphome')
+        else:
+            messages.info(request, 'Username or Password is incorrect')
+
+    context = {}
+    return render(request, "users/login.html", context)

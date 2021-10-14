@@ -14,7 +14,7 @@ install:
 
 env:
   # One build will be triggered for each line in the env array.
-  - SECRET_KEY="THREPOSE" DEBUG=True
+  - SECRET_KEY="THREPOSE" DEBUG=True HOSTS=127.0.0.1,localhost
 
 before_script:
   - python manage.py migrate

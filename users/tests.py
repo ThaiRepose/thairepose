@@ -97,24 +97,64 @@ class TestLogin(TestCase):
         self.assertEqual(response.status_code, 401)
 
 
-# class TestActivateUser(TestCase):
+class TestActivateUser(TestCase):
     
-#     def setUp(self):
-#         self.client = Client()
-#         self.user1 = {
-#             'username': 'TestUser1',
-#             'email': 'testuser@email.com',
-#             'password1': 'Password1234@',
-#             'password2': 'Password1234@'
-#         }
-#         self.register_url = reverse('register')
-    
-#     def test_activate_success(self):
-#         self.client.post(self.register_url, self.user1)
-#         user = User.objects.filter(email=self.user1['email']).first()
-#         self.token = generate_token.make_token(user)
-#         self.uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
-#         response = self.client.post('activate-user/<uidb64>/<token>', {'token':self.token,'uidb64':self.uidb64})
-#         print(response)
-#         self.assertEqual(200, response.status_code)
+    def setUp(self):
+        self.client = Client()
+        self.user1 = {
+            'username': 'TestUser1',
+            'email': 'testuser@email.com',
+            'password1': 'Password1234@',
+            'password2': 'Password1234@'
+        }
+        self.user2 = {
+            'username': 'TestUser2',
+            'email': 'testuser2@email.com',
+            'password1': 'Password1234@',
+            'password2': 'Password1234@'
+        }
+        self.register_url = reverse('register')
         
+    
+    def test_activate_success(self):
+        self.client.post(self.register_url, self.user1)
+        user = User.objects.filter(email=self.user1['email']).first()
+
+        self.token = generate_token.make_token(user)
+        self.uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+
+        url = reverse('activate', args=[self.uidb64, self.token])
+        response = self.client.post(url)
+
+        self.assertEqual(302, response.status_code)
+        self.assertTemplateNotUsed('users/activation-fail.html')
+
+    def test_activate_user_fail(self):
+        self.client.post(self.register_url, self.user1)
+
+        user = User.objects.filter(email=self.user1['email']).first()
+
+        self.token = generate_token.make_token(user)
+        self.uidb64 = None
+
+        url = reverse('activate', args=[self.uidb64, self.token])
+        response = self.client.post(url)
+
+        self.assertEqual(401, response.status_code)
+        self.assertTemplateUsed('users/activation-fail.html')
+
+    def test_activate_token_fail(self):
+        self.client.post(self.register_url, self.user1)
+        self.client.post(self.register_url, self.user2)
+
+        user = User.objects.filter(email=self.user1['email']).first()
+        user2 = User.objects.filter(email=self.user2['email']).first()
+
+        self.token = generate_token.make_token(user2)
+        self.uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+
+        url = reverse('activate', args=[self.uidb64, self.token])
+        response = self.client.post(url)
+
+        self.assertEqual(401, response.status_code)
+        self.assertTemplateUsed('users/activation-fail.html')

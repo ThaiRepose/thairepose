@@ -102,4 +102,4 @@ def activate_user(request, uidb64, token):
         user.customer.save()
         messages.info(request, 'Email verified')
         return redirect(reverse('login'))
-    return render(request, 'users/activate-fail.html', {"user":user}, status=401)
+    return render(request, "users/activation-fail.html", {"user":user}, status=401)

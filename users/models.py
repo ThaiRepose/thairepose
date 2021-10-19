@@ -13,4 +13,4 @@ class Customer(models.Model):
     profile_pic = models.ImageField(null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.username

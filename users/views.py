@@ -1,7 +1,8 @@
 import django
 from django.contrib.auth.models import Group
+from django.http.response import HttpResponseBadRequest
 from django.shortcuts import redirect, render
-from django.http import HttpResponse
+from django.http import HttpResponse, request
 from django.core.mail import EmailMessage
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -38,6 +39,9 @@ def home(request):
 def index(request):
     return render(request, "users/index.html")
 
+def activate_fail(request):
+    return render(request, )
+
 def register(request):
     form = CreateUserForm()
     
@@ -45,9 +49,9 @@ def register(request):
         form = CreateUserForm(request.POST)
         if form.is_valid():
             user = form.save()
-            group = Group.objects.get(name='customer')
+            # group = Group.objects.get(name='customer')
             username = form.cleaned_data.get('username')
-            user.groups.add(group)
+            # user.groups.add(group)
             Customer.objects.create(
                 user=user,
                 username=username,
@@ -58,6 +62,9 @@ def register(request):
     return render(request, "users/register.html", context)
 
 def loginPage(request):
+    context = {
+        'has_error':False
+    }
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -66,14 +73,18 @@ def loginPage(request):
         if user is not None:
             if not user.customer.is_email_verified:
                 messages.info(request, 'Email is not verified, please check your email inbox')
+                context['has_error'] = True 
             else:
                 login(request, user)
                 return redirect('temphome')
         else:
             messages.info(request, 'Username or Password is incorrect')
+            context['has_error'] = True 
 
-    context = {}
-    return render(request, "users/login.html", context)
+    if context['has_error']:
+        return render(request, "users/login.html", status=401)
+        
+    return render(request, "users/login.html")
 
 def logoutUser(request):
     logout(request)
@@ -91,4 +102,4 @@ def activate_user(request, uidb64, token):
         user.customer.save()
         messages.info(request, 'Email verified')
         return redirect(reverse('login'))
-    return render(request, 'users/activate-fail.html', {"user":user})
+    return render(request, 'users/activate-fail.html', {"user":user}, status=401)

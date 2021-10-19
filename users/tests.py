@@ -53,6 +53,49 @@ class TestRegister(TestCase):
         self.assertEqual(response.status_code, 200)
         assert len(mail.outbox) == 1
 
+class TestLogin(TestCase):
+    """Test user login"""
+
+    def setUp(self) -> None:
+        self.client = Client()
+        self.login_url = reverse('login')
+        self.register_url = reverse('register')
+        self.user1 = {
+            'username': 'TestUser1',
+            'email': 'testuser@email.com',
+            'password1': 'Password1234@',
+            'password2': 'Password1234@'
+        }
+
+    def test_template(self):
+        response = self.client.get(self.login_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'users/login.html')
+
+    def test_not_verified_login(self):
+        self.client.post(self.register_url, self.user1)
+        user = User.objects.filter(email=self.user1['email']).first()
+        user.customer.is_email_verified = False
+        user.customer.save()
+        response = self.client.post(self.login_url, {'username': self.user1['username'], 'password': self.user1['password1']})
+        self.assertEqual(response.status_code, 401)
+
+    def test_can_login(self):
+        self.client.post(self.register_url, self.user1)
+        user = User.objects.filter(email=self.user1['email']).first()
+        user.customer.is_email_verified = True
+        user.customer.save()
+        response = self.client.post(self.login_url, {'username': self.user1['username'], 'password': self.user1['password1']})
+        self.assertEqual(response.status_code, 302)
+
+    def test_wrong_password(self):
+        self.client.post(self.register_url, self.user1)
+        user = User.objects.filter(email=self.user1['email']).first()
+        user.customer.is_email_verified = True
+        user.customer.save()
+        response = self.client.post(self.login_url, {'username': self.user1['username'], 'password': 'Aaaaa123'})
+        self.assertEqual(response.status_code, 401)
+
 
 # class TestActivateUser(TestCase):
     

@@ -13,12 +13,32 @@ from .models import Customer
 from .utils import generate_token
 
 # Create your tests here.
+
+class TestModel(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.register_url = reverse('register')
+        self.user1 = {
+            'username': 'TestUser1',
+            'email': 'testuser@email.com',
+            'password1': 'Password1234@',
+            'password2': 'Password1234@'
+        }
+        self.client.post(self.register_url, self.user1)
+
+    def test_customer_model(self):
+        user = User.objects.filter(email=self.user1['email']).first()
+        self.assertEqual(self.user1['username'], str(Customer.objects.filter(user=user).first()))
+
+
 class TestEmailSend(TestCase):
     """Test send email."""
 
     def test_send(self):
         mail.send_mail('subject', 'body.', 'from@example.com', ['to@example.com'])
         assert len(mail.outbox) == 1
+
 
 class TestRegister(TestCase):
     """Test user register"""
@@ -42,6 +62,7 @@ class TestRegister(TestCase):
         response = self.client.post(self.register_url, data=self.user1)
         self.assertEqual(response.status_code, 200)
         assert len(mail.outbox) == 1
+
 
 class TestLogin(TestCase):
     """Test user login"""
@@ -84,7 +105,10 @@ class TestLogin(TestCase):
         response = self.client.post(self.login_url, {'username': self.user1['username'], 'password': 'Aaaaa123'})
         self.assertEqual(response.status_code, 401)
 
+
 class TestLogout(TestCase):
+    """Test user logout"""
+
     def setUp(self):
         self.client = Client()
         self.login_url = reverse('login')
@@ -108,8 +132,9 @@ class TestLogout(TestCase):
         self.client.post(self.logout_url)
         self.assertTemplateUsed('login.html')
 
+
 class TestActivateUser(TestCase):
-    
+    """Test user activation"""
     def setUp(self):
         self.client = Client()
         self.user1 = {

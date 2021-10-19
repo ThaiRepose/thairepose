@@ -18,6 +18,11 @@ from .utils import generate_token
 # Create your views here.
 
 def send_action_email(user, request):
+    """Retrieve user model and send email to user and return status 200.
+
+    Args:
+        user (Customer): extended model from user
+    """
     current_site = get_current_site(request)
     email_subject = 'Activate your account'
     email_body = render_to_string('users/activate.html',{
@@ -39,15 +44,18 @@ def index(request):
     return render(request, "users/index.html")
 
 def register(request):
+    """Add user to database.
+
+    Returns:
+        Httprequest: return register page
+    """
     form = CreateUserForm()
     
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # group = Group.objects.get(name='customer')
             username = form.cleaned_data.get('username')
-            # user.groups.add(group)
             Customer.objects.create(
                 user=user,
                 username=username,
@@ -58,6 +66,12 @@ def register(request):
     return render(request, "users/register.html", context)
 
 def loginPage(request):
+    """Send user to home page if user put right username and password.
+
+    Returns:
+        Httprequest: return home page with status 302 if user put right username and password.
+                     And return login page with status 401 if use put wrong 
+    """
     context = {
         'has_error':False
     }
@@ -83,16 +97,33 @@ def loginPage(request):
     return render(request, "users/login.html")
 
 def logoutUser(request):
+    """Logout user.
+
+    Returns:
+        Httprequest: return login page after logout
+    """
     logout(request)
     return redirect('login')
 
 def activate_user(request, uidb64, token):
+    """Change is_email_verified to true if token are right.
+
+    Args:
+        uidb64 (string): encoded user id
+        token (string): string of token
+
+    Returns:
+        Httprequest: return login page if user verified success with statuss 302 and
+                     return activate-fail with status 401 if user verified fail
+    """
     try:
+        # decode uid
         uid=force_text(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
     except Exception as e:
         user=None
         
+    # check user and token
     if user and generate_token.check_token(user, token):
         user.customer.is_email_verified = True
         user.customer.save()

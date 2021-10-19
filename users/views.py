@@ -1,6 +1,5 @@
 import django
 from django.contrib.auth.models import Group
-from django.http.response import HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.http import HttpResponse, request
 from django.core.mail import EmailMessage
@@ -9,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_text, force_str, DjangoUnicodeDecodeError
+from django.utils.encoding import force_bytes, force_text
 from django.conf import settings
 from django.urls import reverse
 
@@ -38,9 +37,6 @@ def home(request):
 
 def index(request):
     return render(request, "users/index.html")
-
-def activate_fail(request):
-    return render(request, )
 
 def register(request):
     form = CreateUserForm()

@@ -1,8 +1,7 @@
 from django.http import request, response
 from django.test.testcases import _AssertTemplateNotUsedContext
 from django.urls import reverse
-from django.contrib.auth import get_user_model, tokens
-from django.test import TestCase, Client, RequestFactory
+from django.test import TestCase, Client
 from django.core import mail
 from django.contrib.auth.models import User
 from django.utils.http import urlsafe_base64_encode
@@ -16,12 +15,6 @@ from .utils import generate_token
 # Create your tests here.
 class TestEmailSend(TestCase):
     """Test send email."""
-
-    def email_backend_setup(self, settings):
-        settings.EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
-
-    def user_setup(self):
-        self.user = Customer.objects.create_user('Tester', 'test@example.com', 'Password123')
 
     def test_send(self):
         mail.send_mail('subject', 'body.', 'from@example.com', ['to@example.com'])
@@ -39,9 +32,6 @@ class TestRegister(TestCase):
             'password1': 'Password1234@',
             'password2': 'Password1234@'
         }
-    
-    def email_backend_setup(self, settings):
-        settings.EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 
     def test_template(self):
         response = self.client.get(self.register_url)
@@ -66,6 +56,7 @@ class TestLogin(TestCase):
             'password1': 'Password1234@',
             'password2': 'Password1234@'
         }
+        self.client.post(self.register_url, self.user1)
 
     def test_template(self):
         response = self.client.get(self.login_url)
@@ -73,7 +64,6 @@ class TestLogin(TestCase):
         self.assertTemplateUsed(response, 'users/login.html')
 
     def test_not_verified_login(self):
-        self.client.post(self.register_url, self.user1)
         user = User.objects.filter(email=self.user1['email']).first()
         user.customer.is_email_verified = False
         user.customer.save()
@@ -81,7 +71,6 @@ class TestLogin(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_can_login(self):
-        self.client.post(self.register_url, self.user1)
         user = User.objects.filter(email=self.user1['email']).first()
         user.customer.is_email_verified = True
         user.customer.save()
@@ -89,13 +78,35 @@ class TestLogin(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_wrong_password(self):
-        self.client.post(self.register_url, self.user1)
         user = User.objects.filter(email=self.user1['email']).first()
         user.customer.is_email_verified = True
         user.customer.save()
         response = self.client.post(self.login_url, {'username': self.user1['username'], 'password': 'Aaaaa123'})
         self.assertEqual(response.status_code, 401)
 
+class TestLogout(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.login_url = reverse('login')
+        self.register_url = reverse('register')
+        self.logout_url = reverse('logout')
+        self.user1 = {
+            'username': 'TestUser1',
+            'email': 'testuser@email.com',
+            'password1': 'Password1234@',
+            'password2': 'Password1234@'
+        }
+        self.client.post(self.register_url, self.user1)
+        user = User.objects.filter(email=self.user1['email']).first()
+        user.customer.is_email_verified = True
+        user.customer.save()
+    
+    def test_logout(self):
+        self.client.login(username=self.user1['username'], password=self.user1['password1'])
+        response = self.client.get(reverse('temphome'))
+        self.assertEqual(response.status_code, 200)
+        self.client.post(self.logout_url)
+        self.assertTemplateUsed('login.html')
 
 class TestActivateUser(TestCase):
     

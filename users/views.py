@@ -1,18 +1,18 @@
 import django
+from django.conf import settings
 from django.contrib.auth.models import Group
-from django.shortcuts import redirect, render
-from django.http import HttpResponse, request
 from django.core.mail import EmailMessage
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.sites.shortcuts import get_current_site
+from django.http import HttpResponse, request
+from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode,urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
-from django.conf import settings
 from django.urls import reverse
 
-from users.models import Customer, User
+from .models import Customer, User
 from .forms import CreateUserForm
 from .utils import generate_token
 # Create your views here.

@@ -60,7 +60,6 @@ def register(request):
 
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
-        email = request.POST.get('email')
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username')

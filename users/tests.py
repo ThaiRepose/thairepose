@@ -1,7 +1,5 @@
 """This file contain unittest."""
 
-from django.http import request
-from django.test.testcases import _AssertTemplateNotUsedContext
 from django.urls import reverse
 from django.test import TestCase, Client
 from django.core import mail
@@ -9,8 +7,6 @@ from django.contrib.auth.models import User
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 
-import users
-from .views import activate_user
 from .models import Profile
 from .utils import generate_token
 
@@ -18,7 +14,7 @@ from .utils import generate_token
 
 
 class TestModel(TestCase):
-    """Test model."""
+    """Test Profile"""
 
     def setUp(self):
         """Set up for test model."""

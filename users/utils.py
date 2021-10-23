@@ -3,11 +3,7 @@ import six
 
 
 class TokenGenerator(PasswordResetTokenGenerator):
-    """This class contain function for generate token.
-
-    Args:
-        PasswordResetTokenGenerator (PasswordResetTokenGenerator): use for generate token
-    """
+    """This class contain function for generate token."""
 
     def _make_hash_value(self, user, timestamp: int):
         """Make hash value from user information and timestano.

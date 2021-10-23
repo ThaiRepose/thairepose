@@ -4,7 +4,7 @@ from django import forms
 
 
 class CreateUserForm(UserCreationForm):
-    """Config user form class."""
+    """Create user registeration form class."""
 
     class Meta:
         model = User

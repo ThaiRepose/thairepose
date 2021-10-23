@@ -5,8 +5,14 @@ from django.contrib.auth.models import User
 class Profile(models.Model):
     """Extended user model class that use for user profile.
 
-    Args:
-        models (models): django model
+    Attributes:
+        user(User): user model
+        username(str): username
+        name(str): name of user
+        surename(str): surname of user
+        birthday(str): user birthday
+        is_email_verified(bool): check email verified(if not verified, it equal to false)
+        profile_pic(image): user profile image
 
     Returns:
         str: username

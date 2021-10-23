@@ -82,20 +82,19 @@ class TestRegister(TestCase):
         assert len(mail.outbox) == 1
 
     def test_email_exist(self):
-        """Test user email is alreafy exist"""
+        """Test user email is alreafy exist."""
         self.client.post(self.register_url, data=self.user1)
         response = self.client.post(self.register_url, data=self.user2)
         self.assertEqual(response.status_code, 403)
-        
 
     def test_username_exist(self):
-        """Test username is already exist"""
+        """Test username is already exist."""
         self.client.post(self.register_url, data=self.user1)
         response = self.client.post(self.register_url, data=self.user3)
         self.assertEqual(response.status_code, 403)
 
     def test_password_not_match(self):
-        """Test password1 and password2 is already exist"""
+        """Test password1 and password2 is already exist."""
         response = self.client.post(self.register_url, data=self.user4)
         self.assertEqual(response.status_code, 403)
 

@@ -60,6 +60,7 @@ def register(request):
 
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
+        email = request.POST.get('email')
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username')
@@ -68,9 +69,10 @@ def register(request):
                 username=username,
             )
             send_action_email(user, request)
+            return render(request, "users/login.html", {'form': form})
 
     context = {'form': form}
-    return render(request, "users/register.html", context)
+    return render(request, "users/register.html", context, status=403)
 
 
 def loginPage(request):
@@ -97,7 +99,8 @@ def loginPage(request):
                 login(request, user)
                 return redirect('temphome')
         else:
-            messages.info(request, 'Username or Password is incorrect')
+            messages.info(
+                request, 'Username or Password is incorrect')
             context['has_error'] = True
 
     if context['has_error']:

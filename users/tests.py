@@ -51,11 +51,28 @@ class TestRegister(TestCase):
             'password1': 'Password1234@',
             'password2': 'Password1234@'
         }
+        self.user2 = {
+            'username': 'TestUser2',
+            'email': 'testuser@email.com',
+            'password1': 'Password1234@',
+            'password2': 'Password1234@'
+        }
+        self.user3 = {
+            'username': 'TestUser1',
+            'email': 'testuser2@email.com',
+            'password1': 'Password1234@',
+            'password2': 'Password1234@'
+        }
+        self.user4 = {
+            'username': 'TestUser4',
+            'email': 'testuser@email.com',
+            'password1': 'Password1234',
+            'password2': 'Password1234@'
+        }
 
     def test_template(self):
         """Test register template."""
         response = self.client.get(self.register_url)
-        self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'users/register.html')
 
     def test_register_email_send(self):
@@ -63,6 +80,24 @@ class TestRegister(TestCase):
         response = self.client.post(self.register_url, data=self.user1)
         self.assertEqual(response.status_code, 200)
         assert len(mail.outbox) == 1
+
+    def test_email_exist(self):
+        """Test user email is alreafy exist"""
+        self.client.post(self.register_url, data=self.user1)
+        response = self.client.post(self.register_url, data=self.user2)
+        self.assertEqual(response.status_code, 403)
+        
+
+    def test_username_exist(self):
+        """Test username is already exist"""
+        self.client.post(self.register_url, data=self.user1)
+        response = self.client.post(self.register_url, data=self.user3)
+        self.assertEqual(response.status_code, 403)
+
+    def test_password_not_match(self):
+        """Test password1 and password2 is already exist"""
+        response = self.client.post(self.register_url, data=self.user4)
+        self.assertEqual(response.status_code, 403)
 
 
 class TestLogin(TestCase):

@@ -1,4 +1,3 @@
-"""Contain view module."""
 import django
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -13,7 +12,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 from django.urls import reverse
 
-from .models import Customer, User
+from .models import Profile, User
 from .forms import CreateUserForm
 from .utils import generate_token
 # Create your views here.
@@ -23,7 +22,7 @@ def send_action_email(user, request):
     """Retrieve user model and send email to user and return status 200.
 
     Args:
-        user (Customer): extended model from user
+        user (Profile): extended model from user
     """
     current_site = get_current_site(request)
     email_subject = 'Activate your account'
@@ -63,7 +62,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username')
-            Customer.objects.create(
+            Profile.objects.create(
                 user=user,
                 username=username,
             )
@@ -90,7 +89,7 @@ def loginPage(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            if not user.customer.is_email_verified:
+            if not user.profile.is_email_verified:
                 messages.info(
                     request, 'Email is not verified, please check your email inbox')
                 context['has_error'] = True
@@ -121,8 +120,11 @@ def logoutUser(request):
 def activate_user(request, uidb64, token):
     """Change is_email_verified to true if token are right.
 
+    Retrieve uidb64 and token from activation link. which uidb64
+    is encoded.
+
     Args:
-        uidb64 (string): encoded user id
+        uidb64 (string): encoded user id(uid)
         token (string): string of token
 
     Returns:
@@ -138,8 +140,8 @@ def activate_user(request, uidb64, token):
 
     # check user and token
     if user and generate_token.check_token(user, token):
-        user.customer.is_email_verified = True
-        user.customer.save()
+        user.profile.is_email_verified = True
+        user.profile.save()
         messages.info(request, 'Email verified')
         return redirect(reverse('login'))
     return render(request, "users/activation-fail.html", {"user": user}, status=401)

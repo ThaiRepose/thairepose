@@ -1,10 +1,16 @@
-"""Contain model."""
 from django.db import models
 from django.contrib.auth.models import User
 
 
-class Customer(models.Model):
-    """model for customer."""
+class Profile(models.Model):
+    """Extended user model class that use for user profile.
+
+    Args:
+        models (models): django model
+
+    Returns:
+        str: username
+    """
 
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     username = models.CharField(max_length=200, null=True)
@@ -15,5 +21,9 @@ class Customer(models.Model):
     profile_pic = models.ImageField(null=True, blank=True)
 
     def __str__(self):
-        """Retrun username."""
+        """Return username.
+
+        Returns:
+            str: username of model
+        """
         return self.username

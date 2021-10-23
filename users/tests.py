@@ -11,7 +11,7 @@ from django.utils.encoding import force_bytes
 
 import users
 from .views import activate_user
-from .models import Customer
+from .models import Profile
 from .utils import generate_token
 
 # Create your tests here.
@@ -24,8 +24,8 @@ class TestModel(TestCase):
         """Set up for test model."""
         self.client = Client()
 
-    def test_customer_model(self):
-        """Test user string of user model."""
+    def test_profile_model(self):
+        """Test string of profile model."""
         self.register_url = reverse('register')
         self.user1 = {
             'username': 'TestUser1',
@@ -35,11 +35,11 @@ class TestModel(TestCase):
         }
         self.client.post(self.register_url, self.user1)
         user = User.objects.filter(email=self.user1['email']).first()
-        self.assertEqual(self.user1['username'], str(Customer.objects.filter(user=user).first()))
+        self.assertEqual(self.user1['username'], str(Profile.objects.filter(user=user).first()))
 
 
 class TestRegister(TestCase):
-    """Test user register."""
+    """Test profile register."""
 
     def setUp(self):
         """Set up for register."""
@@ -82,7 +82,7 @@ class TestRegister(TestCase):
         assert len(mail.outbox) == 1
 
     def test_email_exist(self):
-        """Test user email is alreafy exist."""
+        """Test register email is alreafy exist."""
         self.client.post(self.register_url, data=self.user1)
         response = self.client.post(self.register_url, data=self.user2)
         self.assertEqual(response.status_code, 403)
@@ -94,7 +94,7 @@ class TestRegister(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_password_not_match(self):
-        """Test password1 and password2 is already exist."""
+        """Test password1 and password2 is not match."""
         response = self.client.post(self.register_url, data=self.user4)
         self.assertEqual(response.status_code, 403)
 
@@ -124,8 +124,8 @@ class TestLogin(TestCase):
     def test_not_verified_login(self):
         """Test login with user not verified."""
         user = User.objects.filter(email=self.user1['email']).first()
-        user.customer.is_email_verified = False
-        user.customer.save()
+        user.profile.is_email_verified = False
+        user.profile.save()
         response = self.client.post(self.login_url, {'username': self.user1['username'],
                                                      'password': self.user1['password1']})
         self.assertEqual(response.status_code, 401)
@@ -133,8 +133,8 @@ class TestLogin(TestCase):
     def test_can_login(self):
         """Test login with user already verified."""
         user = User.objects.filter(email=self.user1['email']).first()
-        user.customer.is_email_verified = True
-        user.customer.save()
+        user.profile.is_email_verified = True
+        user.profile.save()
         response = self.client.post(self.login_url, {'username': self.user1['username'],
                                                      'password': self.user1['password1']})
         self.assertEqual(response.status_code, 302)
@@ -142,16 +142,16 @@ class TestLogin(TestCase):
     def test_wrong_password(self):
         """Test login with wrong password."""
         user = User.objects.filter(email=self.user1['email']).first()
-        user.customer.is_email_verified = True
-        user.customer.save()
+        user.profile.is_email_verified = True
+        user.profile.save()
         response = self.client.post(self.login_url, {'username': self.user1['username'], 'password': 'Aaaaa123'})
         self.assertEqual(response.status_code, 401)
 
     def test_wrong_user(self):
-        """Test login with wrong user."""
+        """Test login with wrong username."""
         user = User.objects.filter(email=self.user1['email']).first()
-        user.customer.is_email_verified = True
-        user.customer.save()
+        user.profile.is_email_verified = True
+        user.profile.save()
         response = self.client.post(self.login_url, {'username': 'Aaaaa', 'password': self.user1['password1']})
         self.assertEqual(response.status_code, 401)
 
@@ -173,8 +173,8 @@ class TestLogout(TestCase):
         }
         self.client.post(self.register_url, self.user1)
         user = User.objects.filter(email=self.user1['email']).first()
-        user.customer.is_email_verified = True
-        user.customer.save()
+        user.profile.is_email_verified = True
+        user.profile.save()
 
     def test_logout(self):
         """Test user logout."""
@@ -221,7 +221,7 @@ class TestActivateUser(TestCase):
         self.assertTemplateNotUsed('users/activation-fail.html')
 
     def test_activate_user_fail(self):
-        """Test user activation with user fail."""
+        """Test user activation with uid fail."""
         self.client.post(self.register_url, self.user1)
 
         user = User.objects.filter(email=self.user1['email']).first()

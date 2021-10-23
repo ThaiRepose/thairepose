@@ -1,13 +1,25 @@
-"""Django utilitys."""
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 import six
 
 
 class TokenGenerator(PasswordResetTokenGenerator):
-    """Create token."""
+    """This class contain function for generate token.
+
+    Args:
+        PasswordResetTokenGenerator (PasswordResetTokenGenerator): use for generate token
+    """
 
     def _make_hash_value(self, user, timestamp: int):
-        return (six.text_type(user.pk) + six.text_type(timestamp) + six.text_type(user.customer.is_email_verified))
+        """Make hash value from user information and timestano.
+
+        Args:
+            user (Profile): user profile
+            timestamp (int): timestamp
+
+        Returns:
+            str: unicode of string
+        """
+        return (six.text_type(user.pk) + six.text_type(timestamp) + six.text_type(user.profile.is_email_verified))
 
 
 generate_token = TokenGenerator()

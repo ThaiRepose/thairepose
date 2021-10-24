@@ -57,7 +57,9 @@ def register(request):
                      and return login page with status 200 if registeration success
     """
     form = CreateUserForm()
-
+    context = {
+        'has_error': False
+    }
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
@@ -68,10 +70,13 @@ def register(request):
                 username=username,
             )
             send_action_email(user, request)
-            return render(request, "users/login.html", {'form': form})
+            return redirect('login')
+        context['has_error'] = True
 
-    context = {'form': form}
-    return render(request, "users/register.html", context, status=403)
+    if context['has_error']:
+        return render(request, "users/register.html", {'form': form}, status=403)
+
+    return render(request, "users/register.html")
 
 
 def loginPage(request):

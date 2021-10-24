@@ -67,12 +67,13 @@ class TestRegister(TestCase):
     def test_template(self):
         """Test register template."""
         response = self.client.get(self.register_url)
+        self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'users/register.html')
 
     def test_register_email_send(self):
         """Test email send after register."""
         response = self.client.post(self.register_url, data=self.user1)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
         assert len(mail.outbox) == 1
 
     def test_email_exist(self):

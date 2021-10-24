@@ -13,9 +13,6 @@ class Profile(models.Model):
         birthday(str): user birthday
         is_email_verified(bool): check email verified(if not verified, it equal to false)
         profile_pic(image): user profile image
-
-    Returns:
-        str: username
     """
 
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)

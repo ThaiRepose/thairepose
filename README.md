@@ -49,7 +49,10 @@
     DEBUG=True
     SECRET_KEY=Your-Secret-Key
     HOSTS=localhost,127.0.0.1
+    EMAIL_FROM_USER = email-for-send-verification-form 
+    EMAIL_HOST_PASSWORD = email-password
     ```
+    (If you don't use gmail. Please change EMAIL_PORT and EMAIL_HOST in setting)
 7. Install TailwindCSS framework.
 
     ```

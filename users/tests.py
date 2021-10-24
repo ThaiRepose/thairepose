@@ -12,7 +12,7 @@ from .utils import generate_token
 
 
 class TestModel(TestCase):
-    """Test Profile"""
+    """Test Profile."""
 
     def setUp(self):
         """Set up for test model."""

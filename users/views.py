@@ -53,7 +53,7 @@ def register(request):
     """Add user to database.
 
     Returns:
-        Httprequest: return register page with status 403 if registeration fail 
+        Httprequest: return register page with status 403 if registeration fail
                      and return login page with status 200 if registeration success
     """
     form = CreateUserForm()

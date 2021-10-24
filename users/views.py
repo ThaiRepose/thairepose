@@ -71,12 +71,9 @@ def register(request):
             )
             send_action_email(user, request)
             return redirect('login')
-        context['has_error'] = True
-
-    if context['has_error']:
         return render(request, "users/register.html", {'form': form}, status=403)
 
-    return render(request, "users/register.html")
+    return render(request, "users/register.html", {'form': form})
 
 
 def loginPage(request):

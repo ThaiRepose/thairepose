@@ -57,9 +57,7 @@ def register(request):
                      and return login page with status 200 if registeration success
     """
     form = CreateUserForm()
-    context = {
-        'has_error': False
-    }
+
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():

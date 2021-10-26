@@ -1,5 +1,6 @@
+[![Build Status](https://app.travis-ci.com/ThaiRepose/thairepose.svg?branch=main)](https://app.travis-ci.com/ThaiRepose/thairepose)
+[![codecov](https://codecov.io/gh/ThaiRepose/thairepose/branch/main/graph/badge.svg?token=uocBU8wW8W)](https://codecov.io/gh/ThaiRepose/thairepose)
 # ThaiRepose
-[![Build Status](https://app.travis-ci.com/ThaiRepose/thairepose.svg?branch=main)](https://app.travis-ci.com/ThaiRepose/thairepose)    
 **ThaiRepose** website is a web application that helps to find areas that users want to travel and it can help people to make decisions for making trips. People who don't even have any experience planning a trip before, it can help them to easily plan a trip. ThaiRepose.com will be a community for people who love to travel.
 
 ## Project Documents
@@ -49,7 +50,10 @@
     DEBUG=True
     SECRET_KEY=Your-Secret-Key
     HOSTS=localhost,127.0.0.1
+    EMAIL_FROM_USER = email-for-send-verification-form 
+    EMAIL_HOST_PASSWORD = email-password
     ```
+    (If you don't use gmail. Please change EMAIL_PORT and EMAIL_HOST in setting)
 7. Install TailwindCSS framework.
 
     ```

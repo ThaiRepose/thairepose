@@ -1,4 +1,4 @@
-"""threpose URL Configuration
+"""threpose URL Configuration.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.2/topics/http/urls/
@@ -19,6 +19,10 @@ from users import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('users/', views.index),
-    path('', include('trip.urls', namespace="trip"))
+    path('', include('trip.urls', namespace="trip")),
+    path('register/', views.register, name='register'),
+    path('login/', views.loginPage, name='login'),
+    path('logout/', views.logoutUser, name='logout'),
+    path('temphome/', views.home, name='temphome'),
+    path('activate-user/<uidb64>/<token>', views.activate_user, name='activate'),
 ]

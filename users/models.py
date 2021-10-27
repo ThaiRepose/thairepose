@@ -9,7 +9,7 @@ class Profile(models.Model):
         birthday(str): user birthday
         profile_pic(image): user profile image
     """
-
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     birthday = models.DateField(null=True, auto_now=False, auto_now_add=False)
     profile_pic = models.ImageField(null=True, blank=True)
 

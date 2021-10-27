@@ -19,7 +19,7 @@ from users import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name='index'),
+    path('', include('trip.urls', namespace="trip")),
     path('register/', views.register, name='register'),
     path('login/', views.loginPage, name='login'),
     path('logout/', views.logoutUser, name='logout'),

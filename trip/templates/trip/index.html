@@ -1,0 +1,22 @@
+{% extends 'trip/base.html' %}
+{% load static %}
+
+{% block header %}
+    <title>ThaiRepose</title>
+    <style>
+        body {
+            background-image: url("{% static 'trip/images/bg.jpg' %}");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: 100% 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block main_content %}
+
+    <div class="flex flex-grow items-center justify-center">
+        <h1 class="text-6xl flex items-center justify-center">Page Content</h1>
+    </div>
+
+{% endblock %}

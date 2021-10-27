@@ -20,9 +20,5 @@ from users import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
-    path('register/', views.register, name='register'),
-    path('login/', views.loginPage, name='login'),
-    path('logout/', views.logoutUser, name='logout'),
-    path('temphome/', views.home, name='temphome'),
-    path('activate-user/<uidb64>/<token>', views.activate_user, name='activate'),
+    path('accounts/', include('allauth.urls')),
 ]

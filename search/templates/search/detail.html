@@ -1,0 +1,17 @@
+{% extends 'trip/index.html' %}
+{% block main_content %}
+<div class="flex-grow">
+    {% for place in places %}
+    <div id="whoobe-3fery" class="w-full md:w-64 justify-center items-center bg-white shadow-lg rounded-lg flex flex-col">
+        <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={{ place.photos.0.photo_reference }}&key=AIzaSyBxO1khE-LHn5Z5U2SWpA36D4nKqoWzNRg" alt="img" title="img" class="w-full h-auto object-cover rounded-t-lg" id="whoobe-ixxe5">
+
+            <div id="whoobe-1okdg" class="w-full p-4 justify-start flex flex-col">
+                <h4 class="border-b-2 text-3xl" id="whoobe-3mr7n">{{ place.name }}</h4>
+                <p class="my-4" id="whoobe-950fw">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ac tortor dignissim convallis aenean. Imperdiet massa tincidunt nunc pulvinar.</p>
+                <button value="button" class="my-4 px-4 py-2 text-white hover:bg-blue-700 bg-blue-500" id="whoobe-jkkr2">Read more</button>
+            </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

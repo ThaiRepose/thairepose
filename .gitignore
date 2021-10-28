@@ -134,5 +134,8 @@ dmypy.json
 # Django migrations
 */migrations/
 
-# User Data
-/users/static/profile_picture/
+# User profile
+users/static/profile_picture/*
+
+# Exception
+!users/static/profile_picture/.gitkeep 

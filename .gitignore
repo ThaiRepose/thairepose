@@ -135,7 +135,4 @@ dmypy.json
 */migrations/
 
 # User profile
-users/static/profile_picture/*
-
-# Exception
-!users/static/profile_picture/.gitkeep 
+users/static/profile_picture/

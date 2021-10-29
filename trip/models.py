@@ -14,7 +14,7 @@ class TripPlan(models.Model):
 
 class Review(models.Model):
     """Class for set fields for review"""
-    
+
     post = models.ForeignKey(
         TripPlan, related_name="review", on_delete=models.CASCADE)
     name = models.CharField(max_length=200)

@@ -4,5 +4,16 @@
 <h1> {{ post.title }} </h1>
 <small> By: {{ post.author }}</small>
 {{ post.body }}
-
+<br/><br>
+<h2>Review</h2>
+<br>
+{% if not post.review.all %}
+    No review Yet
+{% else %}
+    {% for comment in post.review.all %}
+    <strong>{{comment.name}} - {{comment.date_added}} </strong>
+    {{comment.body}}
+    <br>
+    {% endfor %}
+{% endif %}
 {% endblock %}

@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from dotenv import load_dotenv
 import os
+import unittest
 from .views import get_details_context
 
 
@@ -14,19 +15,11 @@ class PlaceDetailsViewTest(TestCase):
         load_dotenv()
         self.frontend_api_key = os.getenv('FRONTEND_API_KEY')
 
-    def test_view_one_place(self):
+    def test_valid_place_id(self):
         """Test viewing Kasetsart University (place_id = ChIJVysBBt6c4jARcDELPbMAAQ8)
-        because there are completely informations."""
+                because there are completely informations."""
         response = self.client.get(reverse('trip:place', args=['ChIJVysBBt6c4jARcDELPbMAAQ8']))
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.context['images'], list)
-        self.assertIsInstance(response.context['suggestions'], list)
-        self.assertIsInstance(response.context['reviews'], list)
-        self.assertIsInstance(response.context['rating'], range)
-        self.assertIsInstance(response.context['blank_rating'], range)
-        self.assertEqual(response.context['name'], "Kasetsart University")
-        self.assertEqual(response.context['phone'], "02 942 8200")
-        self.assertEqual(response.context['website'], "http://www.ku.ac.th/")
 
     def test_invalid_place_id(self):
         """Test viewing place details page with invalid place_id."""
@@ -56,6 +49,21 @@ class PlaceDetailsViewTest(TestCase):
         self.assertIn(expected_photo_url, context['images'])
         self.assertNotIn('reviews', context.keys())
         self.assertNotIn('suggestions', context.keys())
+
+    @unittest.skip("Skip due to not provided API key.")
+    def test_view_one_place(self):
+        """Test viewing Kasetsart University (place_id = ChIJVysBBt6c4jARcDELPbMAAQ8)
+        because there are completely informations."""
+        response = self.client.get(reverse('trip:place', args=['ChIJVysBBt6c4jARcDELPbMAAQ8']))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.context['images'], list)
+        self.assertIsInstance(response.context['suggestions'], list)
+        self.assertIsInstance(response.context['reviews'], list)
+        self.assertIsInstance(response.context['rating'], range)
+        self.assertIsInstance(response.context['blank_rating'], range)
+        self.assertEqual(response.context['name'], "Kasetsart University")
+        self.assertEqual(response.context['phone'], "02 942 8200")
+        self.assertEqual(response.context['website'], "http://www.ku.ac.th/")
 
 
 class IndexViewTest(TestCase):

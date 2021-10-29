@@ -1,19 +1,8 @@
 import django
-from django.conf import settings
-from django.contrib.auth.models import Group
-from django.core.mail import EmailMessage
-from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
-from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_text
-from django.urls import reverse
-from django.dispatch import receiver
+from django.shortcuts import render
+from allauth.account.views import LoginView, SignupView
 
-from .models import Profile, User
 # Create your views here.
 
 

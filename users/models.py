@@ -7,6 +7,7 @@ class Profile(models.Model):
     """Extended user model class that use for user profile.
 
     Attributes:
+        user(User): user model
         birthday(str): user birthday
         profile_pic(image): user profile image
     """

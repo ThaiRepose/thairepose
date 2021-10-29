@@ -8,6 +8,20 @@ from .utils import upload_profile_pic
 class ProfileAccountAdapter(DefaultAccountAdapter):
     
     def save_user(self, request, user, form, commit=True):
+        """Extend django-allauth save_user() function.
+        
+        This function add user to profile model that provided by Signup form.
+
+        Args:
+            user (User): user model
+            form (SignupForm): form for signup
+            commit (bool): If True, save user. Defaults to True.
+
+        Returns:
+            User: user model
+
+        
+        """
         user = super(ProfileAccountAdapter, self).save_user(
             request, user, form, commit
         )
@@ -20,6 +34,17 @@ class ProfileAccountAdapter(DefaultAccountAdapter):
 class ProfileSocialAccountAdapter(DefaultSocialAccountAdapter):
 
     def save_user(self, request, sociallogin, form=None):
+        """Extend django-allauth save_user() function
+        
+        This function add user and user profile picture from sociallogin to profile model.
+
+        Args:
+            sociallogin (Social): Object of each social login. Depend on type of socail
+            form (SignupForm): form for signup.
+
+        Returns:
+            User: user model
+        """
         user = super(ProfileSocialAccountAdapter, self).save_user(
             request, sociallogin, form
         )

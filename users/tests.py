@@ -45,8 +45,5 @@ class TestUploadPircute(TestCase):
 
     def test_upload_profile_pic_success(self):
         """Test upload picture to profile model."""
-        # change path from \\ to /
-        result = settings.PROFILE_PIC_LOCATION.replace("\\", "/")
-
         upload_profile_pic(self.user, None, 'test.png', True)
-        self.assertEqual(os.path.join(result, 'test.png'), self.user.profile.profile_pic)
+        self.assertEqual(os.path.join(settings.PROFILE_PIC_LOCATION, 'test.png'), self.user.profile.profile_pic)

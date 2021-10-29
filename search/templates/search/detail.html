@@ -1,17 +1,48 @@
-{% extends 'trip/index.html' %}
-{% block main_content %}
-<div class="flex-grow">
-    {% for place in places %}
-    <div id="whoobe-3fery" class="w-full md:w-64 justify-center items-center bg-white shadow-lg rounded-lg flex flex-col">
-        <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={{ place.photos.0.photo_reference }}&key=AIzaSyBxO1khE-LHn5Z5U2SWpA36D4nKqoWzNRg" alt="img" title="img" class="w-full h-auto object-cover rounded-t-lg" id="whoobe-ixxe5">
+{% extends 'base.html' %}
+{% load static tailwind_tags %}
+{% block header %}
+    <title>ThaiRepose</title>
+    
+    <style>
+    
+    body {
+    background: url("{% static 'images/bg-blur.jpg' %}") no-repeat fixed;
+    background-size: cover;
+    }
+        
+    </style> 
+{% endblock %}
 
-            <div id="whoobe-1okdg" class="w-full p-4 justify-start flex flex-col">
-                <h4 class="border-b-2 text-3xl" id="whoobe-3mr7n">{{ place.name }}</h4>
-                <p class="my-4" id="whoobe-950fw">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ac tortor dignissim convallis aenean. Imperdiet massa tincidunt nunc pulvinar.</p>
-                <button value="button" class="my-4 px-4 py-2 text-white hover:bg-blue-700 bg-blue-500" id="whoobe-jkkr2">Read more</button>
-            </div>
+{% block main_content %}
+
+  <!-- Tailwind CSS -->
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+
+  <div class="flex-grow justify-center max-w-6xl mx-auto rounded-lg p-8 m-10 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-5 bg-green-600 bg-fixed" style="background-color: rgba(209, 213, 219, 0.3);
+box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
+    <!--Card 1-->
+    {% for place in places %}
+    <div class="rounded-lg overflow-hidden shadow-lg bg-white">
+      <img class="w-full" src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={{ place.photos.0.photo_reference }}&key=AIzaSyBxO1khE-LHn5Z5U2SWpA36D4nKqoWzNRg">
+      <div class="px-6 py-4">
+        <div class="font-bold text-xl mb-2">{{ place.name }}</div>
+        <p class="text-gray-700 text-base">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.
+        </p>
+      </div>
+      <div class="px-6 pt-4 pb-2">
+        <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#photography</span>
+        <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#travel</span>
+        <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#winter</span>
+      </div>
     </div>
     {% endfor %}
-</div>
+  </div>
+
+
+
+
+
+
 
 {% endblock %}

@@ -23,3 +23,11 @@
 * {
     font-family: 'sf_thonburiregular', 'Prompt', sans-serif;
 }
+
+html {
+    background: url("{% static 'images/bg-blur.jpg' %}");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}

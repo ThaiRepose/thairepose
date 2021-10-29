@@ -135,5 +135,5 @@ dmypy.json
 */migrations/
 
 # User profile
-users/static/profile_picture/*
-! users/static/profile_picture/blank-profile-picture.png
+users/static/profile_pic/*
+!users/static/profile_pic/blank-profile-picture.png

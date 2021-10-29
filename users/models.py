@@ -13,7 +13,7 @@ class Profile(models.Model):
     """
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     birthday = models.DateField(null=True, auto_now=False, auto_now_add=False)
-    profile_pic = models.ImageField(upload_to=None ,null=True, blank=True)
+    profile_pic = models.ImageField(upload_to = settings.PROFILE_PIC_LOCATION, null=True, blank=True)
 
     def __str__(self):
         """Return username.

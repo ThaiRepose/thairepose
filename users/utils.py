@@ -1,7 +1,9 @@
 import urllib.request
+import os
+from django.conf import settings
 from django.core.files import File
 
-def upload_profile_pic(user, image_url, location, filename):
+def upload_profile_pic(user, image_url, location, filename, testing=False):
     """Upload profile picture to Profile model
 
     Args:
@@ -11,10 +13,17 @@ def upload_profile_pic(user, image_url, location, filename):
         filename (str): file name of picture
     """
     try:
-        urllib.request.urlretrieve(image_url, location+filename)
-    except:
-        print("Url not found")
-    user.profile.profile_pic.save(
+        result = urllib.request.urlretrieve('image_url')
+        user.profile.profile_pic.save(
             filename,
-            File(open(location+filename, 'rb'))
-            )
+            File(open(result[0], 'rb'))
+        )
+    except:
+        result = os.path.join(settings.PROFILE_PIC_LOCATION,"blank-profile-picture.png")
+        user.profile.profile_pic.save(
+            filename,
+            File(open(result, 'rb'))
+        )
+
+    
+    user.profile.save()

@@ -142,7 +142,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-PROFILE_PIC_LOCATION = "D:/Github/thairepose/users/static/profile_picture/"
+PROFILE_PIC_LOCATION = "D:/Github/thairepose/users/static/profile_pic/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

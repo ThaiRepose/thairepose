@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.test import TestCase
 from .models import Profile
+from django.db import models
 
 import os
 
@@ -41,9 +42,9 @@ class TestUploadPircute(TestCase):
 
     def tearDown(self):
         """For remove file that create while testing."""
-        os.remove(settings.PROFILE_PIC_LOCATION + 'test.png')
+        os.remove(os.path.join(settings.PROFILE_PIC_LOCATION, 'test.png'))
 
     def test_upload_profile_pic_success(self):
         """Test upload picture to profile model."""
         upload_profile_pic(self.user, None, 'test.png', True)
-        self.assertEqual(os.path.join(settings.PROFILE_PIC_LOCATION, 'test.png'), self.user.profile.profile_pic)
+        self.assertNotEqual(self.user.profile.profile_pic, None)

@@ -35,6 +35,11 @@ def upload_profile_pic(user, image_url, filename, testing=False):
 
 
 def pic_profile_relative_path():
+    """change from absolute path to relative path
+
+    Returns:
+        str: relative path of profile pic
+    """
     path = settings.PROFILE_PIC_LOCATION.replace('\\', '/')
     if path[0] == '/':
         return path[1:]

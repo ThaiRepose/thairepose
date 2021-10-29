@@ -40,11 +40,13 @@ class TestUploadPircute(TestCase):
             user=self.user
         )
 
-    def tearDown(self):
-        """For remove file that create while testing."""
-        os.remove(os.path.join(settings.PROFILE_PIC_LOCATION, 'test.png'))
-
     def test_upload_profile_pic_success(self):
         """Test upload picture to profile model."""
         upload_profile_pic(self.user, None, 'test.png', True)
         self.assertNotEqual(self.user.profile.profile_pic, None)
+
+    def tearDown(self):
+        """For remove file that create while testing. if file created"""
+        path = os.path.join(settings.PROFILE_PIC_LOCATION, 'test.png')
+        if os.path.isfile(path):
+            os.remove(path)

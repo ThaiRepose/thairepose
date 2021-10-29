@@ -6,9 +6,10 @@ from .utils import upload_profile_pic
 
 
 class ProfileAccountAdapter(DefaultAccountAdapter):
+    """Extended django-allauth class."""
 
     def save_user(self, request, user, form, commit=True):
-        """Extend django-allauth save_user() function.
+        """Save_user() function that extended from django-allauth.
 
         This function add user to profile model that provided by Signup form.
 
@@ -31,9 +32,10 @@ class ProfileAccountAdapter(DefaultAccountAdapter):
 
 
 class ProfileSocialAccountAdapter(DefaultSocialAccountAdapter):
+    """Extended django-allauth class."""
 
     def save_user(self, request, sociallogin, form=None):
-        """Extend django-allauth save_user() function
+        """Save_user() function that extened from django-allauth function.
 
         This function add user and user profile picture from sociallogin to profile model.
 

@@ -140,7 +140,8 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-PROFILE_PIC_LOCATION = "D:/Github/thairepose/users/static/profile_pic/"
+ROOT_DIR = os.path.dirname(os.path.abspath(".github"))
+PROFILE_PIC_LOCATION = ROOT_DIR + "/users/static/profile_pic/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

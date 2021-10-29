@@ -6,7 +6,7 @@ from django.core.files import File
 
 
 def upload_profile_pic(user, image_url, filename, testing=False):
-    """Upload profile picture to Profile model
+    """Upload profile picture to Profile model.
 
     Args:
         user (User): User model

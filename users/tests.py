@@ -10,9 +10,10 @@ import os
 
 
 class TestProfileModel(TestCase):
+    """Test profile model."""
 
     def test_profile(self):
-        """Test profile model"""
+        """Test profile model."""
         user = User.objects.create(
             username='harry',
             email='harry@email.com',
@@ -25,9 +26,10 @@ class TestProfileModel(TestCase):
 
 
 class TestUploadPircute(TestCase):
+    """Test upload picture function."""
 
     def setUp(self) -> None:
-        """Set up profile model for test upload picture"""
+        """Set up profile model for test upload picture."""
         self.user = User.objects.create(
             username='harry',
             email='harry@email.com',
@@ -38,10 +40,13 @@ class TestUploadPircute(TestCase):
         )
 
     def tearDown(self):
-        """For remove file that create while testing"""
+        """For remove file that create while testing."""
         os.remove(settings.PROFILE_PIC_LOCATION + 'test.png')
 
     def test_upload_profile_pic_success(self):
-        """Test upload picture to profile model"""
+        """Test upload picture to profile model."""
+        # change path from \\ to /
+        result = settings.PROFILE_PIC_LOCATION.replace("\\", "/")
+
         upload_profile_pic(self.user, None, 'test.png', True)
-        self.assertEqual(settings.PROFILE_PIC_LOCATION + 'test.png', self.user.profile.profile_pic)
+        self.assertEqual(os.path.join(result, 'test.png'), self.user.profile.profile_pic)

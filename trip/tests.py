@@ -28,6 +28,12 @@ class PlaceDetailsViewTest(TestCase):
         self.assertEqual(response.context['phone'], "02 942 8200")
         self.assertEqual(response.context['website'], "http://www.ku.ac.th/")
 
+    def test_invalid_place_id(self):
+        """Test viewing place details page with invalid place_id."""
+        response = self.client.get(reverse('trip:place', args=['123']))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual("Place not found.", response.context['err_msg'])
+
     def test_get_details_function(self):
         """Test for get_details_context() function."""
         mock_data = {

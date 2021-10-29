@@ -1,7 +1,6 @@
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 
-from django.conf import settings
 from .models import Profile
 from .utils import upload_profile_pic
 
@@ -19,8 +18,6 @@ class ProfileAccountAdapter(DefaultAccountAdapter):
 
         Returns:
             User: user model
-
-        
         """
         user = super(ProfileAccountAdapter, self).save_user(
             request, user, form, commit
@@ -28,6 +25,7 @@ class ProfileAccountAdapter(DefaultAccountAdapter):
         Profile.objects.create(
             user = user
         )
+        upload_profile_pic(user, None, str(user.id)+"_profile_picture.jpg")
         return user
 
 
@@ -53,7 +51,7 @@ class ProfileSocialAccountAdapter(DefaultSocialAccountAdapter):
         )
         try:
             picture_url = sociallogin.account.get_avatar_url()
-            upload_profile_pic(user, picture_url, settings.PROFILE_PIC_LOCATION, str(user.id)+"_profile_picture.jpg")
+            upload_profile_pic(user, picture_url, str(user.id)+"_profile_picture.jpg")
         except (KeyError, AttributeError):
             pass
         

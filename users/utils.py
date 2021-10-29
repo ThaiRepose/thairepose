@@ -1,9 +1,10 @@
 import urllib.request
 import os
+from django import test
 from django.conf import settings
 from django.core.files import File
 
-def upload_profile_pic(user, image_url, location, filename, testing=False):
+def upload_profile_pic(user, image_url, filename, testing=False):
     """Upload profile picture to Profile model
 
     Args:
@@ -13,7 +14,10 @@ def upload_profile_pic(user, image_url, location, filename, testing=False):
         filename (str): file name of picture
     """
     try:
-        result = urllib.request.urlretrieve('image_url')
+        if not testing:
+            result = urllib.request.urlretrieve(image_url)
+        else:
+            result = None
         user.profile.profile_pic.save(
             filename,
             File(open(result[0], 'rb'))

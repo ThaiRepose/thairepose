@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.test import TestCase
 from .models import Profile
-from django.db import models
 
 import os
 

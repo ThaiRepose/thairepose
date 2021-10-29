@@ -1,6 +1,5 @@
 import urllib.request
 import os
-from django import test
 from django.conf import settings
 from django.core.files import File
 

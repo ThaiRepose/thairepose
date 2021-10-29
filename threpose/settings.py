@@ -140,11 +140,17 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+# Check travis
+is_travis = 'TRAVIS' in os.environ
+
 # Project directory
 ROOT_DIR = os.path.dirname(os.path.abspath(".github"))
 
 # Profile photo directory
 root_path = ROOT_DIR.replace("\\", "/")
+if is_travis:
+    root_path = "/home/travis/build/thairepose"
+
 PROFILE_PIC_LOCATION = root_path + "/users/static/profile_pic/"
 
 # Internationalization

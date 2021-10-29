@@ -1,0 +1,11 @@
+{% extends 'trip/base.html' %}
+
+{% block main_content %}
+
+{% for post in object %}
+    <li><a href="{% url 'trip:tripdetail' post.id %}" type="submit">{{ post.title }}</a> 
+    {{ post.author }}
+    <br>
+    {{ post.body }}</li>
+{% endfor %}
+{% endblock %}

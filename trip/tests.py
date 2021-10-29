@@ -35,7 +35,10 @@ class PlaceDetailsViewTest(TestCase):
                 'formatted_phone_number': "191",
                 'website': "tawanb.dev",
                 'rating': 4.4,
-                'photos': [{'photo_reference': "1234"}]
+                'photos': [{'photo_reference': "1234"}],
+                'reviews': [{'author_name': "Tawan", "text": "Good"},
+                            {'author_name': "Unknown", "text": ""}],
+                'geometry': {'location': {'lat': 10, 'lng': 10}}
             }
         }
         expected_photo_url = f"https://maps.googleapis.com/maps/api/place/photo?" \
@@ -47,8 +50,13 @@ class PlaceDetailsViewTest(TestCase):
         self.assertEqual(range(4), context['rating'])
         self.assertEqual(range(1), context['blank_rating'])
         self.assertIn(expected_photo_url, context['images'])
-        self.assertNotIn('reviews', context.keys())
-        self.assertNotIn('suggestions', context.keys())
+        self.assertEqual(1, len(context['reviews']))
+        self.assertIsInstance(context['suggestions'], list)
+
+    def test_empty_get_details_function(self):
+        """Test for get_details_context() function with empty place_data."""
+        context = get_details_context({}, self.frontend_api_key)
+        self.assertEqual({}, context)
 
     @unittest.skip("Skip due to not provided API key.")
     def test_view_one_place(self):

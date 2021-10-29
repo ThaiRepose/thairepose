@@ -32,3 +32,10 @@ def upload_profile_pic(user, image_url, filename, testing=False):
         )
 
     user.profile.save()
+
+
+def pic_profile_relative_path():
+    path = settings.PROFILE_PIC_LOCATION.replace('\\', '/')
+    if path[0] == '/':
+        return path[1:]
+    return path

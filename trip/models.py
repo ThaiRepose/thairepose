@@ -1,5 +1,6 @@
-from django.db import models 
+from django.db import models
 from django.contrib.auth.models import User
+
 
 class TripPlan(models.Model):
     """Class to create field for user input."""
@@ -12,11 +13,13 @@ class TripPlan(models.Model):
 
 
 class Review(models.Model):
-    post = models.ForeignKey(TripPlan, related_name="review", on_delete=models.CASCADE)
+    """Class for set fields for review"""
+    
+    post = models.ForeignKey(
+        TripPlan, related_name="review", on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     body = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return '%s - %s' % (self.post.title, self.name)
-

@@ -4,6 +4,7 @@ from django import test
 from django.conf import settings
 from django.core.files import File
 
+
 def upload_profile_pic(user, image_url, filename, testing=False):
     """Upload profile picture to Profile model
 
@@ -23,11 +24,11 @@ def upload_profile_pic(user, image_url, filename, testing=False):
             File(open(result[0], 'rb'))
         )
     except:
-        result = os.path.join(settings.PROFILE_PIC_LOCATION,"blank-profile-picture.png")
+        result = os.path.join(settings.PROFILE_PIC_LOCATION,
+                              "blank-profile-picture.png")
         user.profile.profile_pic.save(
             filename,
             File(open(result, 'rb'))
         )
 
-    
     user.profile.save()

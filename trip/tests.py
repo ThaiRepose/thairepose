@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
-from .views import get_details_context
 from dotenv import load_dotenv
 import os
+from .views import get_details_context
 
 
 # Create your tests here.

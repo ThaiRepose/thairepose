@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView , DetailView # get qurry set from database
 from .models import TripPlan
 
@@ -16,3 +16,5 @@ class DetailView(DetailView):
     """Class to handle the detail of each trip."""
     model = TripPlan
     template_name = 'trip/trip_detail.html'
+    queryset = TripPlan.objects.all()
+    context_object_name = 'post'

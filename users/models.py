@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from .utils import pic_profile_relative_path
 
+
 class Profile(models.Model):
     """Extended user model class that use for user profile.
 
@@ -14,7 +15,8 @@ class Profile(models.Model):
 
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     birthday = models.DateField(null=True, auto_now=False, auto_now_add=False)
-    profile_pic = models.ImageField(upload_to=pic_profile_relative_path(), null=True, blank=True)
+    profile_pic = models.ImageField(
+        upload_to=pic_profile_relative_path(), null=True, blank=True)
 
     def __str__(self):
         """Return username.

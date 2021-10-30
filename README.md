@@ -77,6 +77,7 @@
     ```
 11. Add Oauth API Key
     Go to domain/admin/socialaccount/socialapp/ (local: http://127.0.0.1:8000/admin/socialaccount/socialapp/) 
+    - Add provider to Google.
     - Add Client id and Secret key that retrieve form API owner.
     - Add site to chosen sites.
 12. Add location for store profile picture in setting.py

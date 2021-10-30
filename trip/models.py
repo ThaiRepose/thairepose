@@ -14,6 +14,7 @@ class TripPlan(models.Model):
         return self.title + ' | ' + str(self.author)
 
     def get_absolute_url(self):
+        """Return redirest to detail of each trip."""
         return reverse("trip:tripdetail", args=(str(self.id)))
 
 
@@ -29,10 +30,12 @@ class Review(models.Model):
 
     @property
     def total_like(self):
+        """Return number of count."""
         return self.likes.count()
 
     def __str__(self):
         return '%s - %s' % (self.post.title, self.name)
 
     def get_absolute_url(self):
+        """Return redirest to detail of each commend."""
         return reverse("trip:tripdetail", args=(str(self.post.id)))

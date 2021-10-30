@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.views.generic import ListView, DetailView, CreateView
 from .models import TripPlan, Review
 
@@ -39,3 +41,8 @@ class AddReview(CreateView):
     model = Review
     template_name = "trip/add_review.html"
     fields = '__all__'
+
+def LikeView(request, pk):
+    post = get_object_or_404(Review, id=request.POST.get('commend_id'))
+    post.likes.add(request.user)
+    return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))

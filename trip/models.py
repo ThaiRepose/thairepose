@@ -25,6 +25,14 @@ class Review(models.Model):
     name = models.CharField(max_length=200)
     body = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField(User, related_name='commended')
+
+    @property
+    def total_like(self):
+        return self.likes.count()
 
     def __str__(self):
         return '%s - %s' % (self.post.title, self.name)
+
+    def get_absolute_url(self):
+        return reverse("trip:tripdetail", args=(str(self.post.id)))

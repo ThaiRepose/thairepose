@@ -9,13 +9,18 @@
 <br>
 {% if not post.review.all %}
     No review Yet
-    <a href="{% url 'trip:addreview' post.pk%}">Add comment</a>
+    <a href="{% url 'trip:addreview' post.pk%}">Add commend</a>
 {% else %}
-    {% for comment in post.review.all %}
-    <strong>{{comment.name}} - {{comment.date_added}} </strong>
-    {{comment.body}}
+    {% for commend in post.review.all %}
+    <strong>{{commend.name}} - {{commend.date_added}} </strong>
+    {{commend.body}}
+    <form action="{% url 'trip:list_commend' post.pk %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" name="commend_id" value="{{ commend.id }}">Like</button>
+        - {{ commend.total_like }}
+    </form>
     <br>
     {% endfor %}
-    <a href="{% url 'trip:addreview' post.pk%}">Add comment</a>
+    <a href="{% url 'trip:addreview' post.pk%}">Add commend</a>
 {% endif %}
 {% endblock %}

@@ -32,8 +32,9 @@ class AddPost(CreateView):
     template_name = "trip/add_blog.html"
     fields = '__all__'
 
+
 class AddReview(CreateView):
-    """Class to handle the create trip."""
+    """Class to handle the create review."""
 
     model = Review
     template_name = "trip/add_review.html"

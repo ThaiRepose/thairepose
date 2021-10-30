@@ -54,6 +54,8 @@
     EMAIL_HOST_PASSWORD = email-password
     ```
     (If you don't use gmail. Please change EMAIL_PORT and EMAIL_HOST in setting)
+    
+    **For anyone who use macOS. It may have problem while import email with os.environ.get. please try another way to import it**
 7. Install TailwindCSS framework.
 
     ```

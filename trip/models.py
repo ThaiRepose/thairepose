@@ -5,7 +5,7 @@ from django.urls import reverse
 
 class TripPlan(models.Model):
     """Class to create field for user input."""
-    
+
     title = models.CharField(max_length=200)
     author = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
     body = models.TextField()
@@ -18,7 +18,7 @@ class TripPlan(models.Model):
 
 
 class Review(models.Model):
-    """Class for set fields for review"""
+    """Class for set fields for review."""
 
     post = models.ForeignKey(
         TripPlan, related_name="review", on_delete=models.CASCADE)

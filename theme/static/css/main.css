@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Prompt&display=swap');
+
+@font-face {
+    font-family: 'sf_thonburibold';
+    src: url('sfthonburi-bold-webfont.woff2') format('woff2'),
+         url('sfthonburi-bold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'sf_thonburiregular';
+    src: url('sfthonburi-regular-webfont.woff2') format('woff2'),
+         url('sfthonburi-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'sf_thonburisemibold';
+    src: url('sfthonburi-semibold-webfont.woff2') format('woff2'),
+         url('sfthonburi-semibold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+* {
+    font-family: 'sf_thonburiregular', 'Prompt', sans-serif;
+}

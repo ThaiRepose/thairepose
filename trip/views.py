@@ -23,9 +23,11 @@ class DetailView(DetailView):
     template_name = 'trip/trip_detail.html'
     queryset = TripPlan.objects.all()
     context_object_name = 'post'
-    
+
 
 class AddPost(CreateView):
+    """Class to handle the create trip."""
+
     model = TripPlan
     template_name = "trip/add_blog.html"
     fields = '__all__'

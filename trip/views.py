@@ -1,5 +1,5 @@
-from django.shortcuts import render, get_object_or_404
-from django.views.generic import ListView, DetailView
+from django.shortcuts import render
+from django.views.generic import ListView, DetailView, CreateView
 from .models import TripPlan
 
 
@@ -23,3 +23,9 @@ class DetailView(DetailView):
     template_name = 'trip/trip_detail.html'
     queryset = TripPlan.objects.all()
     context_object_name = 'post'
+    
+
+class AddPost(CreateView):
+    model = TripPlan
+    template_name = "trip/add_blog.html"
+    fields = '__all__'

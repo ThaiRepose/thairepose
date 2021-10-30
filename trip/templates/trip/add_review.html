@@ -1,6 +1,10 @@
 {% extends 'trip/base.html' %}
 
 {% block main_content %}
-
-
+<h1>Add Comment</h1>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button>Add comment</button>
+</form>
 {% endblock %}

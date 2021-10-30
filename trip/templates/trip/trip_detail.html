@@ -9,11 +9,13 @@
 <br>
 {% if not post.review.all %}
     No review Yet
+    <a href="{% url 'trip:addreview' post.pk%}">Add comment</a>
 {% else %}
     {% for comment in post.review.all %}
     <strong>{{comment.name}} - {{comment.date_added}} </strong>
     {{comment.body}}
     <br>
     {% endfor %}
+    <a href="{% url 'trip:addreview' post.pk%}">Add comment</a>
 {% endif %}
 {% endblock %}

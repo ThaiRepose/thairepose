@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView
-from .models import TripPlan
+from .models import TripPlan, Review
 
 
 def index(request):
@@ -30,4 +30,11 @@ class AddPost(CreateView):
 
     model = TripPlan
     template_name = "trip/add_blog.html"
+    fields = '__all__'
+
+class AddReview(CreateView):
+    """Class to handle the create trip."""
+
+    model = Review
+    template_name = "trip/add_review.html"
     fields = '__all__'

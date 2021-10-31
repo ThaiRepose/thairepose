@@ -48,8 +48,8 @@ class AddReview(CreateView):
         return super().form_valid(form)
 
 
-def LikeView(request, pk):
-    """Function to user like of each commend."""
+def likeview(request, pk):
+    """Methid for store user like of each commend."""
     post = get_object_or_404(Review, id=request.POST.get('commend_id'))
     post.like.add(request.user)
     return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))

@@ -46,5 +46,5 @@ class AddReview(CreateView):
 def LikeView(request, pk):
     """Function to user like of each commend."""
     post = get_object_or_404(Review, id=request.POST.get('commend_id'))
-    post.likes.add(request.user)
+    post.like.add(request.user)
     return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))

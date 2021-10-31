@@ -1,3 +1,4 @@
+from django.http import HttpResponseNotFound
 import json
 import os
 from django.shortcuts import render
@@ -56,7 +57,7 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
         if lat is not None and lng is not None:
             suggestions = []
             url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/" \
-                  f"json?location={lat}%2C{lng}&radius=1000&key={api_key}"
+                  f"json?location={lat}%2C{lng}&radius=2000&key={api_key}"
             response = requests.get(url)
             place_data = json.loads(response.content)
             for place in place_data['results'][1:]:
@@ -90,6 +91,6 @@ def place_info(request, place_id):
     response = requests.get(url)
     data = json.loads(response.content)
     if data['status'] != "OK":
-        return render(request, "trip/place_details.html", {"err_msg": "Place not found."})
+        return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
     context = get_details_context(data, os.getenv('FRONTEND_API_KEY'))
     return render(request, "trip/place_details.html", context)

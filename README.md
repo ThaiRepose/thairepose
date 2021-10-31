@@ -44,35 +44,37 @@
     ```
     pip install -r requirements.txt
     ```
-6. Create `.env` file in the same level as manage.py and write down:
+   1. Create `.env` file in the same level as manage.py and write down:
 
-    ```
-    DEBUG=True
-    SECRET_KEY=Your-Secret-Key
-    HOSTS=localhost,127.0.0.1
-    EMAIL_FROM_USER = email-for-send-verification-form 
-    EMAIL_HOST_PASSWORD = email-password
-    ```
-    (If you don't use gmail. Please change EMAIL_PORT and EMAIL_HOST in setting)
-7. Install TailwindCSS framework.
+       ```
+       DEBUG=True
+       SECRET_KEY=Your-Secret-Key
+       GOOGLE_API_KEY=Your-Google-API-key
+       FRONTEND_API_KEY=Another-Google-API-key
+       HOSTS=localhost,127.0.0.1
+       EMAIL_FROM_USER = email-for-send-verification-form 
+       EMAIL_HOST_PASSWORD = email-password
+       ```
+       (If you don't use gmail. Please change EMAIL_PORT and EMAIL_HOST in setting)
+6. Install TailwindCSS framework.
 
     ```
     python manage.py tailwind install
     ```
-8. Build TailwindCSS frontend framework the get GUI.
+7. Build TailwindCSS frontend framework the get GUI.
 
     ```
     python manage.py tailwind build
     ```
-9. Run this command to migrate the database.
+8. Run this command to migrate the database.
 
     ```
     python manage.py migrate
     ```
-10. Start running the server by this command.
-    ```
-    python manage.py runserver
-    ```
+9. Start running the server by this command.
+   ```
+   python manage.py runserver
+   ```
 
 ## Team Members
 | Name | Github  |

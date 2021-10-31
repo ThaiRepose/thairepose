@@ -11,7 +11,7 @@ def index(request):
 
 
 class HomeView(ListView):
-    """Class to create handle show all trip."""
+    """Class for link html of show all trip page."""
 
     model = TripPlan
     template_name = 'trip/trip_plan.html'
@@ -19,7 +19,7 @@ class HomeView(ListView):
 
 
 class DetailView(DetailView):
-    """Class to handle the detail of each trip."""
+    """Class for link html of detail of eaach trip."""
 
     model = TripPlan
     template_name = 'trip/trip_detail.html'
@@ -28,7 +28,7 @@ class DetailView(DetailView):
 
 
 class AddPost(CreateView):
-    """Class to handle the create trip."""
+    """Class for link html of add trip page."""
 
     model = TripPlan
     template_name = "trip/add_blog.html"
@@ -36,7 +36,7 @@ class AddPost(CreateView):
 
 
 class AddReview(CreateView):
-    """Class to handle the create review."""
+    """Class for link html of add review."""
 
     model = Review
     template_name = "trip/add_review.html"

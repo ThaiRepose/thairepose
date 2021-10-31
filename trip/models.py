@@ -4,7 +4,13 @@ from django.urls import reverse
 
 
 class TripPlan(models.Model):
-    """Class to create field for user input."""
+    """Extended user model class that use for Trip plan.
+
+    Attributes:
+        title(str): title of post
+        author(user): user who write post
+        body(str): descriptions
+    """
 
     title = models.CharField(max_length=200)
     author = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
@@ -14,12 +20,19 @@ class TripPlan(models.Model):
         return self.title + ' | ' + str(self.author)
 
     def get_absolute_url(self):
-        """Return redirest to detail of each trip."""
+        """Return redirect to all trip pages."""
         return reverse("trip:tripdetail", args=(str(self.id)))
 
 
 class Review(models.Model):
-    """Class for set fields for review."""
+    """Extended user model class that use for Review.
+
+    Attributes:
+        post(TripPlan): trip plan that host of review
+        name(str): name of who write commend
+        date_added(datetime): date and time when comment writed
+        like(object): file to store user to like comment
+    """
 
     post = models.ForeignKey(
         TripPlan, related_name="review", on_delete=models.CASCADE)
@@ -37,5 +50,8 @@ class Review(models.Model):
         return '%s - %s' % (self.post.title, self.name)
 
     def get_absolute_url(self):
-        """Return redirest to detail of each commend."""
+        """Return redirect to detail of each commend.
+
+        When your like comment page will refesh itseft to show all like.
+        """
         return reverse("trip:tripdetail", args=(str(self.post.id)))

@@ -1,8 +1,8 @@
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from .models import Review, TripPlan
-from . import views
+
 
 
 class ReviewModelTests(TestCase):
@@ -10,6 +10,7 @@ class ReviewModelTests(TestCase):
 
     def setUp(self):
         """Set up trip plan for create review"""
+        self.request = RequestFactory()
         self.user = User.objects.create(username='tester', password='tester')
         self.trip = TripPlan.objects.create(
             title='test', body='create_trip', author=self.user)
@@ -24,7 +25,7 @@ class ReviewModelTests(TestCase):
         self.assertEqual(Review.objects.count(), 1)
 
     def test_like_one_user(self):
-        """Test link comment."""
+        """Test like comment."""
         Review.objects.create(post=self.trip, name='reviewer', body='review')
         post = get_object_or_404(Review, id='1')
         post.like.add(self.user)

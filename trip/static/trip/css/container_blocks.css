@@ -24,6 +24,10 @@
     box-shadow: 2px 5px 10px rgb(0 0 0 / 0.1);
 }
 
+.fade {
+  opacity: 1;
+}
+
 .underline-md {
     text-decoration-line: underline;
     text-underline-offset: 8px;

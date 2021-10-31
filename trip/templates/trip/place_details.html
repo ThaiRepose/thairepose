@@ -22,7 +22,7 @@
             <div class="h-full flex flex-col md:flex-row">
                 <div class="w-full md:w-2/5">
                     <!-- Flickity HTML init -->
-                    <div class="carousel js-flickity h-60 md:h-3/5">
+                    <div class="carousel js-flickity h-60 md:h-3/5 js-show-on-scroll">
                         {% if images %}
                             {% for image in images %}
                                 <div class="carousel-cell" style="height: 100%">
@@ -35,7 +35,7 @@
                                 </div>
                         {% endif %}
                     </div>
-                    <div id="basic-info" class="flex flex-col lg:flex-row mt-15">
+                    <div id="basic-info" class="flex flex-col lg:flex-row mt-15 js-show-on-scroll">
                         <div class="flex flex-col w-full lg:w-1/2 ml-6 lg:ml-9">
                             <h1 class="text-2xl font-bold">CONTACT</h1>
                             <div class="flex flex-row mt-2">
@@ -46,7 +46,7 @@
                                     <a class="text-lg">N/A</a>
                                 {% endif %}
                             </div>
-                            <div class="flex flex-row" style="display: inline;">
+                            <div class="flex flex-row h-8" style="display: inline;">
                                 <p class="text-lg">Website:&nbsp;</p>
                                 {% if website %}
                                     <a href="{{ website }}" class="text-lg text-indigo-500 underline" target="_blank">{{ website }}</a>
@@ -71,7 +71,7 @@
                     <h1 class="text-2xl font-bold mt-6 ml-10">REVIEWS</h1>
                     <div class="overflow-y-scroll px-10 h-5/6 py-2" style="height: 28rem;">
                     {% for review in reviews %}
-                        <div class="rounded-2xl bg-translucent h-28 flex flex-row my-2">
+                        <div class="rounded-2xl bg-translucent h-28 flex flex-row my-2 js-show-on-scroll">
                             <div class="overflow-y-auto px-6 w-4/5">
                                 <h1 class="pt-3 text-lg font-bold">{{ review.author }}</h1>
                                 <p class="text-sm">{{ review.text }}</p>
@@ -90,9 +90,9 @@
                 </div>
                 <div class="w-full md:w-1/5">
                     <h1 class="text-xl font-bold mt-6 md:mt-2 md:my-6 ml-6">SUGGESTIONS</h1>
-                    <div class="overflow-y-scroll px-10" style="height: 28rem;">
+                    <div class="overflow-y-scroll px-1" style="height: 28rem;">
                         {% for place in suggestions %}
-                            <div class="overflow-y-scroll px-2 py-2 flex justify-center hover:scale-110 transition duration-300">
+                            <div class="overflow-y-scroll px-2 py-2 flex justify-center hover:scale-110 transition duration-300 js-show-on-scroll">
                                 <a class="rounded-2xl h-52 w-44 bg-translucent px-2 py-2 flex flex-col bg-gray-900" href="{% url 'trip:place' place.place_id %}">
                                     <div class="rounded-2xl bg-gray-300 w-40 h-40">
                                         <img class="object-cover h-full w-full rounded-xl" src="{{ place.photo }}">
@@ -112,4 +112,25 @@
 
 {% block script %}
     <script defer src="https://npmcdn.com/flickity@2/dist/flickity.pkgd.js"></script>
+    <script>
+        const callback = function (entries) {
+          entries.forEach((entry) => {
+            console.log(entry);
+
+            if (entry.isIntersecting) {
+              entry.target.classList.add("animate-fadeIn");
+            } else {
+              entry.target.classList.remove("animate-fadeIn");
+            }
+          });
+        };
+
+        const observer = new IntersectionObserver(callback);
+
+        const targets = document.querySelectorAll(".js-show-on-scroll");
+        targets.forEach(function (target) {
+          target.classList.add("opacity-0");
+          observer.observe(target);
+        });
+    </script>
 {% endblock %}

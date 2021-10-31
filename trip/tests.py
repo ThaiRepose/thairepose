@@ -15,12 +15,6 @@ class PlaceDetailsViewTest(TestCase):
         load_dotenv()
         self.frontend_api_key = os.getenv('FRONTEND_API_KEY')
 
-    def test_valid_place_id(self):
-        """Test viewing Kasetsart University (place_id = ChIJVysBBt6c4jARcDELPbMAAQ8)
-                because there are completely informations."""
-        response = self.client.get(reverse('trip:place', args=['ChIJVysBBt6c4jARcDELPbMAAQ8']))
-        self.assertEqual(response.status_code, 200)
-
     def test_invalid_place_id(self):
         """Test viewing place details page with invalid place_id."""
         response = self.client.get(reverse('trip:place', args=['123']))

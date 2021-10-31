@@ -26,7 +26,7 @@ class Review(models.Model):
     name = models.CharField(max_length=200)
     body = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
-    like = models.ManyToManyField(User, related_name='commended')
+    like = models.ManyToManyField(User, related_name='commended', null=True, blank=True)
 
     @property
     def total_like(self):

@@ -40,8 +40,11 @@ class AddReview(CreateView):
 
     model = Review
     template_name = "trip/add_review.html"
-    fields = '__all__'
-
+    fields = ('name', 'body')
+    
+    def form_valid(self, form):
+        form.instance.post_id = self.kwargs['pk']
+        return super().form_valid(form)
 
 def LikeView(request, pk):
     """Function to user like of each commend."""

@@ -5,43 +5,41 @@
     
     <style>
     
-    body {
-    background: url("{% static 'images/bg-blur.jpg' %}") no-repeat fixed;
-    background-size: cover;
-    }
+    .bg-page {
+            background-image: url("{% static 'images/bg-blur.jpg' %}");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
+        }
         
-    </style> 
+    </style>
 {% endblock %}
 
 {% block main_content %}
-
+<div class="bg-page flex-grow">
   <!-- Tailwind CSS -->
-  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css" rel="stylesheet">
 
-  <div class="flex-grow justify-center max-w-6xl mx-auto rounded-lg p-8 m-10 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-5 bg-green-600 bg-fixed" style="background-color: rgba(209, 213, 219, 0.3);
+  <div class="flex-grow rounded-3xl justify-center max-w-6xl mx-auto p-8 m-10 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 bg-green-600 bg-fixed" style="background-color: rgba(209, 213, 219, 0.3);
 box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
     <!--Card 1-->
     {% for place in places %}
-    <div class="rounded-lg overflow-hidden shadow-lg bg-white">
+    <div class="rounded-3xl overflow-hidden shadow-lg bg-gray-300">
     {% if place.photos and place.have_photo == True %}
-   <img class="w-full" src="{% static 'images/places_image/' %}{{ place.place_id }}photo.jpeg">
+   <img class="w-full h-80 rounded-3xl p-2" src="{% static 'images/places_image/' %}{{ place.place_id }}photo.jpeg">
     {% else %}
-    <img class="w-full" src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={{ place.photos.0.photo_reference }}&key=AIzaSyBxO1khE-LHn5Z5U2SWpA36D4nKqoWzNRg">
+    <img class="w-full h-80 rounded-3xl p-2" src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={{ place.photos.0.photo_reference }}&key=AIzaSyBxO1khE-LHn5Z5U2SWpA36D4nKqoWzNRg">
     {% endif %}
       <div class="px-6 py-4">
         <div class="font-bold text-xl mb-2">{{ place.name }}</div>
-        <p class="text-gray-700 text-base">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus quia, nulla! Maiores et perferendis eaque, exercitationem praesentium nihil.
-        </p>
-      </div>
-      <div class="px-6 pt-4 pb-2">
-        <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#photography</span>
-        <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#travel</span>
-        <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#winter</span>
       </div>
     </div>
     {% endfor %}
   </div>
+</div>
+
+
+
 
 
 

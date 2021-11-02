@@ -18,14 +18,16 @@
 {% endblock %}
 
 {% block main_content %}
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abel|Archivo+Black|Barlow">
 	<div id="content" class="bg-center bg-cover bg-no-repeat h-screen items-center justify-center flex flex-col -mt-20">
 		<div class="items-center justify-center w-full p-8 flex flex-col">
 			<div class="bg-white items-center justify-center md:w-1/2 w-full shadow-md p-5 h-auto rounded-lg blur-3 bg-opacity-50 flex flex-col col-span-12">
             <img class="w-20 md:w-24" src="{% static "/template-picture/email-13750.png" %}">
 				</h4>
-				<div class="text-center text-xl mt-10 mx-10" style="font-family: Abel;">We have sent an e-mail to <span class="text-xl text-blue-600">{{request.session.user_email}}</span> for verification. Follow the link provided to verified your email. You can still use website without verify your account. But some function are prohibit. Please contact us if you do not receive it within a few minutes.</div>
-                <div class="text-center text-lg mt-6 -mb-2" style="font-family: Abel;">Click here to go to <a class="text-lg text-blue-700" style="font-family: Abel;" href={% url 'trip:index' %}>Home page</a></div>
+				<div class="text-center text-xl mt-10 mx-10">We have sent an e-mail to <span class="text-xl text-blue-600">{{request.session.user_email}}</span> 
+                    for verification. Follow the link provided to verified your email. You can still use website without verify your account. But some function are 
+                    prohibit. Please contact us if you do not receive it within a few minutes.
+                </div>
+                <div class="text-center text-lg mt-6 -mb-2">Click here to go to <a class="text-lg text-blue-700" href={% url 'trip:index' %}>Home page</a></div>
 			</div>
 		</div>
 	</div>

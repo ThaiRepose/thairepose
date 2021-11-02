@@ -25,8 +25,12 @@
         <img class="w-20 md:w-24 mb-8" src="{% static "/template-picture/email-13750.png" %}">
         {% if user.is_authenticated %}
         <div class="text-center text-3xl">Verify your email to access this function</div>
-            <div class="text-center text-xl mt-10 mx-10">This part of the site requires us to verify that you are who you claim to be. For this purpose, we require that you verify ownership of your e-mail address. </div>
-			<div class="text-center text-xl mt-10 mx-10">We have sent an e-mail to <span class="text-xl text-blue-600">{{ user.email }}</span> for verification. Please click on the link inside this e-mail. Please contact us if you do not receive it within a few minutes.</div>
+            <div class="text-center text-xl mt-10 mx-10">This part of the site requires us to verify that you are who you claim to be. For this purpose, 
+                we require that you verify ownership of your e-mail address. 
+            </div>
+			<div class="text-center text-xl mt-10 mx-10">We have sent an e-mail to <span class="text-xl text-blue-600">{{ user.email }}</span>
+                for verification. Please click on the link inside this e-mail. Please contact us if you do not receive it within a few minutes.
+            </div>
             <div class="text-center text-lg mt-6 -mb-2">Note: you can still <a href="{{ email_url }}" class="text-lg text-blue-700">change your e-mail address</a>.</div>
 		</div>
         {% else %}

@@ -45,6 +45,10 @@ def run():
 
         all_img = [f for f in listdir(PLACE_IMG_PATH) if isfile(join(PLACE_IMG_PATH, f))]
         now = datetime.datetime.now()
+        if not os.path.exists(os.path.join(BASE_DIR,'expireTable.json')):
+            json_init = {}
+            with open(os.path.join(BASE_DIR,'expireTable.json'), 'w') as json_file:
+                json.dump(json_init, json_file)
         with open(os.path.join(BASE_DIR,'expireTable.json')) as json_file:
             json_decoded = json.load(json_file)
         

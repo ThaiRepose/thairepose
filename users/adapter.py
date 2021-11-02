@@ -37,6 +37,14 @@ class ProfileAccountAdapter(DefaultAccountAdapter):
 
 
     def respond_email_verification_sent(self, request, user):
+        """Show email_verification_sent page with assign user_email variable to request.session.
+
+        Args:
+            user (Usser): user model
+
+        Returns:
+            Httpresponse: redirect to account_email_verification_sent
+        """
         if 'user_email' in request.session:
             del request.session['user_email']
         request.session['user_email'] = user.email

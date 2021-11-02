@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 from pathlib import Path
 import os
 import json
@@ -122,10 +123,11 @@ AUTH_PASSWORD_VALIDATORS = [
 SITE_ID = 1
 ACCOUNT_ADAPTER = 'users.adapter.ProfileAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'users.adapter.ProfileSocialAccountAdapter'
-ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/login'
+ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/confirm-email/'
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
 LOGIN_REDIRECT_URL = '/'
+ACCOUNT_UNIQUE_EMAIL = True
 
 
 # Provider specific settings

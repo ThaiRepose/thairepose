@@ -25,7 +25,7 @@ function initAutocomplete() {
     var autocomplete;
     autocomplete = new google.maps.places.Autocomplete(
         document.getElementById('autocomplete'), {
-            types: ['geocode'],
+            types: ['establishment', 'geocode'],
             componentRestrictions: { 'country': ['TH'] },
             field: ['place_id', 'geometry', 'name']
         });

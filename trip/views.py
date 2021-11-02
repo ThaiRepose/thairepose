@@ -85,7 +85,7 @@ def index(request):
 def place_info(request, place_id):
     """Render Place information page."""
     load_dotenv()
-    api_key = os.getenv('GOOGLE_API_KEY')
+    api_key = os.getenv('API_KEY')
     field = "&fields=name%2Cformatted_phone_number%2Cphoto%2Cwebsite%2Crating%2Creviews%2Cgeometry/location"
     url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}{field}&key={api_key}"
     response = requests.get(url)

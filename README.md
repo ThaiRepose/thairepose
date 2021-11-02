@@ -44,7 +44,8 @@
     ```
     pip install -r requirements.txt
     ```
-    
+    [Our caching system](https://github.com/ThaiRepose/thairepose/tree/caching/src/caching#installation)
+
 6. Create `.env` file in the same level as manage.py and write down:
 
     ```

@@ -2,7 +2,7 @@ from django.shortcuts import render
 import os, json
 from .api import GoogleAPI
 from threpose.settings import BASE_DIR
-from src.caching.caching import APICaching
+from src.caching.caching_gmap import APICaching
 from subprocess import call
 from dotenv import load_dotenv
 load_dotenv()

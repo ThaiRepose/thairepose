@@ -9,7 +9,8 @@ import click
 import pathlib
 
 api_caching = APICaching()
-
+from dotenv import load_dotenv
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
@@ -17,7 +18,8 @@ PLACE_IMG_PATH = os.path.join(ROOT_DIR,'theme','static','images','places_image')
 
 
 def write_img_from_gmap_api(place_id, photo_ref):
-    url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={photo_ref}&key=AIzaSyBxO1khE-LHn5Z5U2SWpA36D4nKqoWzNRg"
+    api_key = os.getenv('API_KEY')
+    url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={photo_ref}&key={api_key}"
     payload={}
     headers = {}
     response = requests.request("GET", url, headers=headers, data=payload)

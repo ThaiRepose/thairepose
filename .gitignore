@@ -133,3 +133,7 @@ dmypy.json
 
 # Django migrations
 */migrations/
+
+# User profile
+users/static/profile_pic/*
+!users/static/profile_pic/blank-profile-picture.png

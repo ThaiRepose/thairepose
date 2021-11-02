@@ -8,6 +8,7 @@ click==8.0.3
 cookiecutter==1.7.3
 coverage==6.0.2
 Django==3.2.8
+django-allauth==0.45.0
 django-tailwind==2.2.1
 flake8==4.0.1
 idna==3.2

@@ -75,6 +75,9 @@
     ```
     python manage.py runserver
     ```
+    ```
+    tr-caching start
+    ```
 
 ## Team Members
 | Name | Github  |

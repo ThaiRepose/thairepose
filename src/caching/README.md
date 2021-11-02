@@ -10,6 +10,7 @@ but I found a problem that caching system such as redis is a low-level caching s
 - Save temporary data from everythin that you want to keep it.
 - Data that we keep in cache can have an expire date or if you don't want it you can keep leave it alone.
 - `tr-caching start` is a command to check cache file that have key word in filename is searchresult(json data) and download image form it(each place in search result should have photo reference but if place not have photo reference it would ignore it.).
+- The image that downloaded can stay up to 1 month.
 
 ## Installation
 

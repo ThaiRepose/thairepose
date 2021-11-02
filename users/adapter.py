@@ -35,7 +35,6 @@ class ProfileAccountAdapter(DefaultAccountAdapter):
         request.session['user_email'] = user.email
         return user
 
-
     def respond_email_verification_sent(self, request, user):
         """Show email_verification_sent page with assign user_email variable to request.session.
 

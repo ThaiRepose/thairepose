@@ -45,7 +45,7 @@ class TestUploadPircute(TestCase):
         self.assertNotEqual(self.user.profile.profile_pic, None)
 
     def tearDown(self):
-        """For remove file that create while testing. if file created"""
+        """For remove file that create while testing. if file created."""
         path = os.path.join(settings.PROFILE_PIC_LOCATION, 'test.png')
         if os.path.isfile(path):
             os.remove(path)

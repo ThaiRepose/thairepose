@@ -44,6 +44,7 @@
     ```
     pip install -r requirements.txt
     ```
+    
 6. Create `.env` file in the same level as manage.py and write down:
 
     ```

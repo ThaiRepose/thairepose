@@ -50,7 +50,6 @@
        DEBUG=True
        SECRET_KEY=Your-Secret-Key
        API_KEY=Your-Google-API-key
-       FRONTEND_API_KEY=Another-Google-API-key
        HOSTS=localhost,127.0.0.1
        EMAIL_FROM_USER = email-for-send-verification-form 
        EMAIL_HOST_PASSWORD = email-password

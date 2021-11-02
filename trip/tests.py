@@ -13,7 +13,7 @@ class PlaceDetailsViewTest(TestCase):
     def setUp(self):
         """Initialize API key from env."""
         load_dotenv()
-        self.frontend_api_key = os.getenv('FRONTEND_API_KEY')
+        self.frontend_api_key = os.getenv('API_KEY')
 
     def test_invalid_place_id(self):
         """Test viewing place details page with invalid place_id."""

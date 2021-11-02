@@ -92,5 +92,5 @@ def place_info(request, place_id):
     data = json.loads(response.content)
     if data['status'] != "OK":
         return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
-    context = get_details_context(data, os.getenv('FRONTEND_API_KEY'))
+    context = get_details_context(data, os.getenv('API_KEY'))
     return render(request, "trip/place_details.html", context)

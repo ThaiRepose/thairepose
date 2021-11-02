@@ -3,7 +3,7 @@ from os.path import isfile, join
 from pathlib import Path
 import json, os
 import requests
-from caching import APICaching
+from caching_gmap import APICaching
 import datetime
 import click
 import pathlib

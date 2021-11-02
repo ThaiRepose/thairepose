@@ -135,4 +135,4 @@ dmypy.json
 # Django migrations
 */migrations/
 
-Table
+expireTable.json

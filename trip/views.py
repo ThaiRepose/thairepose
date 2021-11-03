@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import ListView, DetailView, CreateView
 from .models import TripPlan, Review
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -48,7 +49,7 @@ class AddReview(CreateView):
         form.instance.name = self.request.user
         return super().form_valid(form)
 
-
+@login_required
 def likeview(request, pk):
     """Methid for store user like of each commend."""
     post = get_object_or_404(Review, id=request.POST.get('commend_id'))

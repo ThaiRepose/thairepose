@@ -139,3 +139,7 @@ dmypy.json
 .DS_Store
 ._.DS_Store
 **/._.DS_Store
+
+# User profile
+users/static/profile_pic/*
+!users/static/profile_pic/blank-profile-picture.png

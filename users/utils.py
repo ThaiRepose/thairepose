@@ -34,7 +34,7 @@ def upload_profile_pic(user, image_url, filename, testing=False):
 
 
 def pic_profile_relative_path():
-    """change from absolute path to relative path
+    """Change from absolute path to relative path.
 
     Returns:
         str: relative path of profile pic

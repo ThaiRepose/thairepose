@@ -1,5 +1,7 @@
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 from .models import Profile
 from .utils import upload_profile_pic
@@ -28,7 +30,24 @@ class ProfileAccountAdapter(DefaultAccountAdapter):
             user=user
         )
         upload_profile_pic(user, None, str(user.id) + "_profile_picture.jpg")
+        if 'user_email' in request.session:
+            del request.session['user_email']
+        request.session['user_email'] = user.email
         return user
+
+    def respond_email_verification_sent(self, request, user):
+        """Show email_verification_sent page with assign user_email variable to request.session.
+
+        Args:
+            user (User): user model
+
+        Returns:
+            Httpresponse: redirect to account_email_verification_sent
+        """
+        if 'user_email' in request.session:
+            del request.session['user_email']
+        request.session['user_email'] = user.email
+        return HttpResponseRedirect(reverse("account_email_verification_sent"))
 
 
 class ProfileSocialAccountAdapter(DefaultSocialAccountAdapter):

@@ -1,23 +1,41 @@
-{% extends "account/base.html" %}
-
+{% extends "base.html" %}
+{% load static %}
 {% load i18n %}
+{% load account %}
+{% load static tailwind_tags %}
 
-{% block head_title %}{% trans "Verify Your E-mail Address" %}{% endblock %}
+{% block header %}
+    <title>ThaiRepose::{{ name }}</title>
+    <style>
+        body {
+            background: url("{% static '/images/bg-blur.jpg' %}") no-repeat fixed;
+            background-size: cover;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}" />
+    <link rel="stylesheet" href="https://npmcdn.com/flickity@2/dist/flickity.css" />
+{% endblock %}
 
-{% block content %}
-<h1>{% trans "Verify Your E-mail Address" %}</h1>
+{% block main_content %}
 
 {% url 'account_email' as email_url %}
-
-<p>{% blocktrans %}This part of the site requires us to verify that
-you are who you claim to be. For this purpose, we require that you
-verify ownership of your e-mail address. {% endblocktrans %}</p>
-
-<p>{% blocktrans %}We have sent an e-mail to you for
-verification. Please click on the link inside this e-mail. Please
-contact us if you do not receive it within a few minutes.{% endblocktrans %}</p>
-
-<p>{% blocktrans %}<strong>Note:</strong> you can still <a href="{{ email_url }}">change your e-mail address</a>.{% endblocktrans %}</p>
-
+	<div id="content" class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10">
+	<div class="items-center justify-center w-full p-8 flex flex-col">
+		<div class="bg-white items-center justify-center md:w-1/2 w-full shadow-md p-5 h-auto rounded-lg blur-3 bg-opacity-50 flex flex-col col-span-12">
+        <img class="w-20 md:w-24 mb-8" src="{% static "/template-picture/email-13750.png" %}">
+        {% if user.is_authenticated %}
+        <div class="text-center text-3xl">Verify your email to access this function</div>
+            <div class="text-center text-xl mt-10 mx-10">This part of the site requires us to verify that you are who you claim to be. For this purpose, 
+                we require that you verify ownership of your e-mail address. 
+            </div>
+			<div class="text-center text-xl mt-10 mx-10">We have sent an e-mail to <span class="text-xl text-blue-600">{{ user.email }}</span>
+                for verification. Please click on the link inside this e-mail. Please contact us if you do not receive it within a few minutes.
+            </div>
+            <div class="text-center text-lg mt-6 -mb-2">Note: you can still <a href="{{ email_url }}" class="text-lg text-blue-700">change your e-mail address</a>.</div>
+		</div>
+        {% else %}
+        {% endif %}
+	</div>
+</div>
 
 {% endblock %}

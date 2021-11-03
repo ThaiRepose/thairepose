@@ -1,8 +1,9 @@
 from .utils import upload_profile_pic
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from .models import Profile
+from .adapter import ProfileAccountAdapter
 
 import os
 
@@ -45,7 +46,33 @@ class TestUploadPircute(TestCase):
         self.assertNotEqual(self.user.profile.profile_pic, None)
 
     def tearDown(self):
-        """For remove file that create while testing. if file created"""
+        """For remove file that create while testing. if file created."""
         path = os.path.join(settings.PROFILE_PIC_LOCATION, 'test.png')
         if os.path.isfile(path):
             os.remove(path)
+
+
+class TestEmailVerificationPage(TestCase):
+    """Test response_email_verification."""
+
+    def setUp(self) -> None:
+        """Set up profile and request."""
+        self.rf = RequestFactory
+        self.rf.session = {}
+        self.user = User.objects.create(username='test',
+                                        password='123',
+                                        email='test@email.com'
+                                        )
+
+    def test_template(self):
+        """Test template and response code of response email verification page."""
+        response = ProfileAccountAdapter.respond_email_verification_sent(ProfileAccountAdapter, self.rf, self.user)
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateUsed('verification_sent.html')
+
+    def test_email_already_in_session(self):
+        """Test template and response code of response email verification page with user_email aready in session."""
+        self.rf.session = {'user_email': 'test@email.com'}
+        response = ProfileAccountAdapter.respond_email_verification_sent(ProfileAccountAdapter, self.rf, self.user)
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateUsed('verification_sent.html')

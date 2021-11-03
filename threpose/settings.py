@@ -122,10 +122,11 @@ AUTH_PASSWORD_VALIDATORS = [
 SITE_ID = 1
 ACCOUNT_ADAPTER = 'users.adapter.ProfileAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'users.adapter.ProfileSocialAccountAdapter'
-ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/login'
+ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/confirm-email/'
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
 LOGIN_REDIRECT_URL = '/'
+ACCOUNT_UNIQUE_EMAIL = True
 
 
 # Provider specific settings

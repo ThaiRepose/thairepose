@@ -50,6 +50,7 @@
     DEBUG=True
     SECRET_KEY=Your-Secret-Key
     HOSTS=localhost,127.0.0.1
+    API_KEY=Your-Google-API-key
     EMAIL_FROM_USER = email-for-send-verification-form 
     EMAIL_HOST_PASSWORD = email-password
     ```
@@ -85,7 +86,6 @@
     PROFILE_PIC_LOCATION = your-storage-path-for-store-picture
     ```
     recommend: project-folder/users/static/profile_pic
-
 
 
 ## Team Members

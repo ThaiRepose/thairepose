@@ -1,11 +1,6 @@
 {% extends 'trip/base.html' %}
 
 {% block main_content %}
-
-{% if not object.count == 0 %}
-<p>No Post</p>
-<li><a href="{% url 'trip:addpost' %}">---Add post---</a></li>
-{% else %}
 <ul>
 {% for post in object %}
     <li><a href="{% url 'trip:tripdetail' post.pk %}" type="submit">{{ post.title }}</a> 
@@ -14,5 +9,4 @@
     {{ post.body }}</li>
 {% endfor %}</ul>
 <li><a href="{% url 'trip:addpost' %}">---Add post---</a></li>
-{% endif %}
 {% endblock %}

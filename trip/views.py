@@ -9,6 +9,7 @@ from django.views.generic import ListView, DetailView, CreateView
 from .models import TripPlan, Review
 from django.contrib.auth.decorators import login_required
 
+
 def get_details_context(place_data: dict, api_key: str) -> dict:
     """Get context for place details page.
 
@@ -28,8 +29,10 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
         if 'website' in place_data['result'].keys():
             context['website'] = place_data['result']['website']
         if 'rating' in place_data['result'].keys():
-            context['rating'] = range(round(int(place_data['result']['rating'])))
-            context['blank_rating'] = range(5 - round(int(place_data['result']['rating'])))
+            context['rating'] = range(
+                round(int(place_data['result']['rating'])))
+            context['blank_rating'] = range(
+                5 - round(int(place_data['result']['rating'])))
         if 'photos' in place_data['result'].keys():
             images = []
             current_photo = 0
@@ -77,6 +80,7 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
                 })
             context['suggestions'] = suggestions
     return context
+
 
 def index(request):
     """Render Index page."""

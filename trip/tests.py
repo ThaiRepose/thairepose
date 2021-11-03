@@ -57,7 +57,8 @@ class PlaceDetailsViewTest(TestCase):
     def test_view_one_place(self):
         """Test viewing Kasetsart University (place_id = ChIJVysBBt6c4jARcDELPbMAAQ8)
         because there are completely informations."""
-        response = self.client.get(reverse('trip:place', args=['ChIJVysBBt6c4jARcDELPbMAAQ8']))
+        response = self.client.get(
+            reverse('trip:place', args=['ChIJVysBBt6c4jARcDELPbMAAQ8']))
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.context['images'], list)
         self.assertIsInstance(response.context['suggestions'], list)
@@ -76,6 +77,7 @@ class IndexViewTest(TestCase):
         """Test response for directing index page."""
         response = self.client.get(reverse('trip:index'))
         self.assertEqual(response.status_code, 200)
+
 
 class ReviewModelTests(TestCase):
     """Test Review Model"""
@@ -116,4 +118,3 @@ class ReviewModelTests(TestCase):
         """Remove all user and all trip plan"""
         User.objects.all().delete()
         TripPlan.objects.all().delete()
-

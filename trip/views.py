@@ -79,7 +79,7 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
     return context
 
 def index(request):
-    """Method for link url with index template."""
+    """Render Index page."""
     return render(request, "trip/index.html")
 
 
@@ -128,9 +128,6 @@ def likeview(request, pk):
     post = get_object_or_404(Review, id=request.POST.get('commend_id'))
     post.like.add(request.user)
     return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
-=======
-    """Render Index page."""
-    return render(request, "trip/index.html")
 
 
 def place_info(request, place_id: str):

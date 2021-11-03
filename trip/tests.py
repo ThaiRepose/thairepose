@@ -16,23 +16,23 @@ class ReviewModelTests(TestCase):
 
     def test_create_review(self):
         """Test create new review."""
-        Review.objects.create(post=self.trip, name='reviewer', body='review')
+        Review.objects.create(post=self.trip, name=self.user, body='review')
         self.assertEqual(Review.objects.count(), 1)
-        Review.objects.create(post=self.trip, name='reviewer', body='review')
+        Review.objects.create(post=self.trip, name=self.user, body='review')
         self.assertEqual(Review.objects.count(), 2)
         Review.objects.filter(id='1').delete()
         self.assertEqual(Review.objects.count(), 1)
 
     def test_like_one_user(self):
         """Test like comment."""
-        Review.objects.create(post=self.trip, name='reviewer', body='review')
+        Review.objects.create(post=self.trip, name=self.user, body='review')
         post = get_object_or_404(Review, id='1')
         post.like.add(self.user)
         self.assertEqual(post.total_like, 1)
 
     def test_like_more_than_one_user(self):
         """Test When like with different user."""
-        Review.objects.create(post=self.trip, name='reviewer', body='review')
+        Review.objects.create(post=self.trip, name=self.user, body='review')
         post = get_object_or_404(Review, id='1')
         post.like.add(self.user)
         user2 = User.objects.create(username='tester2', password='tester2')

@@ -135,4 +135,15 @@ dmypy.json
 # Django migrations
 */migrations/
 
+# Cache expire table
 expireTable.json
+# Macos finder cache
+**/.DS_Store
+.DS_Store
+._.DS_Store
+**/._.DS_Store
+
+# User profile
+users/static/profile_pic/*
+!users/static/profile_pic/blank-profile-picture.png
+

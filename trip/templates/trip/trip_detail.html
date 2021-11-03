@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+<h1> {{ post.title }} </h1>
+<small> By: {{ post.author }}</small>
+{{ post.body }}
+<br/><br>
+<h2>Review</h2>
+<br>
+{% if not post.review.all %}
+    No review Yet
+    <a href="{% url 'trip:addreview' post.pk%}">---Add commend---</a>
+{% else %}
+    {% for commend in post.review.all %}
+    <strong>{{commend.name}} - {{commend.date_added}} </strong>
+    {{commend.body}}
+    <form action="{% url 'trip:list_commend' post.pk %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" name="commend_id" value="{{ commend.id }}">Like</button>
+        - {{ commend.total_like }}
+    </form>
+    <br>
+    {% endfor %}
+    <a href="{% url 'trip:addreview' post.pk%}">---Add commend---</a>
+{% endif %}
+{% endblock %}

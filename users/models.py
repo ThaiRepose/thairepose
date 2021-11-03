@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
+from .utils import pic_profile_relative_path
 
 
 class Profile(models.Model):
@@ -7,21 +9,14 @@ class Profile(models.Model):
 
     Attributes:
         user(User): user model
-        username(str): username
-        name(str): name of user
-        surename(str): surname of user
         birthday(str): user birthday
-        is_email_verified(bool): check email verified(if not verified, it equal to false)
         profile_pic(image): user profile image
     """
 
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
-    username = models.CharField(max_length=200, null=True)
-    name = models.CharField(max_length=200, null=True)
-    surname = models.CharField(max_length=200, null=True)
     birthday = models.DateField(null=True, auto_now=False, auto_now_add=False)
-    is_email_verified = models.BooleanField(default=False, null=True)
-    profile_pic = models.ImageField(null=True, blank=True)
+    profile_pic = models.ImageField(
+        upload_to=pic_profile_relative_path(), null=True, blank=True)
 
     def __str__(self):
         """Return username.
@@ -29,4 +24,4 @@ class Profile(models.Model):
         Returns:
             str: username of model
         """
-        return self.username
+        return str(self.user)

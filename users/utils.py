@@ -1,21 +1,45 @@
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-import six
+import urllib.request
+import os
+from django.conf import settings
+from django.core.files import File
 
 
-class TokenGenerator(PasswordResetTokenGenerator):
-    """This class contain function for generate token."""
+def upload_profile_pic(user, image_url, filename, testing=False):
+    """Upload profile picture to Profile model.
 
-    def _make_hash_value(self, user, timestamp: int):
-        """Make hash value from user information and timestano.
+    Args:
+        user (User): User model
+        image_url (str): link of image
+        location (str): path for store picture
+        filename (str): file name of picture
+    """
+    try:
+        if not testing:
+            result = urllib.request.urlretrieve(image_url)
+        else:
+            result = None
+        user.profile.profile_pic.save(
+            filename,
+            File(open(result[0], 'rb'))
+        )
+    except:
+        result = os.path.join(settings.PROFILE_PIC_LOCATION,
+                              "blank-profile-picture.png")
+        user.profile.profile_pic.save(
+            filename,
+            File(open(result, 'rb'))
+        )
 
-        Args:
-            user (Profile): user profile
-            timestamp (int): timestamp
-
-        Returns:
-            str: unicode of string
-        """
-        return (six.text_type(user.pk) + six.text_type(timestamp) + six.text_type(user.profile.is_email_verified))
+    user.profile.save()
 
 
-generate_token = TokenGenerator()
+def pic_profile_relative_path():
+    """Change from absolute path to relative path.
+
+    Returns:
+        str: relative path of profile pic
+    """
+    path = settings.PROFILE_PIC_LOCATION.replace('\\', '/')
+    if path[0] == '/':
+        return path[1:]
+    return path

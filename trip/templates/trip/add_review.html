@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block main_content %}
-{% if user.authenticated %}
+{% if user.is_authenticated %}
 <h1>Add Comment</h1>
 <form method="POST">
     {% csrf_token %}

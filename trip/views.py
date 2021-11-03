@@ -1,9 +1,13 @@
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, HttpResponseRedirect
 import json
 import os
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 import requests
 from dotenv import load_dotenv
+from django.urls import reverse
+from django.views.generic import ListView, DetailView, CreateView
+from .models import TripPlan, Review
+from django.contrib.auth.decorators import login_required
 
 
 def get_details_context(place_data: dict, api_key: str) -> dict:
@@ -25,8 +29,10 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
         if 'website' in place_data['result'].keys():
             context['website'] = place_data['result']['website']
         if 'rating' in place_data['result'].keys():
-            context['rating'] = range(round(int(place_data['result']['rating'])))
-            context['blank_rating'] = range(5 - round(int(place_data['result']['rating'])))
+            context['rating'] = range(
+                round(int(place_data['result']['rating'])))
+            context['blank_rating'] = range(
+                5 - round(int(place_data['result']['rating'])))
         if 'photos' in place_data['result'].keys():
             images = []
             current_photo = 0
@@ -76,10 +82,56 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
     return context
 
 
-# Create your views here.
 def index(request):
     """Render Index page."""
     return render(request, "trip/index.html")
+
+
+class HomeView(ListView):
+    """Class for link html of show all trip page."""
+
+    model = TripPlan
+    template_name = 'trip/trip_plan.html'
+    context_object_name = 'object'
+
+
+class DetailView(DetailView):
+    """Class for link html of detail of eaach trip."""
+
+    model = TripPlan
+    template_name = 'trip/trip_detail.html'
+    queryset = TripPlan.objects.all()
+    context_object_name = 'post'
+
+
+class AddPost(CreateView):
+    """Class for link html of add trip page."""
+
+    model = TripPlan
+    template_name = "trip/add_blog.html"
+    fields = '__all__'
+
+
+class AddReview(CreateView):
+    """Class for link html of add review."""
+
+    model = Review
+    template_name = "trip/add_review.html"
+    fields = ('body',)
+
+    def form_valid(self, form):
+        """Auto choose current post for add comment."""
+        form.instance.post_id = self.kwargs['pk']
+        form.instance.name = self.request.user
+        return super().form_valid(form)
+
+
+@login_required
+def likeview(request, pk):
+    """Methid for store user like of each commend."""
+    post = get_object_or_404(Review, id=request.POST.get('commend_id'))
+    post.like.add(request.user)
+    return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
 
 
 def place_info(request, place_id: str):

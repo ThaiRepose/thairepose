@@ -39,7 +39,7 @@ class ProfileAccountAdapter(DefaultAccountAdapter):
         """Show email_verification_sent page with assign user_email variable to request.session.
 
         Args:
-            user (Usser): user model
+            user (User): user model
 
         Returns:
             Httpresponse: redirect to account_email_verification_sent

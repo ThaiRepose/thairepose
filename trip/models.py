@@ -36,7 +36,7 @@ class Review(models.Model):
 
     post = models.ForeignKey(
         TripPlan, related_name="review", on_delete=models.CASCADE)
-    name = models.CharField(max_length=200)
+    name = models.ForeignKey(User, on_delete=models.CASCADE)
     body = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
     like = models.ManyToManyField(User, related_name='commended', blank=True)
@@ -47,7 +47,7 @@ class Review(models.Model):
         return self.like.count()
 
     def __str__(self):
-        return '%s - %s' % (self.post.title, self.name)
+        return '%s - %s' % (self.post.title, self.name.username)
 
     def get_absolute_url(self):
         """Return redirect to detail of each commend.

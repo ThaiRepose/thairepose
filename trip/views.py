@@ -49,6 +49,7 @@ class AddReview(CreateView):
         form.instance.name = self.request.user
         return super().form_valid(form)
 
+
 @login_required
 def likeview(request, pk):
     """Methid for store user like of each commend."""

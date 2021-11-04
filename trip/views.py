@@ -125,10 +125,14 @@ class AddReview(CreateView):
         form.instance.name = self.request.user
         return super().form_valid(form)
 
+
 class EditPost(UpdateView):
+    """Class for  link htnl of edit post"""
+
     model = TripPlan
     template_name = "trip/update_plan.html"
-    fields = ['title', 'duration', 'price','body']
+    fields = ['title', 'duration', 'price', 'body']
+
 
 @login_required
 def likeview(request, pk):

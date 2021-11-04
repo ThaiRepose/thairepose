@@ -17,6 +17,7 @@ class TripPlan(models.Model):
     duration = models.IntegerField(null=True)
     price = models.IntegerField(null=True)
     body = models.TextField()
+    post_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.title + ' | ' + str(self.author)

@@ -93,6 +93,7 @@ class AllTrip(ListView):
     model = TripPlan
     template_name = 'trip/trip_plan.html'
     context_object_name = 'object'
+    ordering = ['-id']
 
 
 class TripDetail(DetailView):

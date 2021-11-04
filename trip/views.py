@@ -125,12 +125,14 @@ class AddReview(CreateView):
         form.instance.name = self.request.user
         return super().form_valid(form)
 
+
 class EditPost(UpdateView):
     """Class for link html of edit post."""
 
     model = TripPlan
     template_name = "trip/update_plan.html"
-    fields = ['title', 'duration', 'price','body']
+    fields = ['title', 'duration', 'price', 'body']
+
 
 class DeletePost(DeleteView):
     """Class for link html of delete post."""
@@ -139,6 +141,7 @@ class DeletePost(DeleteView):
     template_name = "trip/delete_plan.html"
     context_object_name = 'post'
     success_url = reverse_lazy('trip:tripplan')
+
 
 @login_required
 def like_view(request, pk):

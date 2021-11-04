@@ -14,6 +14,8 @@ class TripPlan(models.Model):
 
     title = models.CharField(max_length=200)
     author = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    duration = models.IntegerField(null=True)
+    price = models.IntegerField(null=True)
     body = models.TextField()
 
     def __str__(self):

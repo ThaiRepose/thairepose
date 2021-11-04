@@ -4,9 +4,13 @@
 <ul>
 {% for post in object %}
     <li><a href="{% url 'trip:tripdetail' post.pk %}" type="submit">{{ post.title }}</a> 
-    {{ post.author }}
-    <br>
-    {{ post.body }}</li>
+    <p>{{ post.author }}</p>
+    <p>{{ post.duration }}</p>
+    <p>{{ post.price }}</p>
+    <p>{{ post.body }}</p>
+    <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>
+    <a href="{% url 'trip:deletepost' post.pk%}">(!!!DELETE!!!)</a>
+    <p>-----------------------------------------------------</p>
 {% endfor %}</ul>
 <li><a href="{% url 'trip:addpost' %}">---Add post---</a></li>
 {% endblock %}

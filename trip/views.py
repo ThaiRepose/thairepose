@@ -4,8 +4,8 @@ import os
 from django.shortcuts import render, get_object_or_404
 import requests
 from dotenv import load_dotenv
-from django.urls import reverse
-from django.views.generic import ListView, DetailView, CreateView
+from django.urls import reverse, reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import TripPlan, Review
 from django.contrib.auth.decorators import login_required
 
@@ -125,6 +125,20 @@ class AddReview(CreateView):
         form.instance.name = self.request.user
         return super().form_valid(form)
 
+class EditPost(UpdateView):
+    """Class for link html of edit post."""
+
+    model = TripPlan
+    template_name = "trip/update_plan.html"
+    fields = ['title', 'duration', 'price','body']
+
+class DeletePost(DeleteView):
+    """Class for link html of delete post."""
+
+    model = TripPlan
+    template_name = "trip/delete_plan.html"
+    context_object_name = 'post'
+    success_url = reverse_lazy('trip:tripplan')
 
 @login_required
 def like_view(request, pk):

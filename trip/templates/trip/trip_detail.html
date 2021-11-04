@@ -3,7 +3,10 @@
 {% block main_content %}
 <h1> {{ post.title }} </h1>
 <small> By: {{ post.author }}</small>
-{{ post.body }}
+<P>{{ post.duration }}</P>
+<P>{{ post.price }}</P>
+<P>{{ post.body }}</P>
+<a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>
 <br/><br>
 <h2>Review</h2>
 <br>

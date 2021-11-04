@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404
 import requests
 from dotenv import load_dotenv
 from django.urls import reverse
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from .models import TripPlan, Review
 from django.contrib.auth.decorators import login_required
 
@@ -125,6 +125,10 @@ class AddReview(CreateView):
         form.instance.name = self.request.user
         return super().form_valid(form)
 
+class EditPost(UpdateView):
+    model = TripPlan
+    template_name = "trip/update_plan.html"
+    fields = ['title', 'duration', 'price','body']
 
 @login_required
 def likeview(request, pk):

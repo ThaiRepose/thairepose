@@ -87,7 +87,7 @@ def index(request):
     return render(request, "trip/index.html")
 
 
-class HomeView(ListView):
+class AllTrip(ListView):
     """Class for link html of show all trip page."""
 
     model = TripPlan
@@ -95,7 +95,7 @@ class HomeView(ListView):
     context_object_name = 'object'
 
 
-class DetailView(DetailView):
+class TripDetail(DetailView):
     """Class for link html of detail of eaach trip."""
 
     model = TripPlan
@@ -127,7 +127,7 @@ class AddReview(CreateView):
 
 
 @login_required
-def likeview(request, pk):
+def like_view(request, pk):
     """Methid for store user like of each commend."""
     post = get_object_or_404(Review, id=request.POST.get('commend_id'))
     post.like.add(request.user)

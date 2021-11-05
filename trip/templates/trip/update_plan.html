@@ -2,12 +2,16 @@
 
 {% block main_content %}
 {% if user.is_authenticated %}
-<h1>Update post</h1>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button>Edit</button>
-</form>
+    {% if user.id == post.author.id%}
+    <h1>Update post</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button>Edit</button>
+    </form>
+    {% else %}
+    <p>You are not allow to access.</p>
+    {% endif %}
 {% else %}
 <a href="{% url 'account_login' %}">You need to login</a>
 {% endif %}

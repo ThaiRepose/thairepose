@@ -13,7 +13,7 @@ class TripPlan(models.Model):
 
     title = models.CharField(max_length=200)
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, default=None, null=True)
+        User, on_delete=models.CASCADE)
     duration = models.IntegerField(null=True)
     price = models.IntegerField(null=True)
     body = models.TextField()
@@ -60,8 +60,7 @@ class Review(models.Model):
         """
         return reverse("trip:tripdetail", args=(str(self.post.id)))
 
-
-class CategoryTrip(models.Model):
+class CategoryPlan(models.Model):
     """Extended user model class that use for Category of Trip plan.
 
     Attributes:
@@ -77,4 +76,3 @@ class CategoryTrip(models.Model):
     def get_absolute_url(self):
         """Return redirect to all trip pages."""
         return reverse("trip:tripplan")
-

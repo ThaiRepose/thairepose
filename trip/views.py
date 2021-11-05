@@ -6,7 +6,7 @@ import requests
 from dotenv import load_dotenv
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import TripPlan, Review, CategoryTrip
+from .models import TripPlan, Review, CategoryPlan
 from .forms import TripPlanForm
 from django.contrib.auth.decorators import login_required
 
@@ -112,12 +112,13 @@ class AddPost(CreateView):
     model = TripPlan
     template_name = "trip/add_blog.html"
     form_class = TripPlanForm
+    context_object_name = 'user'
 
 
 class AddCategory(CreateView):
     """Class for link html of add category page."""
 
-    model = CategoryTrip
+    model = CategoryPlan
     template_name = "trip/add_category.html"
     fields = '__all__'
 
@@ -151,6 +152,7 @@ class DeletePost(DeleteView):
     template_name = "trip/delete_plan.html"
     context_object_name = 'post'
     success_url = reverse_lazy('trip:tripplan')
+
 
 def category(request, cats):
     category_trip = TripPlan.objects.filter(category=cats)

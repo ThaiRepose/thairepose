@@ -9,8 +9,10 @@
     <p>{{ post.price }}</p>
     <p>{{ post.body }}</p>
     {% if user.is_authenticated %}
-    <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>
-    <a href="{% url 'trip:deletepost' post.pk%}">(!!!DELETE!!!)</a>
+        {%if user.id == post.author.id%}
+            <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>
+            <a href="{% url 'trip:deletepost' post.pk%}">(!!!DELETE!!!)</a>
+        {% endif %}
     {% else %}
     {% endif %}
     <p>-----------------------------------------------------</p>

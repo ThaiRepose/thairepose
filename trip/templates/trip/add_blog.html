@@ -3,12 +3,18 @@
 {% block main_content %}
 {% if user.is_authenticated %}
 <h1>Add post</h1>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button>Post</button>
-</form>
-{% else %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <script>
+            var name = "{{ user.username }}";
+            document.getElementsById('test').value = name;
+        </script>
+        <button>Post</button>
+    </form>
+
+    
+{% else %} 
 <a href="{% url 'account_login' %}">You need to login</a>
 {% endif %}
 {% endblock %}

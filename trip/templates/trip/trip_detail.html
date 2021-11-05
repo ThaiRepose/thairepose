@@ -7,8 +7,12 @@
 <P>{{ post.duration }}</P>
 <P>{{ post.price }}</P>
 <P>{{ post.body }}</P>
+{% if user.is_authenticated %}
+    {% if user.id == post.author.id %}
 <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>
 <a href="{% url 'trip:deletepost' post.pk%}">(!!!DELETE!!!)</a>
+    {% endif %}
+{% endif %}
 <a href="{% url 'trip:tripplan' %}">(ALL TRIP)</a>
 <br/><br>
 <h2>Review</h2>

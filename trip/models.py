@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 
+
 class TripPlan(models.Model):
     """Extended user model class that use for Trip plan.
 
@@ -59,6 +60,7 @@ class Review(models.Model):
         When your like comment page will refesh itseft to show all like.
         """
         return reverse("trip:tripdetail", args=(str(self.post.id)))
+
 
 class CategoryPlan(models.Model):
     """Extended user model class that use for Category of Trip plan.

@@ -8,7 +8,8 @@
     <p>{{ post.duration }}</p>
     <p>{{ post.price }}</p>
     <p>{{ post.body }}</p>
-    </li><a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>
+    <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>
+    <a href="{% url 'trip:deletepost' post.pk%}">(!!!DELETE!!!)</a>
     <p>-----------------------------------------------------</p>
 {% endfor %}</ul>
 <li><a href="{% url 'trip:addpost' %}">---Add post---</a></li>

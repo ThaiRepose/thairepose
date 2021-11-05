@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+{% if user.is_authenticated %}
+<h1>Delete post</h1>
+<he>Post that you want to delete: {{ post.title }}</he>
+<form method="POST">
+    {% csrf_token %}
+    <button>!!!Delete!!!</button>
+</form>
+{% else %}
+<a href="{% url 'account_login' %}">You need to login</a>
+{% endif %}
+{% endblock %}

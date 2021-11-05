@@ -4,8 +4,8 @@ import os
 from django.shortcuts import render, get_object_or_404
 import requests
 from dotenv import load_dotenv
-from django.urls import reverse
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.urls import reverse, reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import TripPlan, Review
 from django.contrib.auth.decorators import login_required
 
@@ -87,15 +87,16 @@ def index(request):
     return render(request, "trip/index.html")
 
 
-class HomeView(ListView):
+class AllTrip(ListView):
     """Class for link html of show all trip page."""
 
     model = TripPlan
     template_name = 'trip/trip_plan.html'
     context_object_name = 'object'
+    ordering = ['-id']
 
 
-class DetailView(DetailView):
+class TripDetail(DetailView):
     """Class for link html of detail of eaach trip."""
 
     model = TripPlan
@@ -127,15 +128,24 @@ class AddReview(CreateView):
 
 
 class EditPost(UpdateView):
-    """Class for  link htnl of edit post"""
+    """Class for link html of edit post."""
 
     model = TripPlan
     template_name = "trip/update_plan.html"
     fields = ['title', 'duration', 'price', 'body']
 
 
+class DeletePost(DeleteView):
+    """Class for link html of delete post."""
+
+    model = TripPlan
+    template_name = "trip/delete_plan.html"
+    context_object_name = 'post'
+    success_url = reverse_lazy('trip:tripplan')
+
+
 @login_required
-def likeview(request, pk):
+def like_view(request, pk):
     """Methid for store user like of each commend."""
     post = get_object_or_404(Review, id=request.POST.get('commend_id'))
     post.like.add(request.user)

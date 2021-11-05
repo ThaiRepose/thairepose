@@ -3,10 +3,13 @@
 {% block main_content %}
 <h1> {{ post.title }} </h1>
 <small> By: {{ post.author }}</small>
+<p>Create at: {{ post.post_date }}</p>
 <P>{{ post.duration }}</P>
 <P>{{ post.price }}</P>
 <P>{{ post.body }}</P>
 <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>
+<a href="{% url 'trip:deletepost' post.pk%}">(!!!DELETE!!!)</a>
+<a href="{% url 'trip:tripplan' %}">(ALL TRIP)</a>
 <br/><br>
 <h2>Review</h2>
 <br>

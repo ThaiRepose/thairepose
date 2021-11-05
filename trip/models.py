@@ -2,25 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 
-
-class CategoryTrip(models.Model):
-    """Extended user model class that use for Category of Trip plan.
-
-    Attributes:
-        name(str): category of trip
-
-    """
-
-    name = models.CharField(max_length=255, default='Uncatagorize')
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        """Return redirect to all trip pages."""
-        return reverse("trip:tripplan")
-
-
 class TripPlan(models.Model):
     """Extended user model class that use for Trip plan.
 
@@ -78,3 +59,22 @@ class Review(models.Model):
         When your like comment page will refesh itseft to show all like.
         """
         return reverse("trip:tripdetail", args=(str(self.post.id)))
+
+
+class CategoryTrip(models.Model):
+    """Extended user model class that use for Category of Trip plan.
+
+    Attributes:
+        name(str): category of trip
+
+    """
+
+    name = models.CharField(max_length=255, default='Uncatagorize')
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        """Return redirect to all trip pages."""
+        return reverse("trip:tripplan")
+

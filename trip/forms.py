@@ -14,7 +14,7 @@ class TripPlanForm(forms.ModelForm):
 
     class Meta:
         model = TripPlan
-        fields = ('title', 'author','duration', 'price', 'category', 'body')
+        fields = ('title', 'author', 'duration', 'price', 'category', 'body')
         widgets = {
             'category': forms.TextInput(attrs={'class': 'form-control', 'value': 'Uncategorize'}),
         }

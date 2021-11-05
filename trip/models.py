@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from ckeditor.fields import RichTextField
 
 
 class TripPlan(models.Model):
@@ -17,7 +18,7 @@ class TripPlan(models.Model):
         User, on_delete=models.CASCADE)
     duration = models.IntegerField(null=True)
     price = models.IntegerField(null=True)
-    body = models.TextField()
+    body = RichTextField(blank=True, null=True)
     category = models.CharField(max_length=255, default='Uncatagorize')
     post_date = models.DateField(auto_now_add=True)
 

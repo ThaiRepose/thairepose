@@ -4,12 +4,13 @@
 {% if user.is_authenticated %}
 <h1>Add post</h1>
     <form method="POST">
-        {% csrf_token %}
+        {% csrf_token %}.
+        {{ form.media }}
         {{ form.as_p }}
-        <script>
+        <!-- <script>
             var name = "{{ user.username }}";
             document.getElementsById('test').value = name;
-        </script>
+        </script> -->
         <button>Post</button>
     </form>
 

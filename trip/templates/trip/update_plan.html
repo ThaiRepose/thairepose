@@ -1,11 +1,14 @@
 {% extends 'base.html' %}
 
 {% block main_content %}
+{{user}}
+{{post.author.id}}
 {% if user.is_authenticated %}
     {% if user.id == post.author.id%}
     <h1>Update post</h1>
     <form method="POST">
         {% csrf_token %}
+        {{ form.media }}
         {{ form.as_p }}
         <button>Edit</button>
     </form>

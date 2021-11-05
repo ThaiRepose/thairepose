@@ -6,7 +6,7 @@
 <p>Create at: {{ post.post_date }}</p>
 <P>{{ post.duration }}</P>
 <P>{{ post.price }}</P>
-<P>{{ post.body }}</P>
+{{ post.body|safe }}
 {% if user.is_authenticated %}
     {% if user.id == post.author.id %}
 <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>

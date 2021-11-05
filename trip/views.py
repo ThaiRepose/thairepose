@@ -112,7 +112,6 @@ class AddPost(CreateView):
     model = TripPlan
     template_name = "trip/add_blog.html"
     form_class = TripPlanForm
-    context_object_name = 'user'
 
 
 class AddCategory(CreateView):
@@ -143,6 +142,7 @@ class EditPost(UpdateView):
     model = TripPlan
     template_name = "trip/update_plan.html"
     fields = ['title', 'duration', 'price', 'body']
+    context_object_name = 'post'
 
 
 class DeletePost(DeleteView):

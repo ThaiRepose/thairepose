@@ -6,7 +6,8 @@ import requests
 from dotenv import load_dotenv
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import TripPlan, Review
+from .models import TripPlan, Review, CategoryTrip
+from .forms import TripPlanForm
 from django.contrib.auth.decorators import login_required
 
 
@@ -110,6 +111,14 @@ class AddPost(CreateView):
 
     model = TripPlan
     template_name = "trip/add_blog.html"
+    form_class = TripPlanForm
+
+
+class AddCategory(CreateView):
+    """Class for link html of add category page."""
+
+    model = CategoryTrip
+    template_name = "trip/add_category.html"
     fields = '__all__'
 
 

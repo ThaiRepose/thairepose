@@ -3,6 +3,24 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 
 
+class CategoryTrip(models.Model):
+    """Extended user model class that use for Category of Trip plan.
+
+    Attributes:
+        name(str): category of trip
+
+    """
+
+    name = models.CharField(max_length=255, default='Uncatagorize')
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        """Return redirect to all trip pages."""
+        return reverse("trip:tripplan")
+
+
 class TripPlan(models.Model):
     """Extended user model class that use for Trip plan.
 
@@ -13,10 +31,12 @@ class TripPlan(models.Model):
     """
 
     title = models.CharField(max_length=200)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, default=None, null=True)
     duration = models.IntegerField(null=True)
     price = models.IntegerField(null=True)
     body = models.TextField()
+    category = models.CharField(max_length=255, default='Uncatagorize')
     post_date = models.DateField(auto_now_add=True)
 
     def __str__(self):

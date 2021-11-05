@@ -152,6 +152,10 @@ class DeletePost(DeleteView):
     context_object_name = 'post'
     success_url = reverse_lazy('trip:tripplan')
 
+def category(request, cats):
+    category_trip = TripPlan.objects.filter(category=cats)
+    return render(request, 'trip/category.html', {'cats': cats, 'category_trip': category_trip})
+
 
 @login_required
 def like_view(request, pk):

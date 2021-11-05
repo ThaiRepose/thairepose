@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+{{ cats }}
+{% if category_trip %}
+<ul>
+{% for post in category_trip %}
+    <li><a href="{% url 'trip:tripdetail' post.pk %}" type="submit">{{ post.title }}</a> 
+    <p>{{ post.author }}</p>
+    <p>{{ post.duration }}</p>
+    <p>{{ post.price }}</p>
+    <p>{{ post.body }}</p>
+    {% if user.is_authenticated %}
+    <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>
+    <a href="{% url 'trip:deletepost' post.pk%}">(!!!DELETE!!!)</a>
+    {% else %}
+    {% endif %}
+    <p>-----------------------------------------------------</p>
+{% endfor %}</ul>
+{% else %}
+        <h2>No Trip use this category</h2>
+{% endif %}
+{% endblock %} 

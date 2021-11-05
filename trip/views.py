@@ -1,16 +1,19 @@
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 import json
 import os
+from ast import literal_eval
 from django.shortcuts import render, get_object_or_404
 import requests
+from src.caching.caching_gmap import APICaching
 from dotenv import load_dotenv
 from django.urls import reverse
 from django.views.generic import ListView, DetailView, CreateView
 from .models import TripPlan, Review
 from django.contrib.auth.decorators import login_required
+import pickle
+api_caching = APICaching()
 
-
-def get_details_context(place_data: dict, api_key: str) -> dict:
+def get_details_context(place_data: dict, api_key: str, place_id) -> dict:
     """Get context for place details page.
 
     Args:
@@ -29,17 +32,16 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
         if 'website' in place_data['result'].keys():
             context['website'] = place_data['result']['website']
         if 'rating' in place_data['result'].keys():
-            context['rating'] = range(
-                round(int(place_data['result']['rating'])))
-            context['blank_rating'] = range(
-                5 - round(int(place_data['result']['rating'])))
+            context['rating'] = int(place_data['result']['rating'])
+            context['blank_rating'] = 5 - int(place_data['result']['rating'])
         if 'photos' in place_data['result'].keys():
             images = []
             current_photo = 0
             for data in place_data['result']['photos']:
-                url = f"https://maps.googleapis.com/maps/api/place/" \
-                      f"photo?maxwidth=600&photo_reference={data['photo_reference']}&key={api_key}"
-                images.append(url)
+                img_ref = data['photo_reference']
+                # f"https://maps.googleapis.com/maps/api/place/" \
+                #       f"photo?maxwidth=600&photo_reference={}&key={api_key}"
+                images.append(img_ref)
                 current_photo += 1
                 if current_photo >= 4:
                     break
@@ -63,7 +65,7 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
         if lat is not None and lng is not None:
             suggestions = []
             url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/" \
-                  f"json?location={lat}%2C{lng}&radius=2000&key={api_key}"
+                f"json?location={lat}%2C{lng}&radius=2000&key={api_key}"
             response = requests.get(url)
             place_data = json.loads(response.content)
             for place in place_data['results'][1:]:
@@ -71,14 +73,19 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
                     continue
                 if 'photos' not in place.keys():
                     continue
-                url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=600" \
-                      f"&photo_reference={place['photos'][0]['photo_reference']}&key={api_key}"
+                img_ref = place['photos'][0]['photo_reference']
+                # f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=600" \
+                #       f"&photo_reference={place['photos'][0]['photo_reference']}&key={api_key}"
                 suggestions.append({
                     'name': place['name'],
-                    'photo': url,
+                    'photo': img_ref,
                     'place_id': place['place_id']
                 })
             context['suggestions'] = suggestions
+    print(json.dumps(context))
+    api_caching.add(f"{place_id}detailpage", json.dumps(context).encode())
+    context['blank_rating'] = range(round(context['blank_rating']))
+    context['rating'] = range(round(context['rating']))
     return context
 
 
@@ -144,13 +151,18 @@ def place_info(request, place_id: str):
     Returns:
         HttpRequest: Return 200 if place_id is correct, and return 404 if invalid.
     """
-    load_dotenv()
-    api_key = os.getenv('API_KEY')
-    field = "&fields=name%2Cformatted_phone_number%2Cphoto%2Cwebsite%2Crating%2Creviews%2Cgeometry/location"
-    url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}{field}&key={api_key}"
-    response = requests.get(url)
-    data = json.loads(response.content)
-    if data['status'] != "OK":
-        return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
-    context = get_details_context(data, os.getenv('API_KEY'))
+    if api_caching.get(f"{place_id}detailpage"):
+        context = json.loads(api_caching.get(f"{place_id}detailpage"))
+        context['blank_rating'] = range(round(context['blank_rating']))
+        context['rating'] = range(round(context['rating']))
+    else:
+        load_dotenv()
+        api_key = os.getenv('API_KEY')
+        field = "&fields=name%2Cformatted_phone_number%2Cphoto%2Cwebsite%2Crating%2Creviews%2Cgeometry/location"
+        url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}{field}&key={api_key}"
+        response = requests.get(url)
+        data = json.loads(response.content)
+        if data['status'] != "OK":
+            return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
+        context = get_details_context(data, os.getenv('API_KEY'), place_id)
     return render(request, "trip/place_details.html", context)

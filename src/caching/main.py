@@ -63,6 +63,11 @@ def run():
                 continue
             data = json.loads(api_caching.get(f'{file[:-6]}'))["results"]
             download_img(api_caching, all_img, data)
+        # for file in all_cache_file:
+        #     if not ('detailpage' in file):
+        #         continue
+        #     data = json.loads(api_caching.get(f'{file[:-6]}'))["image"]
+        #     download_img(api_caching, all_img, data)
 
 def delete_expire_img(all_img, now, json_decoded):
     for img in all_img:

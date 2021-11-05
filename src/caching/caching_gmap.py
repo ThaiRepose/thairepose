@@ -13,7 +13,7 @@ class APICaching:
 
     def add(self, key, data):
         new_file = open(os.path.join(self.ROOT_DIR,'__cache__', f'{key}.cache'), 'wb')   
-        new_file.write(data) 
+        new_file.write(data)
 
     def set():
         pass

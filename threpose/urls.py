@@ -18,14 +18,9 @@ from django.urls import path, include
 from users import views
 from django.conf import settings
 from django.conf.urls.static import static
-
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('allauth.urls')),
     path('', include('trip.urls', namespace="trip")),
     path('search/', include('search.urls', namespace="search")),
-    path('register/', views.register, name='register'),
-    path('login/', views.loginPage, name='login'),
-    path('logout/', views.logoutUser, name='logout'),
-    path('temphome/', views.home, name='temphome'),
-    path('activate-user/<uidb64>/<token>', views.activate_user, name='activate'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

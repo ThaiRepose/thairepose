@@ -26,7 +26,11 @@
                         {% if images %}
                             {% for image in images %}
                                 <div class="carousel-cell" style="height: 100%">
-                                    <img src="{{ image }}" alt="{{ name }}" />
+                                    {% if place.photos and place.have_photo == True %}
+                                    <img src="{% static 'images/places_image/' %}{{ place.name }}detailpage.jpeg">
+                                    {% else %}
+                                    <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={{ image }}&key=AIzaSyBxO1khE-LHn5Z5U2SWpA36D4nKqoWzNRg" alt="{{ name }}">
+                                    {% endif %}
                                 </div>
                             {% endfor %}
                             {% else %}
@@ -93,9 +97,9 @@
                     <div class="overflow-y-scroll px-1" style="height: 28rem;">
                         {% for place in suggestions %}
                             <div class="overflow-y-scroll px-2 py-2 flex justify-center hover:scale-110 transition duration-300 js-show-on-scroll">
-                                <a class="rounded-2xl h-52 w-44 bg-translucent px-2 py-2 flex flex-col bg-gray-900" href="{% url 'trip:place' place.place_id %}">
+                                <a class="rounded-2xl h-52 w-44 bg-translucent px-2 py-2 flex flex-col bg-gray-900" href="{% url 'trip:place-detail' place.place_id %}">
                                     <div class="rounded-2xl bg-gray-300 w-40 h-40">
-                                        <img class="object-cover h-full w-full rounded-xl" src="{{ place.photo }}">
+                                        <img class="object-cover h-full w-full rounded-xl" src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={{ place.photo }}&key=AIzaSyBxO1khE-LHn5Z5U2SWpA36D4nKqoWzNRg" alt="{{ name }}">
                                     </div>
                                     <div class="overflow-y-scroll flex justify-center">
                                         <h1 class="font-bold">{{ place.name }}</h1>

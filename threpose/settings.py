@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 from pathlib import Path
 import os
 import json
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'trip',
     'tailwind',
     'theme',
+    'widget_tweaks',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',

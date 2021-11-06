@@ -25,13 +25,15 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
     <!--Card 1-->
     {% for place in places %}
     <a class="rounded-3xl overflow-hidden shadow-lg bg-gray-300" href="{% url 'trip:place-detail' place.place_id %}"">
-    {% if place.photos and place.have_photo == True %}
-   <img class="w-full h-80 rounded-3xl p-2" src="{% static 'images/places_image/' %}{{ place.place_id }}photo.jpeg">
-    {% else %}
-    <img class="w-full h-80 rounded-3xl p-2" src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={{ place.photos.0.photo_reference }}&key=AIzaSyBxO1khE-LHn5Z5U2SWpA36D4nKqoWzNRg">
+    {% if img_downloaded and place.name_img %}
+      <img class="w-full h-80 rounded-3xl p-2" src="{% static 'images/places_image/' %}{{ place.name_img }}photo.jpeg"> 
+    {% elif not img_downloaded and place.photo_ref.0%}
+      <img class="w-full h-80 rounded-3xl p-2" src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={{ place.photo_ref.0 }}&key=AIzaSyBxO1khE-LHn5Z5U2SWpA36D4nKqoWzNRg">
+    {% else %} 
+      <img class="w-full h-80 rounded-3xl p-2" src="{% static '/images/img_not_found.jpg' %}" alt="NotFound" />
     {% endif %}
       <div class="px-6 py-4">
-        <div class="font-bold text-xl mb-2">{{ place.name }}</div>
+        <div class="font-bold text-xl mb-2">{{ place.place_name }}</div>
       </div>
     </a>
     {% endfor %}

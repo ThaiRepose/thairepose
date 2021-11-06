@@ -1,20 +1,24 @@
-{% extends "account/base.html" %}
-
+{% extends "base.html" %}
 {% load i18n %}
 {% load account socialaccount %}
 
-{% block head_title %}{% trans "Sign In" %}{% endblock %}
-
-{% block content %}
-
-<h1>{% trans "Sign In" %}</h1>
+{% block main_content %}
+{% if messages %}
+<div>
+  <strong>Messages:</strong>
+  <ul>
+    {% for message in messages %}
+    <script>alert("login");</script>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
 
 {% get_providers as socialaccount_providers %}
 
 {% if socialaccount_providers %}
-<p>{% blocktrans with site.name as site_name %}Please sign in with one
-of your existing third party accounts. Or, <a href="{{ signup_url }}">sign up</a>
-for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
+<!-- <script>alert("Please Sign in");</script> -->
+
 
 <div class="socialaccount_ballot">
 
@@ -22,26 +26,91 @@ for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
     {% include "socialaccount/snippets/provider_list.html" with process="login" %}
   </ul>
 
-  <div class="login-or">{% trans 'or' %}</div>
-
 </div>
 
 {% include "socialaccount/snippets/login_extra.html" %}
 
 {% else %}
-<p>{% blocktrans %}If you have not created an account yet, then please
-<a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
+<script>alert("If you have not created an account yet, then please sign up first.");</script>
 {% endif %}
 
 <form class="login" method="POST" action="{% url 'account_login' %}">
   {% csrf_token %}
-  {{ form.as_p }}
-  {% if redirect_field_value %}
-  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-  {% endif %}
-  <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-  <button class="primaryAction" type="submit">{% trans "Sign In" %}</button>
+  <div class="flex items-center justify-center min-h-screen bg-cover bg-center"
+    style="background-image: url('https://cdn.discordapp.com/attachments/901501438067351656/901501516660219914/webb-07.png')">
+    <div class="container mx-auto">
+      <div class="flex justify-center px-6 my-12">
+        <!-- Row -->
+        <div class="w-full lg:w-3/4 lg:w-11/12 flex">
+          <!-- Col -->
+          <div class="w-full h-auto bg-gray-400 lg:block lg:w-5/12 bg-cover bg-center rounded-l-lg"
+            style="background-image: url('https://cdn.discordapp.com/attachments/901501438067351656/901502756718784512/webb-05.png')">
+          </div>
+          <!-- Col -->
+          <div class="w-full lg:w-7/12 bg-white p-5 rounded-lg lg:rounded-l-none">
+            <div>
+              <span class="flex justify-center text-gray-900">Welcome</span>
+              <h1 class="flex justify-center font-bold">Login to your account</h1>
+              {{form.as_p}}
+              <div class="flex justify-end text-right mt-2 ">
+                <a href="#" class="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700">Forgot Password?</a>
+              </div>
+              <button type="button"
+                class="w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 border border-gray-300">
+                <p>Login</p>
+              </button>
+              <div class="">
+                <div class="flex space-x-2 justify-center items-end hover:bg-gray-600 text-black py-2 rounded-md">
+                  <p> or </p>
+                </div>
+              </div>
+              <hr class="my-6 border-gray-300 w-full">
+
+              <button type="button"
+                class="w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 border border-gray-300">
+                <div class="flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="w-6 h-6"
+                    viewBox="0 0 48 48">
+                    <defs>
+                      <path id="a" d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z" />
+                    </defs>
+                    <clipPath id="b">
+                      <use xlink:href="#a" overflow="visible" />
+                    </clipPath>
+                    <path clip-path="url(#b)" fill="#FBBC05" d="M0 37V11l17 13z" />
+                    <path clip-path="url(#b)" fill="#EA4335" d="M0 11l17 13 7-6.1L48 14V0H0z" />
+                    <path clip-path="url(#b)" fill="#34A853" d="M0 37l30-23 7.9 1L48 0v48H0z" />
+                    <path clip-path="url(#b)" fill="#4285F4" d="M48 48L17 24l-4-3 35-10z" />
+                  </svg>
+                  <span class="ml-4">Log in with Google</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="px-8 py-6 mt-4 text-left bg-white shadow-lg">
+      <h3 class="text-2xl font-bold text-center">Login to your account</h3>
+        <div class="mt-4">
+          <div>
+           {{form.as_p}}
+          </div>
+          <div class="flex items-baseline justify-between">
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+            <button class="px-6 py-2 mt-4 text-white bg-red-900 rounded-lg hover:bg-red-900" type="submit">{% trans "Sign In" %}</button>
+            <a href="{% url 'account_reset_password' %}" class="text-sm text-red-900 hover:underline">Forgot
+              password?</a>
+          </div>
+          <div class="flex items-baseline justify-end">
+            <a href="{{ signup_url }}" class="text-sm text-red-900 hover:underline">Create
+              account</a>
+          </div>
+        </div>
+    </div> -->
+  </div>
 </form>
 
 {% endblock %}
-<h1>Hello world</h1>

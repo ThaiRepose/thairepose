@@ -1,11 +1,30 @@
-{% extends "account/base.html" %}
+{% extends "base.html" %}
+{% load i18n static %}
 
-{% load i18n %}
+{% block header %}
+    <title>ThaiRepose::Account Inactive</title>
+    <style>
+        body {
+            background-image: url("{% static 'images/bg-blur.jpg' %}");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: 100% 100%;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'css/containers.css' %}">
+{% endblock %}
 
-{% block head_title %}{% trans "Account Inactive" %}{% endblock %}
+{% block main_content %}
+    <div class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10">
+        <div class="w-full h-full rounded-3xl container-lg flex flex-col" style="min-height: 395px; max-height: 440px;">
+            <span class="material-icons text-8xl text-red-400 flex flex-row justify-center">person_off</span>
+            <h1 class="text-2xl font-bold text-red-400 text-center mt-2 mb-4">{% trans "Account Inactive!" %}</h1>
+            <p class="text-lg text-center">{% trans "This account is inactive. To continue using this account, please reactivate." %}</p>
+            <div class="flex flex-col sm:flex-row mt-10 justify-between">
+                <a href="/" class="text-left sm:text-center p-2 pl-5 pr-5 bg-transparent border-2 border-blue-500 text-blue-500 text-lg rounded-lg hover:bg-blue-500 hover:text-gray-100 focus:border-4 focus:border-blue-300">Back to Homepage</a>
+                <a href="{% url 'reactivate' %}" class="text-right sm:text-center mt-5 sm:mt-0 p-2 pl-5 pr-5 bg-transparent border-2 border-green-700 text-green-700 text-lg rounded-lg hover:bg-green-700 hover:text-gray-100 focus:border-4 focus:border-green-500">Reactivate account</a>
+            </div>
+        </div>
+    </div>
 
-{% block content %}
-<h1>{% trans "Account Inactive" %}</h1>
-
-<p>{% trans "This account is inactive." %}</p>
 {% endblock %}

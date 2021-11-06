@@ -59,7 +59,7 @@ def place_list(request, *args, **kwargs):
     types = ['restaurant', 'shopping_mall', 'supermarket', 'zoo', 'tourist_attraction','museum', 'cafe']
     lat = data['lat']
     lng = data['lng']
-
+    token = {}
     if api_caching.get(f'{lat}{lng}searchresult'):
         context = json.loads(api_caching.get(f'{lat}{lng}searchresult'))['cache']
         print(len(context))
@@ -67,6 +67,8 @@ def place_list(request, *args, **kwargs):
         tempo_context = []
         for type in types:
             data = json.loads(gapi.search_nearby(lat, lng, type))
+            if 'next_page_token' in data:
+                token[type] = data['next_page_token']
             places = data['results']
             restructed_places = restruct_nearby_place(places)
             tempo_context = add_more_place(tempo_context, restructed_places)  
@@ -81,4 +83,4 @@ def place_list(request, *args, **kwargs):
                 img_downloaded = True
             else:
                 img_downloaded = False
-    return render(request, "search/place_list.html", {'places': context, 'img_downloaded': img_downloaded})
+    return render(request, "search/place_list.html", {'places': context, 'img_downloaded': img_downloaded, 'all_token': token})

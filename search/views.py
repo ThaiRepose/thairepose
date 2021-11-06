@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 import os, json
 from .api import GoogleAPI
 from threpose.settings import BASE_DIR
@@ -56,13 +57,14 @@ def add_more_place(context, new):
 
 def place_list(request, *args, **kwargs):
     data = request.GET
-    types = ['restaurant', 'shopping_mall', 'supermarket', 'zoo', 'tourist_attraction','museum', 'cafe']
+    types = ['restaurant', 'shopping_mall', 'supermarket', 'zoo', 'tourist_attraction', 'museum', 'cafe', 'aquarium']
     lat = data['lat']
     lng = data['lng']
     token = {}
     if api_caching.get(f'{lat}{lng}searchresult'):
-        context = json.loads(api_caching.get(f'{lat}{lng}searchresult'))['cache']
-        print(len(context))
+        data = json.loads(api_caching.get(f'{lat}{lng}searchresult'))
+        context = data['cache']
+        token = data['next_page_token']
     else:
         tempo_context = []
         for type in types:
@@ -72,7 +74,7 @@ def place_list(request, *args, **kwargs):
             places = data['results']
             restructed_places = restruct_nearby_place(places)
             tempo_context = add_more_place(tempo_context, restructed_places)  
-        api_caching.add(f'{lat}{lng}searchresult', json.dumps({'cache':tempo_context}, indent=3).encode())
+        api_caching.add(f'{lat}{lng}searchresult', json.dumps({'cache':tempo_context, 'next_page_token':token}, indent=3).encode())
         context = json.loads(api_caching.get(f'{lat}{lng}searchresult'))['cache']
     all_img_file = [f for f in os.listdir(PLACE_IMG_PATH) if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
     
@@ -84,3 +86,22 @@ def place_list(request, *args, **kwargs):
             else:
                 img_downloaded = False
     return render(request, "search/place_list.html", {'places': context, 'img_downloaded': img_downloaded, 'all_token': token})
+
+
+def get_next_page_from_token(request):
+    """Get places list data by next_page_token."""
+    if request.method != 'POST':
+        return JsonResponse({"status": "INVALID METHOD"})
+    if 'token' not in request.POST:
+        return JsonResponse({"STATUS": "INVALID PAYLOAD"})
+    token = request.POST['token']
+    context = []
+    for _ in range(6):  # Request data for 6 times, if response is not OK and reached maximum, it will return empty
+        data = json.loads(gapi.next_search_nearby(token))
+        if data['status'] == "OK":
+            context = restruct_nearby_place(data['results'])
+            break
+        time.sleep(0.2)
+    if len(context) > 0:
+        return JsonResponse({"places": context, "status": "OK"})
+    return JsonResponse({"places": context, "status": "NOT FOUND"})

@@ -40,13 +40,31 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
   </div>
 </div>
 
+{% endblock %}
 
-
-
-
-
-
-
-
-
+{% block script %}
+    <script>
+        function get_next_list($token) {
+            let response = $.ajax({
+                type: "POST",
+                url: "{% url 'search:next-place-list' %}",
+                async: false,
+                data: {
+                    token: $token,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                }
+            });
+            return response.responseJSON;
+        }
+        const all_tokens = {{ all_token|safe }};
+        for (let token in all_tokens) {
+            if (all_tokens.hasOwnProperty(token)) {
+                setTimeout(function () {
+                    console.log(token);
+                    let response = get_next_list(all_tokens[token]);
+                    console.log(response);
+                }, 2000);
+            }
+        }
+    </script>
 {% endblock %}

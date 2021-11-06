@@ -1,3 +1,4 @@
+from pathlib import Path
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 import json
 import os
@@ -82,11 +83,21 @@ def get_details_context(place_data: dict, api_key: str, place_id) -> dict:
                     'place_id': place['place_id']
                 })
             context['suggestions'] = suggestions
-    print(json.dumps(context))
     api_caching.add(f"{place_id}detailpage", json.dumps(context).encode())
     context['blank_rating'] = range(round(context['blank_rating']))
     context['rating'] = range(round(context['rating']))
     return context
+
+def check(context):
+    name = context['name'].replace(" ", "-")
+    ROOT_DIR = Path(__file__).resolve().parent.parent
+    PLACE_IMG_PATH = os.path.join(ROOT_DIR,'theme','static','images','places_image')
+    all_img = [f for f in os.listdir(PLACE_IMG_PATH) if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
+    for idx in range(len(context['images'])):
+        print(f'{name}{idx}detailphoto.jpeg')
+        if not f'{name}{idx}detailphoto.jpeg' in all_img:
+            return False
+    return True
 
 
 def index(request):
@@ -165,4 +176,8 @@ def place_info(request, place_id: str):
         if data['status'] != "OK":
             return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
         context = get_details_context(data, os.getenv('API_KEY'), place_id)
+    context['downloaded'] = check(context)
+    if context['downloaded']:
+        context["img_name"] = context['name'].replace(" ", "-")
+        context["images"] = list(range(len(context["images"])))
     return render(request, "trip/place_details.html", context)

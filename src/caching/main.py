@@ -17,24 +17,22 @@ ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 PLACE_IMG_PATH = os.path.join(ROOT_DIR,'theme','static','images','places_image')
 
 
-def write_img_from_gmap_api(place_id, photo_ref):
+def write_img_from_gmap_api(key, photo_ref):
     api_key = os.getenv('API_KEY')
     url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={photo_ref}&key={api_key}"
     payload={}
     headers = {}
     response = requests.request("GET", url, headers=headers, data=payload)
-    new_file = open(os.path.join(PLACE_IMG_PATH, f'{place_id}photo.jpeg'), 'wb') 
+    new_file = open(os.path.join(PLACE_IMG_PATH, f'{key}photo.jpeg'), 'wb') 
     new_file.write(response.content)
-
+    x = datetime.datetime.now()
+    print('[' + x.strftime("%d:%m:%y %X")+ ']' + f" {key}photo.jpeg has been downloaded")
 
 def download_img(api_caching, all_img, data):
     for sup_data in data:
         place_id = sup_data['place_id']
         if not ('photos' in sup_data) or (f'{place_id}photo.jpeg' in all_img):
             continue
-        x = datetime.datetime.now()
-        out = x.strftime("%d:%m:%y %X")
-        print('[' + x.strftime("%d:%m:%y %X")+ ']' + f" {place_id}photo.jpeg has been downloaded")
         photo_ref = sup_data['photos'][0]['photo_reference']
         write_img_from_gmap_api(place_id, photo_ref) 
         api_caching.expire(f'{place_id}photo.jpeg', 168)
@@ -59,15 +57,22 @@ def run():
         delete_expire_img(all_img, now, json_decoded)
 
         for file in all_cache_file:
-            if not ('searchresult' in file):
-                continue
-            data = json.loads(api_caching.get(f'{file[:-6]}'))["results"]
-            download_img(api_caching, all_img, data)
+            if ('searchresult' in file):
+                data = json.loads(api_caching.get(f'{file[:-6]}'))["results"]
+                download_img(api_caching, all_img, data)
+            elif ('detailpage' in file):
+                data = json.loads(api_caching.get(f'{file[:-6]}'))
+                name = data['name'].replace(' ', "-")
+                for idx_img in range(len(data["images"])):
+                    if f'{name}{idx_img}detailphoto.jpeg' in all_img:
+                        continue
+                    write_img_from_gmap_api(f"{name}{idx_img}detail", data["images"][idx_img])
+
         # for file in all_cache_file:
         #     if not ('detailpage' in file):
         #         continue
         #     data = json.loads(api_caching.get(f'{file[:-6]}'))["image"]
-        #     download_img(api_caching, all_img, data)
+        #     download_img(f'',api_caching, all_img, data)
 
 def delete_expire_img(all_img, now, json_decoded):
     for img in all_img:

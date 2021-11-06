@@ -26,8 +26,8 @@
                         {% if images %}
                             {% for image in images %}
                                 <div class="carousel-cell" style="height: 100%">
-                                    {% if place.photos and place.have_photo == True %}
-                                    <img src="{% static 'images/places_image/' %}{{ place.name }}detailpage.jpeg">
+                                    {% if downloaded == True %}
+                                    <img src="{% static 'images/places_image/' %}{{ img_name }}{{ image }}detailphoto.jpeg">
                                     {% else %}
                                     <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={{ image }}&key=AIzaSyBxO1khE-LHn5Z5U2SWpA36D4nKqoWzNRg" alt="{{ name }}">
                                     {% endif %}

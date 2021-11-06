@@ -29,6 +29,7 @@ class APICaching:
     def delete(self, key):
         if os.path.exists(os.path.join(self.ROOT_DIR,'__cache__', f'{key}.cache')):
             os.remove(os.path.join(self.ROOT_DIR,'__cache__', f'{key}.cache'))
+            print("Delete successfully")
             return True
         return False
 
@@ -43,4 +44,3 @@ class APICaching:
 
         with open(os.path.join(self.BASE_DIR,'expireTable.json'), 'w') as json_file:
             json.dump(json_decoded, json_file)
-    

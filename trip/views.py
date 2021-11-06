@@ -112,12 +112,14 @@ class TripDetail(DetailView):
         context['total_like'] = total_like
         return context
 
+
 class AddPost(CreateView):
     """Class for link html of add trip page."""
 
     model = TripPlan
     template_name = "trip/add_blog.html"
     form_class = TripPlanForm
+
 
 class AddCategory(CreateView):
     """Class for link html of add category page."""
@@ -170,6 +172,7 @@ def like_view(request, pk):
     post = get_object_or_404(Review, id=request.POST.get('commend_id'))
     post.like.add(request.user)
     return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
+
 
 @login_required
 def like_post(request, pk):

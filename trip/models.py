@@ -34,7 +34,7 @@ class TripPlan(models.Model):
     def get_absolute_url(self):
         """Return redirect to all trip pages."""
         return reverse("trip:tripdetail", args=(str(self.id)))
-    
+
     def total_like(self):
         """Return number of count."""
         return self.like.count()

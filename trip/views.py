@@ -105,6 +105,12 @@ class TripDetail(DetailView):
     queryset = TripPlan.objects.all()
     context_object_name = 'post'
 
+    def get_context_data(self, *args, **kwargs):
+        context = super(TripDetail, self).get_context_data(*args, **kwargs)
+        all_like = get_object_or_404(TripPlan, id=self.kwargs['pk'])
+        total_like = all_like.total_like()
+        context['total_like'] = total_like
+        return context
 
 class AddPost(CreateView):
     """Class for link html of add trip page."""
@@ -112,7 +118,6 @@ class AddPost(CreateView):
     model = TripPlan
     template_name = "trip/add_blog.html"
     form_class = TripPlanForm
-
 
 class AddCategory(CreateView):
     """Class for link html of add category page."""
@@ -163,6 +168,13 @@ def category(request, cats):
 def like_view(request, pk):
     """Methid for store user like of each commend."""
     post = get_object_or_404(Review, id=request.POST.get('commend_id'))
+    post.like.add(request.user)
+    return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
+
+@login_required
+def like_post(request, pk):
+    """Methid for store user like of each trip."""
+    post = get_object_or_404(TripPlan, id=request.POST.get('trip_id'))
     post.like.add(request.user)
     return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
 

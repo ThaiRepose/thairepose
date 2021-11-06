@@ -10,7 +10,12 @@ class TripPlan(models.Model):
     Attributes:
         title(str): title of post
         author(user): user who write post
+        duration(int): all day in trip
+        print(int): money to cover all trip
         body(str): descriptions
+        category(str): category of trip
+        post_date(datetime): datetime of trip is created
+        like(User): store all use press like button
     """
 
     title = models.CharField(max_length=200)
@@ -21,6 +26,7 @@ class TripPlan(models.Model):
     body = RichTextField(blank=True, null=True)
     category = models.CharField(max_length=255, default='Uncatagorize')
     post_date = models.DateField(auto_now_add=True)
+    like = models.ManyToManyField(User, related_name='trip_like', blank=True)
 
     def __str__(self):
         return self.title + ' | ' + str(self.author)
@@ -28,6 +34,10 @@ class TripPlan(models.Model):
     def get_absolute_url(self):
         """Return redirect to all trip pages."""
         return reverse("trip:tripdetail", args=(str(self.id)))
+    
+    def total_like(self):
+        """Return number of count."""
+        return self.like.count()
 
 
 class Review(models.Model):

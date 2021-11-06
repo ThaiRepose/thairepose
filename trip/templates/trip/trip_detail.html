@@ -7,6 +7,11 @@
 <P>{{ post.duration }}</P>
 <P>{{ post.price }}</P>
 {{ post.body|safe }}
+<form action="{% url 'trip:list_trip' post.pk %}" method="POST">
+    {% csrf_token %}
+    <button type="submit" name="trip_id" value="{{ post.id }}">Like</button>
+    - {{ post.total_like }}
+</form>
 {% if user.is_authenticated %}
     {% if user.id == post.author.id %}
 <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>

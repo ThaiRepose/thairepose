@@ -100,7 +100,7 @@ class AllTrip(ListView):
         """Get variable to use in html."""
         content = {
             'post': TripPlan.objects.all(),
-            'category' : CategoryPlan.objects.all()
+            'category': CategoryPlan.objects.all()
         }
         return content
 

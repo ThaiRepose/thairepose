@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 import os, json
+
+from requests import api
 from .api import GoogleAPI
 from threpose.settings import BASE_DIR
 from src.caching.caching_gmap import APICaching
@@ -96,12 +98,18 @@ def get_next_page_from_token(request):
         return JsonResponse({"STATUS": "INVALID PAYLOAD"})
     token = request.POST['token']
     context = []
-    for _ in range(6):  # Request data for 6 times, if response is not OK and reached maximum, it will return empty
-        data = json.loads(gapi.next_search_nearby(token))
-        if data['status'] == "OK":
-            context = restruct_nearby_place(data['results'])
-            break
-        time.sleep(0.2)
-    if len(context) > 0:
-        return JsonResponse({"places": context, "status": "OK"})
-    return JsonResponse({"places": context, "status": "NOT FOUND"})
+    if api_caching.get(f'{token[:10]}') is None:
+        for _ in range(6):  # Request data for 6 times, if response is not OK and reached maximum, it will return empty
+            data = json.loads(gapi.next_search_nearby(token))
+            if data['status'] == "OK":
+                context = restruct_nearby_place(data['results'])
+                break
+            time.sleep(0.2)
+        byte_context = json.dumps({"places": context, "status": "OK"}, indent=3).encode()
+        api_caching.add(f'{token[:10]}', byte_context)
+        if len(context) > 0:
+            return JsonResponse({"places": context, "status": "OK"})
+        return JsonResponse({"places": context, "status": "NOT FOUND"})
+    else:
+        context = json.loads(api_caching.get(f'{token[:10]}'))
+        return JsonResponse(context)

@@ -1,12 +1,7 @@
 from django import forms
-from .models import TripPlan, CategoryPlan
+from .models import TripPlan
 
-
-# choice = CategoryPlan.objects.all().values_list('name', 'name')
 choice_list = ['Uncategorize']
-# for item in choice:
-#     if item not in choice_list:
-#         choice_list.append(item)
 
 
 class TripPlanForm(forms.ModelForm):
@@ -16,5 +11,5 @@ class TripPlanForm(forms.ModelForm):
         model = TripPlan
         fields = ('title', 'author', 'duration', 'price', 'category', 'body')
         widgets = {
-            'category': forms.TextInput(attrs={'class': 'form-control', 'value': 'Uncategorize'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
         }

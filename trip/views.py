@@ -6,7 +6,7 @@ import requests
 from dotenv import load_dotenv
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import TripPlan, Review, CategoryPlan
+from .models import TripPlan, Review
 from .forms import TripPlanForm
 from django.contrib.auth.decorators import login_required
 
@@ -98,7 +98,7 @@ class AllTrip(ListView):
 
 
 class TripDetail(DetailView):
-    """Class for link html of detail of eaach trip."""
+    """Class for link html of detail of each trip."""
 
     model = TripPlan
     template_name = 'trip/trip_detail.html'
@@ -113,20 +113,32 @@ class TripDetail(DetailView):
         return context
 
 
+class CatsListView(ListView):
+    """Class for link html of trip in each category."""
+
+    template_name = 'trip/category.html'
+    context_object_name = 'catlist'
+
+    def get_queryset(self):
+        """Get variable to use in html."""
+        content = {
+            'cat': self.kwargs['category'],
+            'posts': TripPlan.objects.filter(category__name=self.kwargs['category'])
+        }
+        if content['cat'] == 'All':
+            content = {
+                'cat': self.kwargs['category'],
+                'posts': TripPlan.objects.all()
+            }
+        return content
+
+
 class AddPost(CreateView):
     """Class for link html of add trip page."""
 
     model = TripPlan
     template_name = "trip/add_blog.html"
     form_class = TripPlanForm
-
-
-class AddCategory(CreateView):
-    """Class for link html of add category page."""
-
-    model = CategoryPlan
-    template_name = "trip/add_category.html"
-    fields = '__all__'
 
 
 class AddReview(CreateView):
@@ -159,11 +171,6 @@ class DeletePost(DeleteView):
     template_name = "trip/delete_plan.html"
     context_object_name = 'post'
     success_url = reverse_lazy('trip:tripplan')
-
-
-def category(request, cats):
-    category_trip = TripPlan.objects.filter(category=cats)
-    return render(request, 'trip/category.html', {'cats': cats, 'category_trip': category_trip})
 
 
 @login_required

@@ -87,9 +87,6 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
           
           $new.attr('href', url).end();
           $new.find('p').replaceWith(`<p class="font-bold text-xl mb-2">${place.place_name}</p>`).end().appendTo("#big_box");
-          {% comment %} http://127.0.0.1:8000/search/place-list/?lat=13.7468613&lng=100.5390242
-          http://127.0.0.1:8000/place/ChIJEXKEetCe4jARIEVuiUYBmxE/ {% endcomment %}
-          {% comment %} http://127.0.0.1:8000/search/place-list/place/ChIJ7_QO482e4jARqH0M0NDeet4 {% endcomment %}
         }
 
         

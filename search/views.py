@@ -44,7 +44,7 @@ def restruct_nearby_place(places):
         init_place['place_id'] = place['place_id']
         if 'photos' in place:
             init_place['photo_ref'].append(place['photos'][0]['photo_reference'])
-            init_place['name_img'] = str(place['name'].replace(' ', '-'))
+            init_place['name_img'] = str(place['name'].replace(' ', '-').replace("|","").replace(':', "_").replace('"',"").replace('#',""))
         init_place['type'] = place['types']
         context.append(init_place)
     return context
@@ -98,18 +98,19 @@ def get_next_page_from_token(request):
         return JsonResponse({"STATUS": "INVALID PAYLOAD"})
     token = request.POST['token']
     context = []
-    if api_caching.get(f'{token[:10]}') is None:
+    if api_caching.get(f'{token[:30]}') is None:
         for _ in range(6):  # Request data for 6 times, if response is not OK and reached maximum, it will return empty
             data = json.loads(gapi.next_search_nearby(token))
             if data['status'] == "OK":
                 context = restruct_nearby_place(data['results'])
                 break
             time.sleep(0.2)
-        byte_context = json.dumps({"places": context, "status": "OK"}, indent=3).encode()
-        api_caching.add(f'{token[:10]}', byte_context)
+        byte_context = json.dumps({"cache": context, "status": "OK"}, indent=3).encode()
+        api_caching.add(f'{token[:30]}', byte_context)
         if len(context) > 0:
             return JsonResponse({"places": context, "status": "OK"})
         return JsonResponse({"places": context, "status": "NOT FOUND"})
     else:
-        context = json.loads(api_caching.get(f'{token[:10]}'))
-        return JsonResponse(context)
+        context = json.loads(api_caching.get(f'{token[:30]}'))
+        
+        return JsonResponse({"places": context['cache'], "status": "OK"})

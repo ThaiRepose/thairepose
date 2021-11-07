@@ -25,6 +25,7 @@ def get_details_context(place_data: dict, api_key: str, place_id) -> dict:
         context data needed for place details page.
     """
     context = {}
+    print(place_data)
     if 'result' in place_data.keys():
         if 'name' in place_data['result'].keys():
             context['name'] = place_data['result']['name']
@@ -35,6 +36,9 @@ def get_details_context(place_data: dict, api_key: str, place_id) -> dict:
         if 'rating' in place_data['result'].keys():
             context['rating'] = int(place_data['result']['rating'])
             context['blank_rating'] = 5 - int(place_data['result']['rating'])
+        else:
+            context['rating'] = 0
+            context['blank_rating'] = 0
         if 'photos' in place_data['result'].keys():
             images = []
             current_photo = 0
@@ -47,6 +51,8 @@ def get_details_context(place_data: dict, api_key: str, place_id) -> dict:
                 if current_photo >= 4:
                     break
             context['images'] = images
+        else:
+            context['images'] = []
         if 'reviews' in place_data['result'].keys():
             reviews = []
             for i in place_data['result']['reviews']:
@@ -83,7 +89,8 @@ def get_details_context(place_data: dict, api_key: str, place_id) -> dict:
                     'place_id': place['place_id']
                 })
             context['suggestions'] = suggestions
-    api_caching.add(f"{place_id}detailpage", json.dumps(context).encode())
+    print(context)
+    api_caching.add(f"{place_id}detailpage", json.dumps(context, indent=3).encode())
     context['blank_rating'] = range(round(context['blank_rating']))
     context['rating'] = range(round(context['rating']))
     return context
@@ -94,7 +101,6 @@ def check(context):
     PLACE_IMG_PATH = os.path.join(ROOT_DIR,'theme','static','images','places_image')
     all_img = [f for f in os.listdir(PLACE_IMG_PATH) if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
     for idx in range(len(context['images'])):
-        print(f'{name}{idx}detailphoto.jpeg')
         if not f'{name}{idx}detailphoto.jpeg' in all_img:
             return False
     return True
@@ -164,6 +170,7 @@ def place_info(request, place_id: str):
     """
     if api_caching.get(f"{place_id}detailpage"):
         context = json.loads(api_caching.get(f"{place_id}detailpage"))
+        print(context)
         context['blank_rating'] = range(round(context['blank_rating']))
         context['rating'] = range(round(context['rating']))
     else:
@@ -176,8 +183,11 @@ def place_info(request, place_id: str):
         if data['status'] != "OK":
             return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
         context = get_details_context(data, os.getenv('API_KEY'), place_id)
+    check_image(context)
+    return render(request, "trip/place_details.html", context)
+
+def check_image(context):
     context['downloaded'] = check(context)
     if context['downloaded']:
         context["img_name"] = context['name'].replace(" ", "-")
         context["images"] = list(range(len(context["images"])))
-    return render(request, "trip/place_details.html", context)

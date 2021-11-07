@@ -46,9 +46,10 @@ def run():
         for file in all_cache_file:
             cache = json.loads(api_caching.get(file[:-6]))['cache']
             for supdata in cache:
-                name = supdata['place_name'].replace(' ', '-').replace("|","")
+                name = supdata['place_name'].replace(' ', '-').replace("|","").replace(':', "_")
                 if f'{name}photo.jpeg' in all_img:
                     continue
+                
                 if len(supdata['photo_ref']) == 1:
                     write_img_from_gmap_api(f'{name}', supdata['photo_ref'][0])
                 else:
@@ -69,7 +70,7 @@ def start():
     ░░░██║░░░ ██╔══██╗ ╚════╝ ██║░░██╗ ██╔══██║ ██║░░██╗ ██╔══██║ ██║ ██║╚████║ ██║░░╚██╗
     ░░░██║░░░ ██║░░██║ ░░░░░░ ╚█████╔╝ ██╔══██║ ╚█████╔╝ ██║░░██║ ██║ ██║░╚███║ ╚██████╔╝
     ░░░╚═╝░░░ ╚═╝░░╚═╝ ░░░░░░ ░╚════╝░ ╚═╝░░╚═╝ ░╚════╝░ ╚═╝░░╚═╝ ╚═╝ ╚═╝░░╚══╝╝░╚═════╝░
-    version 0.1.0
+    version 0.1.0 dev.
     """) 
     run()
 

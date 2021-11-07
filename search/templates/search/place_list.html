@@ -20,11 +20,11 @@
   <!-- Tailwind CSS -->
   <link href="https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css" rel="stylesheet">
 
-  <div class="flex-grow rounded-3xl justify-center max-w-6xl mx-auto p-8 m-10 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 bg-green-600 bg-fixed" style="background-color: rgba(209, 213, 219, 0.3);
+  <div id="big_box" class="flex-grow rounded-3xl justify-center max-w-6xl mx-auto p-8 m-10 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 bg-green-600 bg-fixed" style="background-color: rgba(209, 213, 219, 0.3);
 box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
     <!--Card 1-->
     {% for place in places %}
-    <a class="rounded-3xl overflow-hidden shadow-lg bg-gray-300" href="{% url 'trip:place-detail' place.place_id %}"">
+    <a id="place_box" class="rounded-3xl overflow-hidden shadow-lg bg-gray-300" href="{% url 'trip:place-detail' place.place_id %}"">
     {% if img_downloaded and place.name_img %}
       <img class="w-full h-80 rounded-3xl p-2" src="{% static 'images/places_image/' %}{{ place.name_img }}photo.jpeg"> 
     {% elif not img_downloaded and place.photo_ref.0%}
@@ -33,7 +33,7 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
       <img class="w-full h-80 rounded-3xl p-2" src="{% static '/images/img_not_found.jpg' %}" alt="NotFound" />
     {% endif %}
       <div class="px-6 py-4">
-        <div class="font-bold text-xl mb-2">{{ place.place_name }}</div>
+        <p class="font-bold text-xl mb-2">{{ place.place_name }}</p>
       </div>
     </a>
     {% endfor %}
@@ -62,9 +62,36 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
                 setTimeout(function () {
                     console.log(token);
                     let response = get_next_list(all_tokens[token]);
-                    console.log(response);
+                    for (var i=0; i<response.places.length; i++){
+                      addBoxPlace(response.places[i]);
+                      
+                      
+                    }
+                    
                 }, 2000);
             }
         }
+        function addBoxPlace(place) {
+          
+          $new = $("#place_box").clone()
+          if (place.photo_ref.length == 1){
+            $new.find('img').attr('src', `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${place.photo_ref[0]}&key=AIzaSyBxO1khE-LHn5Z5U2SWpA36D4nKqoWzNRg`)
+          } else {
+            $new.find('img').attr('src', '{% static '/images/img_not_found.jpg' %}')
+          }
+          var path_array = window.location.href.split('/')
+          var destination = `/place/${place.place_id}/`
+          var protocal = path_array[0];
+          var host = path_array[2]
+          var url = protocal + '//' + host + destination;
+          
+          $new.attr('href', url).end();
+          $new.find('p').replaceWith(`<p class="font-bold text-xl mb-2">${place.place_name}</p>`).end().appendTo("#big_box");
+          {% comment %} http://127.0.0.1:8000/search/place-list/?lat=13.7468613&lng=100.5390242
+          http://127.0.0.1:8000/place/ChIJEXKEetCe4jARIEVuiUYBmxE/ {% endcomment %}
+          {% comment %} http://127.0.0.1:8000/search/place-list/place/ChIJ7_QO482e4jARqH0M0NDeet4 {% endcomment %}
+        }
+
+        
     </script>
 {% endblock %}

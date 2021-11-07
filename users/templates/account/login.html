@@ -41,23 +41,23 @@
 
 <form class="login" method="POST" action="{% url 'account_login' %}">
   {% csrf_token %}
-  <div class="flex items-center justify-center h-screen w-full bg-cover bg-center"
+  <div class="flex items-center justify-center h-screen w-full bg-cover bg-center "
     style="background-image: url('https://cdn.discordapp.com/attachments/901501438067351656/901501516660219914/webb-07.png')">
     <div class="container mx-auto">
       <div class="flex justify-center px-6 my-12">
         <!-- Row -->
         <div class="w-full lg:w-3/4 lg:w-11/12 flex">
           <!-- Col -->
-          <div class="w-full h-auto bg-yellow-600 lg:block lg:w-5/12 bg-cover bg-center rounded-l-lg"
+          <div class="w-full h-auto bg-yellow-700 lg:block lg:w-5/12 bg-cover bg-center rounded-l-lg "
             style="background-image: url('https://cdn.discordapp.com/attachments/901501438067351656/901502756718784512/webb-05.png')">
           </div>
           <!-- Col -->
           <div class="w-full lg:w-7/12 bg-white p-5 rounded-lg lg:rounded-l-none">
             <div>
-              <span class="flex justify-center text-gray-900">Welcome</span>
+              <span class="flex justify-center px-10 text-2xl rounded-r-lg text-gray-800 font-bold p-4 uppercase ">Welcome</span>
               <h1 class="flex justify-center font-bold">Login to your account</h1>
               <br>
-              <div class="flex justify-between">
+              <div class="flex justify-between mb-5">
                 <label class='ml-4'>usernaem<label>
                 <label class='mr-10'>{{form.login}}</label>
                 <label class='ml-20'>password<label>
@@ -69,13 +69,13 @@
               <div class="flex justify-end text-right mt-2 ">
                 <a href="{{ signup_url }}" class="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700">Don't have account? Signup</a>
               </div>
-              <button type="submit" class="primaryAction w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 border border-gray-300">
+              <button type="submit" class="primaryAction w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 mt-5 border border-gray-300">
                 {% trans "Sign In" %}
               </button>
               <br>
               <div class="">
-                <div class="flex space-x-2 justify-center items-end text-black py-2 rounded-md">
-                  <p> or </p>
+                <div class="text-gray-500 text-lg text-center mb-3 font-bold">
+                  <p>Or</p>
                 </div>
               </div>
               <hr class="my-6 border-gray-300 w-full">

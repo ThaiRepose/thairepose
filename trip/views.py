@@ -6,7 +6,7 @@ import requests
 from dotenv import load_dotenv
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import TripPlan, Review
+from .models import TripPlan, Review, CategoryPlan
 from .forms import TripPlanForm
 from django.contrib.auth.decorators import login_required
 
@@ -96,6 +96,14 @@ class AllTrip(ListView):
     context_object_name = 'object'
     ordering = ['-id']
 
+    def get_queryset(self):
+        """Get variable to use in html."""
+        content = {
+            'post': TripPlan.objects.all(),
+            'category' : CategoryPlan.objects.all()
+        }
+        return content
+
 
 class TripDetail(DetailView):
     """Class for link html of detail of each trip."""
@@ -123,13 +131,9 @@ class CatsListView(ListView):
         """Get variable to use in html."""
         content = {
             'cat': self.kwargs['category'],
-            'posts': TripPlan.objects.filter(category__name=self.kwargs['category'])
+            'posts': TripPlan.objects.filter(category__name=self.kwargs['category']),
+            'category': CategoryPlan.objects.all()
         }
-        if content['cat'] == 'All':
-            content = {
-                'cat': self.kwargs['category'],
-                'posts': TripPlan.objects.all()
-            }
         return content
 
 

@@ -1,26 +1,74 @@
 {% extends 'base.html' %}
 
 {% block main_content %}
+<div class="flex flex-wrap">
+    <div class="w-full sm:w-6/12 md:w-4/12 px-4">
+        <div class="relative inline-flex align-middle w-full">
+            <button
+                class="bg-black text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 "
+                type="button" onclick="openDropdown(event,'dropdown-example-1')"> Category <i
+                    class="fas fa-angle-down ml-2"></i>
+            </button>
+            <div class="hidden bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1"
+                style="min-width: 12rem" id="dropdown-example-1">
+                {% for cats in catlist.category %}
+                {% if cats.name != catlist.cat %}
+                <a href="{% url 'trip:category' cats.name %}"
+                    class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-gray-700 hover:bg-gray-100 ">
+                    {{ cats.name }}
+                </a>
+                {% endif %}
+                {% endfor %}
+                <div class=" h-0 my-2 border border-solid border-t-0 border-blueGray-800 opacity-25"></div>
+                <a href="{% url 'trip:tripplan' %}"
+                    class=" text-sm py-2 px-4 font-normal block w-full uppercase whitespace-nowrap bg-transparent text-gray-700 hover:bg-gray-100">
+                    see all trip
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 {% if catlist.posts.count == 0 %}
-    <p>No post Here</p>
-    <li><a href="{% url 'trip:addpost' %}">---Add post---</a></li>
+<p>No post Here</p>
+<li><a href="{% url 'trip:addpost' %}">---Add post---</a></li>
 {% else %}
-    <ul>
+<ul>
     {% for post in catlist.posts %}
-        <li><a href="{% url 'trip:tripdetail' post.pk %}">{{ post.title }}</a> 
+    <li><a href="{% url 'trip:tripdetail' post.pk %}">{{ post.title }}</a>
         <p>{{ post.author }}</p>
         <p>{{ post.duration }}</p>
         <p>{{ post.price }}</p>
         <p>{{ post.body }}</p>
         {% if user.is_authenticated %}
-            {%if user.id == post.author.id%}
-                <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>
-                <a href="{% url 'trip:deletepost' post.pk%}">(!!!DELETE!!!)</a>
-            {% endif %}
+        {%if user.id == post.author.id%}
+        <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>
+        <a href="{% url 'trip:deletepost' post.pk%}">(!!!DELETE!!!)</a>
+        {% endif %}
         {% else %}
         {% endif %}
         <p>-----------------------------------------------------</p>
-    {% endfor %}</ul>
-    <li><a href="{% url 'trip:addpost' %}">---Add post---</a></li>
+        {% endfor %}
+</ul>
+<li><a href="{% url 'trip:tripplan' %}">See all trip</a>
+<li><a href="{% url 'trip:addpost' %}">---Add post---</a></li>
 {% endif %}
+<!-- Required popper.js -->
+<script src="https://unpkg.com/@popperjs/core@2.9.1/dist/umd/popper.min.js" charset="utf-8"></script>
+<script>
+    function openDropdown(event, dropdownID) {
+        let element = event.target;
+        while (element.nodeName !== "BUTTON") {
+            element = element.parentNode;
+        }
+        var popper = Popper.createPopper(
+            element,
+            document.getElementById(dropdownID),
+            {
+                placement: "bottom-start",
+            }
+        );
+        document.getElementById(dropdownID).classList.toggle("hidden");
+        document.getElementById(dropdownID).classList.toggle("block");
+    }
+</script>
 {% endblock %}

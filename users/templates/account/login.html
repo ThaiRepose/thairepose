@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load account socialaccount %}
+{% load static %}
 {% load static tailwind_tags %}
 
 {% block header %}
+{% tailwind_css %}
     <title>ThaiRepose</title>
     <style>
         body {
@@ -40,14 +42,14 @@
 
 <form class="login" method="POST" action="{% url 'account_login' %}">
   {% csrf_token %}
-  <div class="flex items-center justify-center min-h-screen bg-cover bg-center"
+  <div class="flex items-center justify-center h-screen w-full bg-cover bg-center"
     style="background-image: url('https://cdn.discordapp.com/attachments/901501438067351656/901501516660219914/webb-07.png')">
     <div class="container mx-auto">
       <div class="flex justify-center px-6 my-12">
         <!-- Row -->
         <div class="w-full lg:w-3/4 lg:w-11/12 flex">
           <!-- Col -->
-          <div class="w-full h-auto bg-white lg:block lg:w-5/12 bg-cover bg-center rounded-l-lg"
+          <div class="w-full h-auto bg-yellow-600 lg:block lg:w-5/12 bg-cover bg-center rounded-l-lg"
             style="background-image: url('https://cdn.discordapp.com/attachments/901501438067351656/901502756718784512/webb-05.png')">
           </div>
           <!-- Col -->
@@ -64,6 +66,9 @@
               </div>
               <div class="flex justify-end text-right mt-2 ">
                 <a href="{% url 'account_reset_password' %}" class="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700">Forgot Password?</a>
+              </div>
+              <div class="flex justify-end text-right mt-2 ">
+                <a href="{{ signup_url }}" class="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700">Don't have account? Signup</a>
               </div>
               <button type="submit" class="primaryAction w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 border border-gray-300">
                 {% trans "Sign In" %}

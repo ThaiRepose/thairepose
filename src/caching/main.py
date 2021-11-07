@@ -44,6 +44,8 @@ def run():
             json_decoded = json.load(json_file)
         
         for file in all_cache_file:
+            if 'detailpage' in file:
+                continue
             cache = json.loads(api_caching.get(file[:-6]))['cache']
             for supdata in cache:
                 name = supdata['place_name'].replace(' ', '-').replace("|","").replace(':', "_").replace('"',"").replace('#',"")

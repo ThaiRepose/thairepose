@@ -6,7 +6,7 @@ import unittest
 from .views import get_details_context
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from .models import Review, TripPlan
+from .models import Review, TripPlan, CategoryPlan
 
 
 class PlaceDetailsViewTest(TestCase):
@@ -85,9 +85,10 @@ class ReviewModelTests(TestCase):
     def setUp(self):
         """Set up trip plan for create review"""
         self.request = RequestFactory()
+        self.cat = CategoryPlan.objects.create(name='category1')
         self.user = User.objects.create(username='tester', password='tester')
         self.trip = TripPlan.objects.create(
-            title='test', body='create_trip', author=self.user)
+            title='test', body='create_trip', author=self.user, duration=1, price=1, category=self.cat)
 
     def test_create_review(self):
         """Test create new review."""
@@ -114,7 +115,66 @@ class ReviewModelTests(TestCase):
         post.like.add(user2)
         self.assertEqual(post.total_like, 2)
 
+    def test_dont_count_like_by_same_user(self):
+        Review.objects.create(post=self.trip, name=self.user, body='review')
+        post = get_object_or_404(Review, id='1')
+        post.like.add(self.user)
+        post.like.add(self.user)
+        self.assertEqual(post.total_like, 1)
+
     def tearDown(self):
         """Remove all user and all trip plan"""
         User.objects.all().delete()
         TripPlan.objects.all().delete()
+
+
+class TripModelTests(TestCase):
+    """Test for TripPlan functions."""
+
+    def setUp(self):
+        """Set up trip, user and category."""
+        self.cat = CategoryPlan.objects.create(name='category1')
+        self.user = User.objects.create(username='tester', password='tester')
+        self.trip = TripPlan.objects.create(
+            title='test', body='create_trip', author=self.user, duration=1, price=1, category=self.cat)
+        return super().setUp()
+
+    def test_create_post_in_category(self):
+        """Test create post that have category."""
+        self.assertEqual(TripPlan.objects.filter(
+            category=self.cat)[0].category.name, 'category1')
+
+    def test_have_more_than_one_post_in_same_category(self):
+        """Test have more than one post that have same category."""
+        TripPlan.objects.create(
+            title='test2', body='create_trip2', author=self.user, duration=1, price=1, category=self.cat)
+        self.assertEqual(TripPlan.objects.filter(category=self.cat).count(), 2)
+
+    def test_like_post(self):
+        """Test like post."""
+        post = get_object_or_404(TripPlan, id='1')
+        post.like.add(self.user)
+        self.assertEqual(TripPlan.objects.filter(id='1')[0].total_like(), 1)
+
+    def test_like_more_than_one_user(self):
+        """Test have more than one user like same post."""
+        self.user2 = self.user = User.objects.create(
+            username='tester2', password='tester2')
+        post = get_object_or_404(TripPlan, id='1')
+        post.like.add(self.user)
+        post.like.add(self.user2)
+        self.assertEqual(TripPlan.objects.filter(id='1')[0].total_like(), 1)
+
+    def test_dont_count_like_by_same_user(self):
+        """Test post like not count user like if same user."""
+        post = get_object_or_404(TripPlan, id='1')
+        post.like.add(self.user)
+        post.like.add(self.user)
+        self.assertEqual(TripPlan.objects.filter(id='1')[0].total_like(), 1)
+
+    def tearDown(self):
+        """Reset all user, all category and all tripplan"""
+        User.objects.all().delete()
+        TripPlan.objects.all().delete()
+        CategoryPlan.objects.all().delete()
+        return super().tearDown()

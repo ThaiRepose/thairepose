@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load account socialaccount %}
+{% load static tailwind_tags %}
+
+{% block header %}
+    <title>ThaiRepose</title>
+    <style>
+        body {
+            background-image: url("{% static 'images/bg.jpg' %}");
+            background-repeat: no-repeat;
+            background-position: center cover;
+            background-size: 100% 100%;
+        }
+    </style>
+{% endblock %}
 
 {% block main_content %}
 {% if messages %}
@@ -34,7 +47,7 @@
         <!-- Row -->
         <div class="w-full lg:w-3/4 lg:w-11/12 flex">
           <!-- Col -->
-          <div class="w-full h-auto bg-gray-400 lg:block lg:w-5/12 bg-cover bg-center rounded-l-lg"
+          <div class="w-full h-auto bg-white lg:block lg:w-5/12 bg-cover bg-center rounded-l-lg"
             style="background-image: url('https://cdn.discordapp.com/attachments/901501438067351656/901502756718784512/webb-05.png')">
           </div>
           <!-- Col -->
@@ -75,26 +88,6 @@
         </div>
       </div>
     </div>
-    <!-- <div class="px-8 py-6 mt-4 text-left bg-white shadow-lg">
-      <h3 class="text-2xl font-bold text-center">Login to your account</h3>
-        <div class="mt-4">
-          <div>
-           {{form.as_p}}
-          </div>
-          <div class="flex items-baseline justify-between">
-            {% if redirect_field_value %}
-            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-            {% endif %}
-            <button class="px-6 py-2 mt-4 text-white bg-red-900 rounded-lg hover:bg-red-900" type="submit">{% trans "Sign In" %}</button>
-            <a href="{% url 'account_reset_password' %}" class="text-sm text-red-900 hover:underline">Forgot
-              password?</a>
-          </div>
-          <div class="flex items-baseline justify-end">
-            <a href="{{ signup_url }}" class="text-sm text-red-900 hover:underline">Create
-              account</a>
-          </div>
-        </div>
-    </div> -->
   </div>
 </form>
 

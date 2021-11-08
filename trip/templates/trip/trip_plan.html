@@ -27,9 +27,9 @@
 <ul>
     {% for post in object.post %}
     <li><a href="{% url 'trip:tripdetail' post.pk %}" type="submit">{{ post.title }}</a>
-        <p>{{ post.author }}</p>
-        <p>{{ post.duration }}</p>
-        <p>{{ post.price }}</p>
+        <p>author: {{ post.author }}</p>
+        <p>durations: {{ post.duration }}</p>
+        <p>price: {{ post.price }}</p>
         <p>{{ post.body| safe }}</p>
         {% if user.is_authenticated %}
         {%if user.id == post.author.id%}

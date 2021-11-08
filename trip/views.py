@@ -144,6 +144,11 @@ class AddPost(CreateView):
     template_name = "trip/add_blog.html"
     form_class = TripPlanForm
 
+    def form_valid(self, form):
+        """Auto choose current post for add comment."""
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
 
 class AddReview(CreateView):
     """Class for link html of add review."""

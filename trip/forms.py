@@ -9,7 +9,7 @@ class TripPlanForm(forms.ModelForm):
 
     class Meta:
         model = TripPlan
-        fields = ('title', 'author', 'duration', 'price', 'category', 'body')
+        fields = ('title', 'duration', 'price', 'category', 'body')
         widgets = {
             'category': forms.Select(attrs={'class': 'form-control'}),
         }

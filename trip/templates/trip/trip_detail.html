@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block main_content %}
-<h1> {{ post.title }} </h1>
+<h1>{{ post.title }} </h1>
 <small> By: {{ post.author }}</small>
 <p>Create at: {{ post.post_date }}</p>
-<P>{{ post.duration }}</P>
-<P>{{ post.price }}</P>
+<P>durations: {{ post.duration }}</P>
+<P>price: {{ post.price }}</P>
 {{ post.body|safe }}
 <form action="{% url 'trip:list_trip' post.pk %}" method="POST">
     {% csrf_token %}

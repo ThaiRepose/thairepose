@@ -2,9 +2,6 @@
     /* Backfround color */
     background-color: rgba(209, 213, 219, 0.3);
 
-    /* Full height */
-    height: 100%;
-
     /* Center and scale the image nicely */
     background-position: center;
     background-repeat: no-repeat;
@@ -14,6 +11,26 @@
     box-shadow: 3px 8px 5px rgb(0 0 0 / 0.3);
 
     word-wrap:break-word;
+}
+
+.container-height {
+    /* Full height */
+    height: 73vh;
+}
+
+.detail-scrolllist {
+    height: 66.666667%;
+}
+
+@media only screen and (max-width: 766px) {
+    .container-height {
+        /* Full height */
+        height: 100%;
+    }
+    .detail-scrolllist {
+        height: 100%;
+    }
+
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */

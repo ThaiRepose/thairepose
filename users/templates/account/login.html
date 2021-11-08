@@ -5,40 +5,18 @@
 {% load account socialaccount %}
 
 {% block header %}
-    <title>ThaiRepose</title>
-    <style>
-        body {
-            background-image: url("{% static 'images/bg.jpg' %}");
-            background-repeat: no-repeat;
-            background-position: center cover;
-            background-size: 100% 100%;
-        }
-    </style>
+<title>ThaiRepose</title>
+<style>
+  body {
+    background-image: url("{% static 'images/bg.jpg' %}");
+    background-repeat: no-repeat;
+    background-position: center cover;
+    background-size: 100% 100%;
+  }
+</style>
 {% endblock %}
 
 {% block main_content %}
-{% if messages %}
-<div>
-  <strong>Messages:</strong>
-  <ul>
-    {% for message in messages %}
-    <script>alert("login");</script>
-    {% endfor %}
-  </ul>
-</div>
-{% endif %}
-{% if socialaccount_providers %}
-<script>alert("Please Sign in");</script>
-<div class="socialaccount_ballot">
-  <ul class="socialaccount_providers">
-    {% include "socialaccount/snippets/provider_list.html" with process="login" %}
-  </ul>
-</div>
-{% include "socialaccount/snippets/login_extra.html" %}
-{% else %}
-<script>alert("If you have not created an account yet, then please sign up first.");</script>
-{% endif %}
-
 <form class="login" method="POST" action="{% url 'account_login' %}">
   {% csrf_token %}
   <div class="flex items-center justify-center h-screen w-full bg-cover bg-center "
@@ -54,22 +32,46 @@
           <!-- Col -->
           <div class="w-full lg:w-7/12 bg-white p-5 rounded-lg lg:rounded-l-none">
             <div>
-              <span class="flex justify-center px-10 text-2xl rounded-r-lg text-gray-800 font-bold p-4 uppercase ">Welcome</span>
-              <h1 class="flex justify-center font-bold">Login to your account</h1>
+              {% if messages %}
+              <div class="flex justify-center font-bold">
+                <strong>Messages:</strong>
+                <ul>
+                  {% for message in messages %}
+                    <li>{{message}}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% endif %}
+              <span
+                class="flex justify-center px-10 text-2xl rounded-r-lg text-gray-800 font-bold p-4 uppercase ">Welcome</span>
+              <h1 class="flex justify-center font-bold mb-5">Login to your account</h1>
+              {% if socialaccount_providers %}
+              <div class="socialaccount_ballot">
+                <ul class="flex justify-center font-bold">
+                  "Please Sign in"
+                  {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+                </ul>
+              </div>
+              {% endif %}
               <br>
               <div class="flex justify-between mb-5">
-                <label class='ml-4'>usernaem<label>
-                <label class='mr-10'>{{form.login}}</label>
-                <label class='ml-20'>password<label>
-                  {{form.password}}
+                <label class='ml-14'>usernaem<label>
+                    <label class='mr-14'>{{form.login}}</label>
+                    <label class=''>password<label>
+                        {{form.password}}
               </div>
               <div class="flex justify-end text-right mt-2 ">
-                <a href="{% url 'account_reset_password' %}" class="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700">Forgot Password?</a>
+                <a href="{% url 'account_reset_password' %}"
+                  class="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700">Forgot
+                  Password?</a>
               </div>
               <div class="flex justify-end text-right mt-2 ">
-                <a href="{{ signup_url }}" class="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700">Don't have account? Signup</a>
+                <a href="{{ signup_url }}"
+                  class="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700">Don't have
+                  account? Signup</a>
               </div>
-              <button type="submit" class="primaryAction w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 mt-5 border border-gray-300">
+              <button type="submit"
+                class="primaryAction w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 mt-5 border border-gray-300">
                 {% trans "Sign In" %}
               </button>
               <br>
@@ -79,12 +81,28 @@
                 </div>
               </div>
               <hr class="my-6 border-gray-300 w-full">
-              <button type="button" class="w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 border border-gray-300">
+              <button type="button"
+                class="w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 border border-gray-300">
                 <div class="flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="w-6 h-6" viewBox="0 0 48 48"><defs><path id="a" d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z"/></defs><clipPath id="b"><use xlink:href="#a" overflow="visible"/></clipPath><path clip-path="url(#b)" fill="#FBBC05" d="M0 37V11l17 13z"/><path clip-path="url(#b)" fill="#EA4335" d="M0 11l17 13 7-6.1L48 14V0H0z"/><path clip-path="url(#b)" fill="#34A853" d="M0 37l30-23 7.9 1L48 0v48H0z"/><path clip-path="url(#b)" fill="#4285F4" d="M48 48L17 24l-4-3 35-10z"/></svg>
-                <span class="ml-4"><ul class="socialaccount_providers">
-                  {% include "socialaccount/snippets/provider_list.html" with process="login" %}
-                </ul></span>
+                  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="w-6 h-6"
+                    viewBox="0 0 48 48">
+                    <defs>
+                      <path id="a"
+                        d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z" />
+                    </defs>
+                    <clipPath id="b">
+                      <use xlink:href="#a" overflow="visible" />
+                    </clipPath>
+                    <path clip-path="url(#b)" fill="#FBBC05" d="M0 37V11l17 13z" />
+                    <path clip-path="url(#b)" fill="#EA4335" d="M0 11l17 13 7-6.1L48 14V0H0z" />
+                    <path clip-path="url(#b)" fill="#34A853" d="M0 37l30-23 7.9 1L48 0v48H0z" />
+                    <path clip-path="url(#b)" fill="#4285F4" d="M48 48L17 24l-4-3 35-10z" />
+                  </svg>
+                  <span class="ml-4">
+                    <ul class="socialaccount_providers">
+                      {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+                    </ul>
+                  </span>
                 </div>
               </button>
             </div>
@@ -94,5 +112,4 @@
     </div>
   </div>
 </form>
-
 {% endblock %}

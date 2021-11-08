@@ -10,7 +10,8 @@
     <button>!!!Delete!!!</button>
 </form>
     {% else %}
-    <p>You are allow to access.</p>
+    <script>alert('You are allow to access.')</script>
+    <META HTTP-EQUIV="Refresh" CONTENT="0 ; URL={% url 'trip:tripplan' %}">
     {% endif %}
 {% else %}
 <a href="{% url 'account_login' %}">You need to login</a>

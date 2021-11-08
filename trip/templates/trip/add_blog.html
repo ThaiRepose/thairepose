@@ -10,6 +10,7 @@
     </form>
 
 {% else %} 
-<a href="{% url 'account_login' %}">You need to login</a>
+<script>alert('You need to login.')</script>
+<META HTTP-EQUIV="Refresh" CONTENT="0 ; URL={% url 'account_login' %}">
 {% endif %}
 {% endblock %}

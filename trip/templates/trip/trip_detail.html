@@ -1,4 +1,12 @@
 {% extends 'base.html' %}
+{% block header %}
+    <style>
+         p {
+            max-width: 75ch;
+            word-wrap: break-word;
+        }
+    </style>
+{% endblock %}
 
 {% block main_content %}
 <h1>{{ post.title }} </h1>
@@ -6,7 +14,7 @@
 <p>Create at: {{ post.post_date }}</p>
 <P>durations: {{ post.duration }}</P>
 <P>price: {{ post.price }}</P>
-{{ post.body|safe }}
+<p>{{ post.body|safe }}<p>
 <form action="{% url 'trip:list_trip' post.pk %}" method="POST">
     {% csrf_token %}
     <button type="submit" name="trip_id" value="{{ post.id }}">Like</button>

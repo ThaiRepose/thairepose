@@ -30,7 +30,7 @@
         <p>author: {{ post.author }}</p>
         <p>durations: {{ post.duration }}</p>
         <p>price: {{ post.price }}</p>
-        <p>{{ post.body| safe }}</p>
+        <p>{{ post.body| slice:":30" | safe}}</p>
         {% if user.is_authenticated %}
         {%if user.id == post.author.id%}
         <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>

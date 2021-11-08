@@ -7,6 +7,7 @@ from .views import get_details_context
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from .models import Review, TripPlan, CategoryPlan
+from django.db import models
 
 
 class PlaceDetailsViewTest(TestCase):
@@ -116,11 +117,18 @@ class ReviewModelTests(TestCase):
         self.assertEqual(post.total_like, 2)
 
     def test_dont_count_like_by_same_user(self):
+        """Test don't count when same user like."""
         Review.objects.create(post=self.trip, name=self.user, body='review')
         post = get_object_or_404(Review, id='1')
         post.like.add(self.user)
         post.like.add(self.user)
         self.assertEqual(post.total_like, 1)
+
+    def test_delete_post_review_will_delete(self):
+        """Test if post is deleted the all review in deleted post will delete."""
+        Review.objects.create(post=self.trip, name=self.user, body='review')
+        TripPlan.objects.filter(id='1').delete()
+        self.assertEqual(Review.objects.all().count(), 0)
 
     def tearDown(self):
         """Remove all user and all trip plan"""
@@ -171,6 +179,11 @@ class TripModelTests(TestCase):
         post.like.add(self.user)
         post.like.add(self.user)
         self.assertEqual(TripPlan.objects.filter(id='1')[0].total_like(), 1)
+
+    def test_cant_delete_category_when_have_post_in_category(self):
+        with self.assertRaises(models.ProtectedError):
+            CategoryPlan.objects.filter(name='category1').delete()
+        
 
     def tearDown(self):
         """Reset all user, all category and all tripplan"""

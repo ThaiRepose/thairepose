@@ -46,10 +46,10 @@
                                     <a class="text-lg">N/A</a>
                                 {% endif %}
                             </div>
-                            <div class="flex flex-row h-8" style="display: inline;">
+                            <div class="w-4/5 md:w-full h-full">
                                 <p class="text-lg">Website:&nbsp;</p>
                                 {% if website %}
-                                    <a href="{{ website }}" class="text-lg text-indigo-500 underline" target="_blank">{{ website }}</a>
+                                    <a href="{{ website }}" class="text-lg text-indigo-500 underline" target="_blank"><span class="limit-text">{{ website }}</span></a>
                                 {% else %}
                                     <a class="text-lg">N/A</a>
                                 {% endif %}
@@ -69,11 +69,11 @@
                 </div>
                 <div class="w-full md:w-2/5">
                     <h1 class="text-2xl font-bold mt-6 ml-10">REVIEWS</h1>
-                    <div class="overflow-y-scroll px-10 h-5/6 py-2" style="height: 28rem;">
+                    <div class="overflow-y-scroll hide-scrollbar px-10 py-2" style="height: 28rem">
                     {% for review in reviews %}
-                        <div class="rounded-2xl bg-translucent h-28 flex flex-row my-2 js-show-on-scroll">
-                            <div class="overflow-y-auto px-6 w-4/5">
-                                <h1 class="pt-3 text-lg font-bold">{{ review.author }}</h1>
+                        <div class="rounded-2xl bg-translucent flex flex-row my-2 transition duration-75 js-show-on-scroll">
+                            <div class="px-6 py-4 w-4/5">
+                                <h1 class="text-lg font-bold">{{ review.author }}</h1>
                                 <p class="text-sm">{{ review.text }}</p>
                             </div>
                             <div class="flex flex-grow">
@@ -90,15 +90,15 @@
                 </div>
                 <div class="w-full md:w-1/5">
                     <h1 class="text-xl font-bold mt-6 md:mt-2 md:my-6 ml-6">SUGGESTIONS</h1>
-                    <div class="overflow-y-scroll px-1" style="height: 28rem;">
+                    <div class="overflow-y-scroll hide-scrollbar px-1 h-full" style="height: 28rem;">
                         {% for place in suggestions %}
-                            <div class="overflow-y-scroll px-2 py-2 flex justify-center hover:scale-110 transition duration-300 js-show-on-scroll">
+                            <div class="px-2 py-2 flex justify-center hover:scale-110 transition duration-75 js-show-on-scroll">
                                 <a class="rounded-2xl h-52 w-44 bg-translucent px-2 py-2 flex flex-col bg-gray-900" href="{% url 'trip:place' place.place_id %}">
                                     <div class="rounded-2xl bg-gray-300 w-40 h-40">
                                         <img class="object-cover h-full w-full rounded-xl" src="{{ place.photo }}">
                                     </div>
-                                    <div class="overflow-y-scroll flex justify-center">
-                                        <h1 class="font-bold">{{ place.name }}</h1>
+                                    <div class="flex justify-center items-center">
+                                        <h1 class="font-bold text-center">{{ place.name }}</h1>
                                     </div>
                                 </a>
                             </div>

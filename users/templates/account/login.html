@@ -1,83 +1,93 @@
 {% extends "base.html" %}
 {% load static %}
-{% load static tailwind_tags %}
 {% load i18n %}
+{% load account %}
 {% load account socialaccount %}
+{% load widget_tweaks %}
+{% load static tailwind_tags %}
+
 
 {% block header %}
-<title>ThaiRepose</title>
-<style>
-  body {
-    background-image: url("{% static 'images/bg.jpg' %}");
-    background-repeat: no-repeat;
-    background-position: center cover;
-    background-size: 100% 100%;
-  }
-</style>
+  <title>ThaiRepose::{{ name }}</title>
+    <style>
+        body {
+            background: url("{% static '/images/bg-blur.jpg' %}") no-repeat fixed;
+            background-size: cover;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}" />
+    <link rel="stylesheet" href="https://npmcdn.com/flickity@2/dist/flickity.css" />
 {% endblock %}
 
 {% block main_content %}
-<form class="login" method="POST" action="{% url 'account_login' %}">
-  {% csrf_token %}
-  <div class="flex items-center justify-center h-screen w-full bg-cover bg-center "
-    style="background-image: url('https://cdn.discordapp.com/attachments/901501438067351656/901501516660219914/webb-07.png')">
-    <div class="container mx-auto">
-      <div class="flex justify-center px-6 my-12">
-        <!-- Row -->
-        <div class="w-full lg:w-3/4 lg:w-11/12 flex">
-          <!-- Col -->
-          <div class="w-full h-auto bg-yellow-700 lg:block lg:w-5/12 bg-cover bg-center rounded-l-lg "
-            style="background-image: url('https://cdn.discordapp.com/attachments/901501438067351656/901502756718784512/webb-05.png')">
-          </div>
-          <!-- Col -->
-          <div class="w-full lg:w-7/12 bg-white p-5 rounded-lg lg:rounded-l-none">
-            <div>
-              {% if messages %}
-              <div class="flex justify-center font-bold">
-                <strong>Messages:</strong>
-                <ul>
-                  {% for message in messages %}
-                    <li>{{message}}</li>
+<div id="content" class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10 mb-20">
+<!-- Container -->
+		<div class="container mx-auto">
+			<div class="flex justify-center px-6 my-12">
+				<!-- Row -->
+				<div class="w-full xl:w-3/4 lg:w-11/12 flex bg-white bg-cover rounded-lg">
+					<!-- Col -->
+					<div
+						class="w-full h-auto bg-gray-400 hidden lg:block lg:w-5/12 bg-cover rounded-l-lg"
+						style="background-image: url('{% static '/template-picture/beach_picture.jpg'%}')"
+					>
+                        <image class="w-2/6 mx-auto" src="{% static '/template-picture/tr-logo.png'%}">
+                    </div>
+					<!-- Col -->
+					<div class="w-full lg:w-7/12 p-5">
+						<h3 class="pt-4 text-3xl text-center">Login</h3>
+						<form class="login px-8 pt-6 pb-8 mb-4 rounded" method="Post" action="{% url 'account_login' %}">
+              {% csrf_token %}
+              <div>
+                {{form.login.label}}</br>{% render_field form.login class="input rounded-md" style="width:100%;"%}
+              </div>
+							<div class="mt-4">
+                {{form.password.label}}</br>{% render_field form.password class="input rounded-md" style="width:100%;"%}
+              </div>
+							<div class="mb-6 text-center">
+								<button
+									class="w-full mt-4 px-4 py-2 font-bold text-white bg-black rounded-full hover:bg-black focus:outline-none focus:shadow-outline"
+									type="submit"
+								>
+									Login
+								</button>
+							</div>
+              {% if form.errors %}
+                {% for field in form %}
+                  {% for error in field.error_messages %}
+                    <div class="flex justify-between text-sm px-4 py-2 mt-2 text-red-700 bg-red-100 rounded-lg">
+                      <p class="self-center">
+                        {{ error }}
+                      </p>
+                      <strong class="text-xl align-center cursor-pointer alert-del">&times;</strong>
+                    </div>
                   {% endfor %}
-                </ul>
-              </div>
+                {% endfor %}
+              {% for error in form.non_field_errors %}
+                <div class="flex justify-between text-sm px-4 py-2 mt-2 text-red-700 bg-red-100 rounded-lg">
+                      <p class="self-center">
+                        {{ error }}
+                      </p>
+                      <strong class="text-xl align-center cursor-pointer alert-del">&times;</strong>
+                    </div>
+              {% endfor %}
               {% endif %}
-              <span
-                class="flex justify-center px-10 text-2xl rounded-r-lg text-gray-800 font-bold p-4 uppercase ">Welcome</span>
-              <h1 class="flex justify-center font-bold mb-5">Login to your account</h1>
-              {% if socialaccount_providers %}
-              <div class="socialaccount_ballot">
-                <ul class="flex justify-center font-bold">
-                  "Please Sign in"
-                  {% include "socialaccount/snippets/provider_list.html" with process="login" %}
-                </ul>
-              </div>
-              {% endif %}
-              <br>
-              <div class="flex justify-between mb-5">
-                <label class='ml-14'>usernaem<label>
-                    <label class='mr-14'>{{form.login}}</label>
-                    <label class=''>password<label>
-                        {{form.password}}
-              </div>
-              <div class="flex justify-end text-right mt-2 ">
-                <a href="{% url 'account_reset_password' %}"
-                  class="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700">Forgot
-                  Password?</a>
-              </div>
-              <div class="flex justify-end text-right mt-2 ">
-                <a href="{{ signup_url }}"
-                  class="text-sm font-semibold text-gray-700 hover:text-blue-700 focus:text-blue-700">Don't have
-                  account? Signup</a>
-              </div>
-              <button type="submit"
-                class="primaryAction w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 mt-5 border border-gray-300">
-                {% trans "Sign In" %}
-              </button>
-              <br>
-              <div class="">
-                <div class="text-gray-500 text-lg text-center mb-3 font-bold">
-                  <p>Or</p>
+              <div class="flex justify-between mt-4">
+                <div>
+                  <a
+                    class="text-sm text-blue-500 align-baseline hover:text-blue-800"
+                    href="{% url 'account_signup' %}"
+                  >
+                    Sign up with email
+                  </a>
+                </div>
+                <div>
+                  <a
+                    class="text-sm text-blue-500 align-baseline hover:text-blue-800"
+                    href="{% url 'account_reset_password' %}"
+                  >
+                    Forgot Password?
+                  </a>
                 </div>
               </div>
               <hr class="my-6 border-gray-300 w-full">
@@ -105,11 +115,18 @@
                   </span>
                 </div>
               </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</form>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+</div>
+<script>
+  var alert_del = document.querySelectorAll('.alert-del');
+  alert_del.forEach((x) =>
+    x.addEventListener('click', function () {
+      x.parentElement.classList.add('hidden');
+    })
+  );
+</script>
 {% endblock %}

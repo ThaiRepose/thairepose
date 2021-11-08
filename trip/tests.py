@@ -183,7 +183,6 @@ class TripModelTests(TestCase):
     def test_cant_delete_category_when_have_post_in_category(self):
         with self.assertRaises(models.ProtectedError):
             CategoryPlan.objects.filter(name='category1').delete()
-        
 
     def tearDown(self):
         """Reset all user, all category and all tripplan"""

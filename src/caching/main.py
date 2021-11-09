@@ -44,19 +44,17 @@ def run():
             json_decoded = json.load(json_file)
         
         for file in all_cache_file:
-            if 'detailpage' in file:
-                continue
             cache = json.loads(api_caching.get(file[:-6]))['cache']
             for supdata in cache:
-                name = supdata['place_name'].replace(' ', '-').replace("|","").replace(':', "_").replace('"',"").replace('#',"")
-                if f'{name}photo.jpeg' in all_img:
-                    continue
-                
-                if len(supdata['photo_ref']) == 1:
+                name = supdata['place_id']
+                max = len(supdata['photo_ref'])
+                if max == 1 and not f'{name}photo.jpeg' in all_img:
                     write_img_from_gmap_api(f'{name}', supdata['photo_ref'][0])
-                else:
-                    for idx in range(len(supdata['photo_ref'])):
-                        write_img_from_gmap_api(f'{name}{idx}', supdata['photo_ref'][idx])
+                elif not f'{name}x{max}photo.jpeg' in all_img:
+                    for idx in range(max):
+                        if f'{name}x{idx}photo.jpeg' in all_img:
+                            continue                
+                        write_img_from_gmap_api(f'{name}_{idx}', supdata['photo_ref'][idx])
                         
 
 @click.group()

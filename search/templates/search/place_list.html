@@ -24,9 +24,9 @@
 box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
     <!--Card 1-->
     {% for place in places %}
-    <a id="place_box" class="rounded-3xl overflow-hidden shadow-lg bg-gray-300" href="{% url 'trip:place-detail' place.place_id %}">
-    {% if img_downloaded and place.name_img %}
-      <img class="object-cover w-full h-80 rounded-3xl p-2" src="{% static 'images/places_image/' %}{{ place.name_img }}photo.jpeg">
+    <a id="place_box" class="rounded-3xl overflow-hidden shadow-lg bg-gray-300" href="{% url 'trip:place-detail' place.place_id %}"">
+    {% if place.downloaded == True and place.name_img %}
+      <img class="object-cover w-full h-80 rounded-3xl p-2" src="{% static 'images/places_image/' %}{{ place.place_id }}photo.jpeg"> 
     {% elif not img_downloaded and place.photo_ref.0%}
       <img class="object-cover w-full h-80 rounded-3xl p-2" src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={{ place.photo_ref.0 }}&key={{ api_key }}">
     {% else %} 
@@ -74,7 +74,10 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
         function addBoxPlace(place) {
           
           $new = $("#place_box").clone()
-          if (place.photo_ref.length == 1){
+          if (place.downloaded){
+            $new.find('img').attr('src', `{% static '/images/places_image' %}/${place.place_id}photo.jpeg`)
+          }
+          else if (place.photo_ref.length == 1){
             $new.find('img').attr('src', `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${place.photo_ref[0]}&key={{ api_key }}`)
           } else {
             $new.find('img').attr('src', '{% static '/images/img_not_found.jpg' %}')

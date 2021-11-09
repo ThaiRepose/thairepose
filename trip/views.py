@@ -14,6 +14,78 @@ from django.contrib.auth.decorators import login_required
 import pickle
 api_caching = APICaching()
 
+def restruct_detail_context_data(context):
+    """Process data for frontend
+
+    Args:
+        places: A place nearby data from google map api.
+
+    Returns:
+        context: A place data that place-list page needed.
+            
+
+    Data struct:
+    [   # main place data
+        {   
+            # Essential key
+            'place_name': <name>,
+            'place_id': <place_id>,
+            'photo_ref': [<photo_ref],
+            'type': [],
+            # other...
+        }
+        # sugguestion place data
+        . . .
+    ]
+    """
+    init_data = []
+    main_data = {
+                'place_name': context['place_name'],
+                'place_id': context['place_id'],
+                'photo_ref': [img for img in context['images']],
+                'types': context['types'],
+                'reviews': context['reviews'],
+                'phone': context['phone'],
+                'rating': context['rating'],
+                'blank_rating': context['blank_rating']
+                }
+    if 'website' in context:            
+        main_data["website"] = context['website']
+    init_data.append(main_data)
+    init_data += context['suggestions']
+    return init_data
+
+def resturct_to_place_detail(context):
+    """Convert cache data to place_detail data.
+        {
+            "place_name": <place_name>,
+            "place_id": <place_id>,
+            "types": [..<types>],
+            "phone": <phone_number>,
+            "website": <website>,
+            "rating": <rating>,
+            "blank_rating": <blank_rating>,
+            "images": [],
+            "reviews": [],
+            "suggestions": []
+        }
+    """
+    init_data = {
+                    "place_name": context[0]['place_name'],
+                    "place_id": context[0]['place_id'],
+                    "types": [context[0]['types']],
+                    "rating": context[0]['rating'],
+                    "blank_rating": context[0]['blank_rating'],
+                    "images": [img for img in context[0]['photo_ref']],
+                    "reviews": context[0]['reviews'],
+                    "suggestions": [place for place in context[1:]]
+                }
+    if 'website' in context[0]:            
+        init_data["website"] = context[0]['website']
+    if 'phone' in context[0]:
+        init_data["phone"] = context[0]['phone']
+    return init_data
+    
 
 def get_details_context(place_data: dict, api_key: str) -> dict:
     """Get context for place details page.
@@ -26,11 +98,13 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
         context data needed for place details page.
     """
     context = {}
-    print(place_data)
-    place_id = place_data['result']['place_id']
     if 'result' in place_data.keys():
         if 'name' in place_data['result'].keys():
-            context['name'] = place_data['result']['name']
+            context['place_name'] = place_data['result']['name']
+        if 'place_id' in place_data['result'].keys():
+            context['place_id'] = place_data['result']['place_id']
+        if 'types' in place_data['result'].keys():
+            context['types'] = place_data['result']['types']
         if 'formatted_phone_number' in place_data['result'].keys():
             context['phone'] = place_data['result']['formatted_phone_number']
         if 'website' in place_data['result'].keys():
@@ -77,25 +151,24 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
             print("Called API")
             place_data = json.loads(response.content)
             for place in place_data['results'][1:]:
-                if place['name'] == context['name']:
+                if place['name'] == context['place_name']:
                     continue
                 if 'photos' not in place.keys():
                     continue
                 img_ref = place['photos'][0]['photo_reference']
                 suggestions.append({
-                    'name': place['name'],
-                    'photo': img_ref,
+                    'place_name': place['name'],
+                    'photo_ref': img_ref,
                     'place_id': place['place_id']
                 })
             context['suggestions'] = suggestions
-    api_caching.add(f"{place_id}detailpage", json.dumps(context, indent=3).encode())
-    context['blank_rating'] = range(round(context['blank_rating']))
-    context['rating'] = range(round(context['rating']))
+    # print(json.dumps(context, indent=3))
     context['api_key'] = api_key
     return context
 
+
 def check(context):
-    name = context['name'].replace(" ", "-")
+    name = context['place_name']
     ROOT_DIR = Path(__file__).resolve().parent.parent
     PLACE_IMG_PATH = os.path.join(ROOT_DIR,'theme','static','images','places_image')
     all_img = [f for f in os.listdir(PLACE_IMG_PATH) if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
@@ -168,27 +241,29 @@ def place_info(request, place_id: str):
     Returns:
         HttpRequest: Return 200 if place_id is correct, and return 404 if invalid.
     """
+    load_dotenv()
+    api_key = os.getenv('API_KEY')
     if api_caching.get(f"{place_id}detailpage"):
-        context = json.loads(api_caching.get(f"{place_id}detailpage"))
-        print(context)
-        context["api_key"] = os.getenv('API_KEY')
-        context['blank_rating'] = range(round(context['blank_rating']))
-        context['rating'] = range(round(context['rating']))
+        cache_data = json.loads(api_caching.get(f"{place_id}detailpage"))['cache']
     else:
-        load_dotenv()
-        api_key = os.getenv('API_KEY')
-        field = "&fields=name%2Cplace_id%2Cformatted_phone_number%2Cphoto%2Cwebsite%2Crating%2Creviews%2Cgeometry/location"
-        url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}{field}&key={api_key}"
+        url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={api_key}"
         response = requests.get(url)
         data = json.loads(response.content)
         if data['status'] != "OK":
             return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
-        context = get_details_context(data, os.getenv('API_KEY'))
+        context = get_details_context(data, api_key)
+        cache_data = restruct_detail_context_data(context)
+        api_caching.add(f"{place_id}detailpage", json.dumps({'cache':cache_data}, indent=3).encode())
+    
+    context = resturct_to_place_detail(cache_data)
+    context['blank_rating'] = range(round(context['blank_rating']))
+    context['rating'] = range(round(context['rating']))
     check_image(context)
+    context['api_key'] = api_key
     return render(request, "trip/place_details.html", context)
 
 def check_image(context):
     context['downloaded'] = check(context)
     if context['downloaded']:
-        context["img_name"] = context['name'].replace(" ", "-")
+        context["img_name"] = context['place_name'].replace(" ", "-")
         context["images"] = list(range(len(context["images"])))

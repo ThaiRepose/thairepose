@@ -1,12 +1,15 @@
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from dotenv import load_dotenv
 import os
 import unittest
 from .views import get_details_context
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
+from .models import Review, TripPlan, CategoryPlan
+from django.db import models
 
 
-# Create your tests here.
 class PlaceDetailsViewTest(TestCase):
     """Test for place details page."""
 
@@ -55,7 +58,8 @@ class PlaceDetailsViewTest(TestCase):
     def test_view_one_place(self):
         """Test viewing Kasetsart University (place_id = ChIJVysBBt6c4jARcDELPbMAAQ8)
         because there are completely informations."""
-        response = self.client.get(reverse('trip:place', args=['ChIJVysBBt6c4jARcDELPbMAAQ8']))
+        response = self.client.get(
+            reverse('trip:place', args=['ChIJVysBBt6c4jARcDELPbMAAQ8']))
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.context['images'], list)
         self.assertIsInstance(response.context['suggestions'], list)
@@ -74,3 +78,115 @@ class IndexViewTest(TestCase):
         """Test response for directing index page."""
         response = self.client.get(reverse('trip:index'))
         self.assertEqual(response.status_code, 200)
+
+
+class ReviewModelTests(TestCase):
+    """Test Review Model"""
+
+    def setUp(self):
+        """Set up trip plan for create review"""
+        self.request = RequestFactory()
+        self.cat = CategoryPlan.objects.create(name='category1')
+        self.user = User.objects.create(username='tester', password='tester')
+        self.trip = TripPlan.objects.create(
+            title='test', body='create_trip', author=self.user, duration=1, price=1, category=self.cat)
+
+    def test_create_review(self):
+        """Test create new review."""
+        Review.objects.create(post=self.trip, name=self.user, body='review')
+        self.assertEqual(Review.objects.count(), 1)
+        Review.objects.create(post=self.trip, name=self.user, body='review')
+        self.assertEqual(Review.objects.count(), 2)
+        Review.objects.filter(id='1').delete()
+        self.assertEqual(Review.objects.count(), 1)
+
+    def test_like_one_user(self):
+        """Test like comment."""
+        Review.objects.create(post=self.trip, name=self.user, body='review')
+        post = get_object_or_404(Review, id='1')
+        post.like.add(self.user)
+        self.assertEqual(post.total_like, 1)
+
+    def test_like_more_than_one_user(self):
+        """Test When like with different user."""
+        Review.objects.create(post=self.trip, name=self.user, body='review')
+        post = get_object_or_404(Review, id='1')
+        post.like.add(self.user)
+        user2 = User.objects.create(username='tester2', password='tester2')
+        post.like.add(user2)
+        self.assertEqual(post.total_like, 2)
+
+    def test_dont_count_like_by_same_user(self):
+        """Test don't count when same user like."""
+        Review.objects.create(post=self.trip, name=self.user, body='review')
+        post = get_object_or_404(Review, id='1')
+        post.like.add(self.user)
+        post.like.add(self.user)
+        self.assertEqual(post.total_like, 1)
+
+    def test_delete_post_review_will_delete(self):
+        """Test if post is deleted the all review in deleted post will delete."""
+        Review.objects.create(post=self.trip, name=self.user, body='review')
+        TripPlan.objects.filter(id='1').delete()
+        self.assertEqual(Review.objects.all().count(), 0)
+
+    def tearDown(self):
+        """Remove all user and all trip plan"""
+        User.objects.all().delete()
+        TripPlan.objects.all().delete()
+
+
+class TripModelTests(TestCase):
+    """Test for TripPlan functions."""
+
+    def setUp(self):
+        """Set up trip, user and category."""
+        self.cat = CategoryPlan.objects.create(name='category1')
+        self.user = User.objects.create(username='tester', password='tester')
+        self.trip = TripPlan.objects.create(
+            title='test', body='create_trip', author=self.user, duration=1, price=1, category=self.cat)
+        return super().setUp()
+
+    def test_create_post_in_category(self):
+        """Test create post that have category."""
+        self.assertEqual(TripPlan.objects.filter(
+            category=self.cat)[0].category.name, 'category1')
+
+    def test_have_more_than_one_post_in_same_category(self):
+        """Test have more than one post that have same category."""
+        TripPlan.objects.create(
+            title='test2', body='create_trip2', author=self.user, duration=1, price=1, category=self.cat)
+        self.assertEqual(TripPlan.objects.filter(category=self.cat).count(), 2)
+
+    def test_like_post(self):
+        """Test like post."""
+        post = get_object_or_404(TripPlan, id='1')
+        post.like.add(self.user)
+        self.assertEqual(TripPlan.objects.filter(id='1')[0].total_like(), 1)
+
+    def test_like_more_than_one_user(self):
+        """Test have more than one user like same post."""
+        self.user2 = self.user = User.objects.create(
+            username='tester2', password='tester2')
+        post = get_object_or_404(TripPlan, id='1')
+        post.like.add(self.user)
+        post.like.add(self.user2)
+        self.assertEqual(TripPlan.objects.filter(id='1')[0].total_like(), 1)
+
+    def test_dont_count_like_by_same_user(self):
+        """Test post like not count user like if same user."""
+        post = get_object_or_404(TripPlan, id='1')
+        post.like.add(self.user)
+        post.like.add(self.user)
+        self.assertEqual(TripPlan.objects.filter(id='1')[0].total_like(), 1)
+
+    def test_cant_delete_category_when_have_post_in_category(self):
+        with self.assertRaises(models.ProtectedError):
+            CategoryPlan.objects.filter(name='category1').delete()
+
+    def tearDown(self):
+        """Reset all user, all category and all tripplan"""
+        User.objects.all().delete()
+        TripPlan.objects.all().delete()
+        CategoryPlan.objects.all().delete()
+        return super().tearDown()

@@ -1,9 +1,14 @@
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, HttpResponseRedirect
 import json
 import os
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 import requests
 from dotenv import load_dotenv
+from django.urls import reverse, reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from .models import TripPlan, Review, CategoryPlan
+from .forms import TripPlanForm
+from django.contrib.auth.decorators import login_required
 
 
 def get_details_context(place_data: dict, api_key: str) -> dict:
@@ -25,8 +30,10 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
         if 'website' in place_data['result'].keys():
             context['website'] = place_data['result']['website']
         if 'rating' in place_data['result'].keys():
-            context['rating'] = range(round(int(place_data['result']['rating'])))
-            context['blank_rating'] = range(5 - round(int(place_data['result']['rating'])))
+            context['rating'] = range(
+                round(int(place_data['result']['rating'])))
+            context['blank_rating'] = range(
+                5 - round(int(place_data['result']['rating'])))
         if 'photos' in place_data['result'].keys():
             images = []
             current_photo = 0
@@ -76,10 +83,161 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
     return context
 
 
-# Create your views here.
 def index(request):
     """Render Index page."""
     return render(request, "trip/index.html")
+
+
+class AllTrip(ListView):
+    """Class for link html of show all trip page."""
+
+    model = TripPlan
+    template_name = 'trip/trip_plan.html'
+    context_object_name = 'object'
+    ordering = ['-id']
+
+    def get_queryset(self):
+        """Get variable to use in html.
+
+        Return:
+            content(dict): list of caliable can use in html.
+        """
+        content = {
+            'post': TripPlan.objects.all(),
+            'category': CategoryPlan.objects.all()
+        }
+        return content
+
+
+class TripDetail(DetailView):
+    """Class for link html of detail of each trip."""
+
+    model = TripPlan
+    template_name = 'trip/trip_detail.html'
+    queryset = TripPlan.objects.all()
+    context_object_name = 'post'
+
+    def get_context_data(self, *args, **kwargs):
+        """Get variable to use in html.
+
+        Return:
+            content(dict): list of caliable can use in html.
+        """
+        context = super(TripDetail, self).get_context_data(*args, **kwargs)
+        all_like = get_object_or_404(TripPlan, id=self.kwargs['pk'])
+        total_like = all_like.total_like()
+        context['total_like'] = total_like
+        return context
+
+
+class CatsListView(ListView):
+    """Class for link html of trip in each category."""
+
+    template_name = 'trip/category.html'
+    context_object_name = 'catlist'
+
+    def get_queryset(self):
+        """Get variable to use in html.
+
+        Return:
+            content(dict): list of caliable can use in html.
+        """
+        content = {
+            'cat': self.kwargs['category'],
+            'posts': TripPlan.objects.filter(category__name=self.kwargs['category']),
+            'category': CategoryPlan.objects.all()
+        }
+        return content
+
+
+class AddPost(CreateView):
+    """Class for link html of add trip page."""
+
+    model = TripPlan
+    template_name = "trip/add_blog.html"
+    form_class = TripPlanForm
+
+    def form_valid(self, form):
+        """Auto choose current post for add comment.
+
+        Args:
+            form(form): form of user input in field.
+
+        Returns:
+            Complete form with put username in author.
+        """
+
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+
+class AddReview(CreateView):
+    """Class for link html of add review."""
+
+    model = Review
+    template_name = "trip/add_review.html"
+    fields = ('body',)
+
+    def form_valid(self, form):
+        """Auto choose current post for add comment.
+
+        Args:
+            form(form): form of user input in field.
+
+        Return:
+            form with trip plan post id and name of user who write review.
+        """
+        form.instance.post_id = self.kwargs['pk']
+        form.instance.name = self.request.user
+        return super().form_valid(form)
+
+
+class EditPost(UpdateView):
+    """Class for link html of edit post."""
+
+    model = TripPlan
+    template_name = "trip/update_plan.html"
+    fields = ['title', 'duration', 'price', 'body']
+    context_object_name = 'post'
+
+
+class DeletePost(DeleteView):
+    """Class for link html of delete post."""
+
+    model = TripPlan
+    template_name = "trip/delete_plan.html"
+    context_object_name = 'post'
+    success_url = reverse_lazy('trip:tripplan')
+
+
+@login_required
+def like_view(request, pk):
+    """Methid for store user like of each commend.
+
+    Args:
+        pk(str): review id of link located.
+
+    Return:
+        HttpResponse: Redirect to page that link review located.
+    """
+    post = get_object_or_404(Review, id=request.POST.get('commend_id'))
+    post.like.add(request.user)
+    return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
+
+
+@login_required
+def like_post(request, pk):
+    """Methid for store user like of each trip.
+
+    Args:
+        pk(str): blog id of link located.
+
+    Return:
+        HttpResponse: Redirect to page that link blog located.
+    """
+    post = get_object_or_404(TripPlan, id=request.POST.get('trip_id'))
+    post.like.add(request.user)
+    return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
 
 
 def place_info(request, place_id: str):

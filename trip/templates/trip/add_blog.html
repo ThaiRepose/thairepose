@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block main_content %}
+{% if user.is_authenticated %}
+<h1>Add post</h1>
+    <form method="POST">
+        {% csrf_token %}.
+        {{ form.media }}
+        {{ form.as_p }}
+        <button>Post</button>
+    </form>
+
+{% else %} 
+<script>alert('You need to login.')</script>
+<META HTTP-EQUIV="Refresh" CONTENT="0 ; URL={% url 'account_login' %}">
+{% endif %}
+{% endblock %}

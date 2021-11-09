@@ -10,6 +10,7 @@ coverage==6.0.2
 Django==3.2.8
 django-allauth==0.45.0
 django-tailwind==2.2.1
+django-ckeditor==6.1.0
 django-widget-tweaks==1.4.9
 flake8==4.0.1
 idna==3.2

@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 from pathlib import Path
 import os
 import json
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'users',
+    'ckeditor',
     'trip',
     'tailwind',
     'theme',
@@ -50,7 +52,6 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    'ckeditor'
 ]
 
 # Config for Tailwind CSS

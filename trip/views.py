@@ -1,7 +1,7 @@
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 import json
 import os
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 import requests
 from dotenv import load_dotenv
 from django.urls import reverse, reverse_lazy
@@ -201,13 +201,23 @@ class EditPost(UpdateView):
     context_object_name = 'post'
 
 
-class DeletePost(DeleteView):
-    """Class for link html of delete post."""
+# class DeletePost(DeleteView):
+#     """Class for link html of delete post."""
 
-    model = TripPlan
-    template_name = "trip/delete_plan.html"
-    context_object_name = 'post'
-    success_url = reverse_lazy('trip:tripplan')
+#     model = TripPlan
+#     template_name = "trip/delete_plan.html"
+#     context_object_name = 'post'
+#     success_url = reverse_lazy('trip:tripplan')
+
+@login_required
+def delete_post(request, pk):
+    post = get_object_or_404(TripPlan, pk=pk)
+    
+    if request.method == 'POST':
+        if request.user.id == post.author.id:
+            post.delete()
+    
+    return redirect(reverse_lazy('trip:tripplan'))
 
 
 @login_required

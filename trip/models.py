@@ -5,7 +5,7 @@ from ckeditor.fields import RichTextField
 
 
 class CategoryPlan(models.Model):
-    """Extended user model class that use for Category of Trip plan.
+    """Class for store Category of Trip plan.
 
     Attributes:
         name(str): category of trip

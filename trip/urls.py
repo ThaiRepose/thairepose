@@ -10,6 +10,7 @@ urlpatterns = [
     path('tripdetail/<int:pk>/addreview/', views.AddReview.as_view(), name="addreview"),
     path('like/<int:pk>/', views.like_view, name="list_commend"),
     # 127.0.0.1/domnfoironkwe_0394
-    path('place/<str:place_id>/', views.place_info, name='place')
-
+    path('place/<str:place_id>/', views.place_info, name='place'),
+    # 127.0.0.1/planner
+    path('planner/', views.trip_planner, name='planner')
 ]

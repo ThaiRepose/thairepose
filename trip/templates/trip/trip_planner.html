@@ -1,10 +1,253 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static tailwind_tags %}
+
+{% block header %}
+    <title>Trip Planner | ThaiRepose</title>
+    <style>
+        body {
+            background: url("{% static 'images/bg-blur.jpg' %}") no-repeat fixed;
+            background-size: cover;
+        }
+    </style>
+    <style>
+        input[type='number']::-webkit-inner-spin-button,
+        input[type='number']::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .custom-number-input input:focus {
+            outline: none !important;
+        }
+
+        .custom-number-input button:focus {
+            outline: none !important;
+        }
+    </style>
+    <style>
+        .table {
+            border-spacing: 0 11px;
+        }
+
+        i {
+            font-size: 1rem !important;
+        }
+    </style>
+    <style>
+        .material-icons.md-18 {
+            font-size: 18px;
+        }
+
+        .material-icons.md-24 {
+            font-size: 24px;
+        }
+
+        .material-icons.md-36 {
+            font-size: 36px;
+        }
+
+        .material-icons.md-48 {
+            font-size: 48px;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}"/>
+{% endblock %}
+
+{% block main_content %}
+    <div class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10">
+        <div class="w-full h-full rounded-3xl container-lg flex flex-col">
+            <div id="place_name" class="mx-8 my-6">
+                <h1 class="text-3xl font-bold" style="line-height: 1.6;">Trip planner</h1>
+            </div>
+            <!-- Days button -->
+            <div class="flex flex-row items-center custom-number-input h-10 mx-8">
+                <label for="custom-input-number" class="w-36 mr-4 text-gray-700 text-sm font-semibold">Day(s) for this
+                    trip (maximum 10)</label>
+                <div class="flex flex-row h-10 w-36 rounded-lg relative bg-transparent mt-1">
+                    <button data-action="decrement"
+                            class=" bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-l cursor-pointer outline-none">
+                        <span class="m-auto text-2xl font-thin">−</span>
+                    </button>
+                    <input readonly type="number"
+                           id="days-selector"
+                           class="outline-none border-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-basecursor-default flex items-center text-gray-700"
+                           name="custom-input-number" value="1">
+                    <button data-action="increment"
+                            class="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-r cursor-pointer">
+                        <span class="m-auto text-2xl font-thin">+</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Trip day row -->
+            <div id="trip-days">
+
+                <!-- Day number -->
+                <div id="day-title" class="mt-6 mx-8">
+                    <h1 class="text-2xl">Day 1</h1>
+                </div>
+
+                <!-- Places list table -->
+                <div id="day-table" class="overflow-auto lg:overflow-visible mx-8 w-full md:w-3/5">
+                    <table class="table w-full text-gray-400 border-separate space-y-6 text-sm">
+                        <thead class="bg-translucent text-gray-700 rounded-lg">
+                        <tr class="shadow-lg">
+                            <th class="py-3 text-center">Arrival</th>
+                            <th class="py-3 text-center">Place</th>
+                            <th class="py-3 text-center">Departure</th>
+                            <th class="py-3 text-center">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody class="text-gray-700">
+                        <tr class="">
+                            <td id="arrival-1" class="p-3 text-center"></td>
+                            <td class="p-3">
+                                <div class="flex align-items-center">
+                                    <img class="rounded-full h-12 w-12 object-cover"
+                                         src="https://images.unsplash.com/photo-1613588718956-c2e80305bf61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=634&q=80"
+                                         alt="unsplash image">
+                                    <div class="ml-3">
+                                        <div class="">Apple</div>
+                                        <div class="text-gray-500">mail@rgmail.com</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-3 text-center">
+                                <input class="rounded-lg bg-translucent rounded-lg shadow-xl border-gray-200" type="time" id="time" name="appt" value="01:00" required>
+                            </td>
+                            <td class="p-3 text-center">
+                                <button class="text-gray-700 hover:text-gray-100 mr-2 focus:outline-none">
+                                    <span class="material-icons material-icons-outlined md-18">north</span>
+                                </button>
+                                <button class="text-gray-700 hover:text-gray-100 mx-2 focus:outline-none">
+                                    <span class="material-icons material-icons-outlined md-18">south</span>
+                                </button>
+                                <button class="text-gray-700 hover:text-gray-100 mx-2 focus:outline-none">
+                                    <span class="material-icons material-icons-outlined md-18">delete_outline</span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td id="arrival-2" class="p-3 text-center">Time</td>
+                            <td class="p-3">
+                                <div class="flex align-items-center">
+                                    <img class="rounded-full h-12 w-12 object-cover"
+                                         src="https://images.unsplash.com/photo-1423784346385-c1d4dac9893a?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
+                                         alt="unsplash image">
+                                    <div class="ml-3">
+                                        <div class="">Realme</div>
+                                        <div class="text-gray-500">mail@rgmail.com</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-3 text-center">
+                                <input class="rounded-lg bg-translucent rounded-lg shadow-xl border-gray-200" type="time" id="time" name="appt" value="01:00" required>
+                            </td>
+                            <td class="p-3 text-center">
+                                <button class="text-gray-700 hover:text-black mr-2 focus:outline-none">
+                                    <span class="material-icons material-icons-outlined md-18">north</span>
+                                </button>
+                                <button class="text-gray-700 hover:text-black mx-2 focus:outline-none">
+                                    <span class="material-icons material-icons-outlined md-18">south</span>
+                                </button>
+                                <button class="text-gray-700 hover:text-black mx-2 focus:outline-none">
+                                    <span class="material-icons material-icons-outlined md-18">delete_outline</span>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <!-- Script for days button -->
+    <script>
+        function decrement(e) {
+            const btn = e.target.parentNode.parentElement.querySelector(
+                'button[data-action="decrement"]'
+            );
+            const target = btn.nextElementSibling;
+            let value = Number(target.value);
+            if (value > 1)
+                value--;
+            target.value = value;
+        }
+
+        function increment(e) {
+            const btn = e.target.parentNode.parentElement.querySelector(
+                'button[data-action="decrement"]'
+            );
+            const target = btn.nextElementSibling;
+            let value = Number(target.value);
+            if (value < 10)
+                value++;
+            target.value = value;
+        }
+
+        const decrementButtons = document.querySelectorAll(
+            `button[data-action="decrement"]`
+        );
+
+        const incrementButtons = document.querySelectorAll(
+            `button[data-action="increment"]`
+        );
+
+        decrementButtons.forEach(btn => {
+            btn.addEventListener("click", decrement);
+        });
+
+        incrementButtons.forEach(btn => {
+            btn.addEventListener("click", increment);
+        });
+
+        document.getElementById('days-selector').addEventListener('change', function () {
+            if (this.value < 1)
+                this.value = 1
+            else if (this.value > 10)
+                this.value = 10
+
+        });
+    </script>
+    <!-- Script for table -->
+    <script>
+        function getLastRow() {
+            let amount = $('[id="day-title"]');
+            return amount.length;
+        }
+        function tableCreate() {
+            let body = document.getElementById('trip-days'),
+                title_div = document.createElement('div'),
+                title_text = document.createElement('h1');
+            title_div.id = "day-title";
+            title_div.classList.add("mt-6", "mx-8");
+            title_text.classList.add("text-2xl");
+            title_text.textContent = "Day";
+
+            body.appendChild(title_div);
+            title_div.appendChild(title_text);
+            body = document.getElementById('trip-days'),
+                table_div = document.createElement('div'),
+                tbl = document.createElement('table');
+            table_div.id = "day-table";
+            table_div.classList.add("overflow-auto", "lg:overflow-visible", "mx-8", "w-3/5");
+            tbl.classList.add("table", "w-full", "text-gray-400", "border-separate", "space-y-6", "text-sm");
+            const head = tbl.createTHead();
+            const tr = head.insertRow();
+            head.classList.add("bg-translucent", "text-gray-700", "shadow-lg");
+            tr.insertCell().outerHTML = "<th class='py-3 text-center'>Arrival</th>";
+            tr.insertCell().outerHTML = "<th class='py-3 text-center'>Place</th>";
+            tr.insertCell().outerHTML = "<th class='py-3 text-center'>Departure</th>";
+            tr.insertCell().outerHTML = "<th class='py-3 text-center'>Action</th>";
+            body.appendChild(table_div);
+            table_div.appendChild(tbl);
+        }
+
+        tableCreate();
+        tableCreate();
+        console.log(getLastRow());
+    </script>
+{% endblock %}

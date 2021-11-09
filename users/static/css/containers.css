@@ -1,0 +1,41 @@
+.container-lg {
+    /* Backfround color */
+    background-color: rgba(209, 213, 219, 0.3);
+
+    /* Full height */
+    height: 70%;
+    width: 90%;
+    max-width: 500px;
+
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    /* Shadow */
+    box-shadow: 3px 8px 5px rgb(0 0 0 / 0.3);
+
+    word-wrap:break-word;
+    padding: 30px;
+}
+
+.bg-translucent {
+    /* Backfround color */
+    background-color: rgba(209, 213, 219, 0.35);
+
+    /* Shadow */
+    box-shadow: 2px 5px 10px rgb(0 0 0 / 0.1);
+}
+
+.fade {
+  opacity: 1;
+}
+
+.mt-15 {
+  margin-top: 3.75rem;
+}
+
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }

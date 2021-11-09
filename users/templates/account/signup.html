@@ -1,85 +1,98 @@
 {% extends "base.html" %}
+{% load static %}
 {% load i18n %}
+{% load account %}
+{% load account socialaccount %}
+{% load widget_tweaks %}
+{% load static tailwind_tags %}
 
-{% block head_title %}{% trans "Signup" %}{% endblock %}
+
+{% block header %}
+  <title>ThaiRepose::{{ name }}</title>
+    <style>
+        body {
+            background: url("{% static '/images/bg-blur.jpg' %}") no-repeat fixed;
+            background-size: cover;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}" />
+    <link rel="stylesheet" href="https://npmcdn.com/flickity@2/dist/flickity.css" />
+{% endblock %}
 
 {% block main_content %}
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<body class="font-mono bg-auto bg-center"
-    style="background-image: url('https://cdn.discordapp.com/attachments/901501438067351656/901501516660219914/webb-07.png')">
-    <!-- Container -->
-    <div class="container mx-auto">
-        <div class="flex justify-center px-6 my-12">
-            <!-- Row -->
-            <div class="w-full lg:w-3/4 lg:w-11/12 flex">
-                <!-- Col -->
-                <div class="w-full h-auto bg-yellow-700 lg:block lg:w-5/12 bg-cover bg-center rounded-l-lg"
-                    style="background-image: url('https://cdn.discordapp.com/attachments/901501438067351656/901502756718784512/webb-05.png')">
-                </div>
-                <!-- Col -->
-                <div class="w-full lg:w-7/12 bg-white p-5 rounded-lg lg:rounded-l-none">
-                    <h3 class="pt-4 text-5xl text-center">Create an Account!</h3>
-                    <form class="signup" id="signup_form" class="px-8 pt-6 pb-8 mb-4 bg-white rounded" method="post" action="{% url 'account_signup' %}">
-                        {% csrf_token %}
-                        <div class="mb-8 md:flex md:justify-between">
-                            <div class="mb-4 md:mr-2 md:mb-0 ml-12">
-                                <label class="block mb-2 text-sm font-bold text-gray-700" for="username">
-                                    {{form.username.label}}
-                                </label>
-                                {{form.username}}
+<div id="content" class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10 mb-20">
+<!-- Container -->
+		<div class="container mx-auto">
+			<div class="flex justify-center px-6 my-12">
+				<!-- Row -->
+				<div class="w-full xl:w-3/4 lg:w-11/12 flex bg-white bg-cover rounded-lg">
+					<!-- Col -->
+					<div
+						class="w-full h-auto bg-gray-400 hidden lg:block lg:w-5/12 bg-cover rounded-l-lg"
+						style="background-image: url('{% static '/template-picture/beach_picture.jpg'%}')"
+					>
+                        <image class="w-2/6 mx-auto" src="{% static '/template-picture/tr-logo.png'%}">
+                    </div>
+					<!-- Col -->
+					<div class="w-full lg:w-7/12 p-5">
+						<h3 class="pt-4 text-2xl text-center">Create an Account!</h3>
+						<form class="signup px-8 pt-6 pb-8 mb-4 rounded" id="signup_form" method="post" action="{% url 'account_signup' %}">
+                            {% csrf_token %}
+                            <div>
+                                {{form.username.label}}</br>{% render_field form.username class="input rounded-md" style="width:100%;"%}
                             </div>
-                            <div class="md:ml-2 mr-8">
-                                <label class="block mb-2 text-sm  font-bold text-gray-700" for="email">
-                                    {{form.email.label}}
-                                </label>
-                                {{form.email}}
-                            </div>
-                        </div>
-                        <div class="mb-4 md:flex md:justify-between">
-                            <div class="mb-4 md:mr-2 md:mb-0 ml-12">
-                                <label class="block mb-2 text-sm font-bold text-gray-700" for="password">
-                                    {{form.password1.label}}
-                                </label>
-                                {{form.password1}}
-                            </div>
-                            <div class="md:ml-2 mr-8">
-                                <label class="block mb-2 text-sm font-bold text-gray-700" for="c_password">
-                                    {{form.password2.label}}
-                                </label>
-                                {{form.password2}}
-                            </div>
-                        </div>
-                        <div class="mb-6 text-center">
-                          {% if redirect_field_value %}
-                          <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-                          {% endif %}
-                          <button type="submit"  class="w-full px-4 py-2 font-bold text-white bg-red-900 rounded-full hover:bg-blue-700 focus:outline-none focus:shadow-outline">{% trans "Sign Up" %} &raquo;</button>
-                        </div>
-                        <hr class="mb-6 border-t" />
-                        <div class="text-center">
-                            <a class="inline-block text-sm text-orange-800 align-baseline hover:text-blue-800"
-                              href="{{ login_url }}">
-                                Already have an account? Login!
-                            </a>
-                        </div>
-                        {{form.errors}}
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
+							<div class="mb-4 mt-4">
+								{{form.email.label}}</br>{% render_field form.email class="input rounded-md" style="width:100%;"%}
+							</div>
+							<div class="mb-4 md:flex md:justify-between">
+								<div>
+                                    {{form.password1.label}}</br>{% render_field form.password1 class="input rounded-md" style="width:100%;"%}
+                                </div>
+                                <div class="lg:ml-2 mt-4 md:mt-0">
+                                    {{form.password2.label}}</br>{% render_field form.password2 class="input rounded-md" style="width:100%;"%}
+                                </div>
+							</div>
+							<div class="mb-6 text-center">
+								<button
+									class="w-full px-4 py-2 font-bold text-white bg-black rounded-full hover:bg-black focus:outline-none focus:shadow-outline"
+									type="submit"
+								>
+									Register Account
+								</button>
+							</div>
+                            {% if form.errors %}
+                                {% for field in form %}
+                                    {% for error in field.errors %}
+                                        <div class="flex justify-between text-sm px-4 py-2 mt-2 text-red-700 bg-red-100 rounded-lg">
+                                            <p class="self-center">
+                                            {{ error }}
+                                            </p>
+                                            <strong class="text-xl align-center cursor-pointer alert-del">&times;</strong>
+                                        </div>
+                                    {% endfor %}
+                                {% endfor %}
+                            {% endif %}
+							<hr class="mb-6 border-t" />
+							<div class="text-center mt-2">
+								<a
+									class="inline-block text-sm text-blue-500 align-baseline hover:text-blue-800"
+									href="{% url 'account_login' %}"
+								>
+									Already have an account? Login!
+								</a>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+</div>
+<script>
+  var alert_del = document.querySelectorAll('.alert-del');
+  alert_del.forEach((x) =>
+    x.addEventListener('click', function () {
+      x.parentElement.classList.add('hidden');
+    })
+  );
+</script>
 {% endblock %}

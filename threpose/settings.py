@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'trip',
     'tailwind',
     'theme',
+    'widget_tweaks',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',

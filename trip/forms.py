@@ -12,4 +12,6 @@ class TripPlanForm(forms.ModelForm):
         fields = ('title', 'duration', 'price', 'category', 'body')
         widgets = {
             'category': forms.Select(attrs={'class': 'form-control'}),
+            'duration': forms.NumberInput(attrs={'min': '0'}),
+            'price': forms.NumberInput(attrs={'min': '0'})
         }

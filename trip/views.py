@@ -97,7 +97,11 @@ class AllTrip(ListView):
     ordering = ['-id']
 
     def get_queryset(self):
-        """Get variable to use in html."""
+        """Get variable to use in html.
+
+        Return:
+            content(dict): list of caliable can use in html.
+        """
         content = {
             'post': TripPlan.objects.all(),
             'category': CategoryPlan.objects.all()
@@ -114,6 +118,11 @@ class TripDetail(DetailView):
     context_object_name = 'post'
 
     def get_context_data(self, *args, **kwargs):
+        """Get variable to use in html.
+
+        Return:
+            content(dict): list of caliable can use in html.
+        """
         context = super(TripDetail, self).get_context_data(*args, **kwargs)
         all_like = get_object_or_404(TripPlan, id=self.kwargs['pk'])
         total_like = all_like.total_like()
@@ -128,7 +137,11 @@ class CatsListView(ListView):
     context_object_name = 'catlist'
 
     def get_queryset(self):
-        """Get variable to use in html."""
+        """Get variable to use in html.
+
+        Return:
+            content(dict): list of caliable can use in html.
+        """
         content = {
             'cat': self.kwargs['category'],
             'posts': TripPlan.objects.filter(category__name=self.kwargs['category']),
@@ -145,7 +158,15 @@ class AddPost(CreateView):
     form_class = TripPlanForm
 
     def form_valid(self, form):
-        """Auto choose current post for add comment."""
+        """Auto choose current post for add comment.
+
+        Args:
+            form(form): form of user input in field.
+
+        Returns:
+            Complete form with put username in author.
+        """
+
         form.instance.author = self.request.user
         return super().form_valid(form)
 
@@ -158,7 +179,14 @@ class AddReview(CreateView):
     fields = ('body',)
 
     def form_valid(self, form):
-        """Auto choose current post for add comment."""
+        """Auto choose current post for add comment.
+
+        Args:
+            form(form): form of user input in field.
+
+        Return:
+            form with trip plan post id and name of user who write review.
+        """
         form.instance.post_id = self.kwargs['pk']
         form.instance.name = self.request.user
         return super().form_valid(form)
@@ -184,7 +212,14 @@ class DeletePost(DeleteView):
 
 @login_required
 def like_view(request, pk):
-    """Methid for store user like of each commend."""
+    """Methid for store user like of each commend.
+
+    Args:
+        pk(str): review id of link located.
+
+    Return:
+        HttpResponse: Redirect to page that link review located.
+    """
     post = get_object_or_404(Review, id=request.POST.get('commend_id'))
     post.like.add(request.user)
     return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
@@ -192,7 +227,14 @@ def like_view(request, pk):
 
 @login_required
 def like_post(request, pk):
-    """Methid for store user like of each trip."""
+    """Methid for store user like of each trip.
+
+    Args:
+        pk(str): blog id of link located.
+
+    Return:
+        HttpResponse: Redirect to page that link blog located.
+    """
     post = get_object_or_404(TripPlan, id=request.POST.get('trip_id'))
     post.like.add(request.user)
     return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))

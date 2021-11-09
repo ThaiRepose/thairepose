@@ -87,7 +87,9 @@ def place_list(request, *args, **kwargs):
                 img_downloaded = True
             else:
                 img_downloaded = False
-    return render(request, "search/place_list.html", {'places': context, 'img_downloaded': img_downloaded, 'all_token': token})
+
+    api_key = os.getenv('API_KEY')
+    return render(request, "search/place_list.html", {'places': context, 'img_downloaded': img_downloaded, 'all_token': token, 'api_key': api_key})
 
 
 def get_next_page_from_token(request):

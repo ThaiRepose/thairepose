@@ -29,13 +29,13 @@
                                     {% if downloaded == True %}
                                     <img src="{% static 'images/places_image/' %}{{ img_name }}{{ image }}detailphoto.jpeg">
                                     {% else %}
-                                    <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={{ image }}&key=AIzaSyBxO1khE-LHn5Z5U2SWpA36D4nKqoWzNRg" alt="{{ name }}">
+                                    <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={{ image }}&key={{ api_key }}" alt="{{ name }}">
                                     {% endif %}
                                 </div>
                             {% endfor %}
                             {% else %}
                                 <div class="carousel-cell" style="height: 100%">
-                                    <img src="{% static 'trip/images/img_not_found.jpg' %}" alt="NotFound" />
+                                    <img src="{% static 'images/img_not_found.jpg' %}" alt="NotFound" />
                                 </div>
                         {% endif %}
                     </div>
@@ -99,7 +99,7 @@
                             <div class="overflow-y-scroll px-2 py-2 flex justify-center hover:scale-110 transition duration-300 js-show-on-scroll">
                                 <a class="rounded-2xl h-52 w-44 bg-translucent px-2 py-2 flex flex-col bg-gray-900" href="{% url 'trip:place-detail' place.place_id %}">
                                     <div class="rounded-2xl bg-gray-300 w-40 h-40">
-                                        <img class="object-cover h-full w-full rounded-xl" src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={{ place.photo }}&key=AIzaSyBxO1khE-LHn5Z5U2SWpA36D4nKqoWzNRg" alt="{{ name }}">
+                                        <img class="object-cover h-full w-full rounded-xl" src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={{ place.photo }}&key={{ api_key }}" alt="{{ name }}">
                                     </div>
                                     <div class="overflow-y-scroll flex justify-center">
                                         <h1 class="font-bold">{{ place.name }}</h1>

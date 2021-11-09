@@ -1,7 +1,11 @@
+from django.conf import settings
+
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
+from django.shortcuts import redirect, resolve_url
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from allauth.account.models import EmailAddress
 
 from .models import Profile
 from .utils import upload_profile_pic
@@ -34,20 +38,20 @@ class ProfileAccountAdapter(DefaultAccountAdapter):
             del request.session['user_email']
         request.session['user_email'] = user.email
         return user
+    
 
-    def respond_email_verification_sent(self, request, user):
-        """Show email_verification_sent page with assign user_email variable to request.session.
-
-        Args:
-            user (User): user model
+    def get_signup_redirect_url(self, request):
+        """Redirect to home page if user already verified and
+        redirect to redirect_url if user not verifed
 
         Returns:
-            Httpresponse: redirect to account_email_verification_sent
+            str: url of page that want to redirect
         """
-        if 'user_email' in request.session:
-            del request.session['user_email']
-        request.session['user_email'] = user.email
-        return HttpResponseRedirect(reverse("account_email_verification_sent"))
+        user = EmailAddress.objects.filter(
+                user=request.user)
+        if user[0].verified == True:
+            return resolve_url('/')
+        return resolve_url(settings.ACCOUNT_SIGNUP_REDIRECT_URL)
 
 
 class ProfileSocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -77,5 +81,9 @@ class ProfileSocialAccountAdapter(DefaultSocialAccountAdapter):
                 user.id) + "_profile_picture.jpg")
         except (KeyError, AttributeError):
             pass
+        
+        if 'user_email' in request.session:
+            del request.session['user_email']
+        request.session['user_email'] = 'SocialLogin'
 
         return user

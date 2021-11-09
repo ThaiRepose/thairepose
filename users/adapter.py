@@ -38,18 +38,16 @@ class ProfileAccountAdapter(DefaultAccountAdapter):
             del request.session['user_email']
         request.session['user_email'] = user.email
         return user
-    
 
     def get_signup_redirect_url(self, request):
-        """Redirect to home page if user already verified and
-        redirect to redirect_url if user not verifed
+        """Redirect to home page if user already verified and redirect to redirect_url if user not verifed.
 
         Returns:
             str: url of page that want to redirect
         """
         user = EmailAddress.objects.filter(
-                user=request.user)
-        if user[0].verified == True:
+            user=request.user)
+        if user[0].verified:
             return resolve_url('/')
         return resolve_url(settings.ACCOUNT_SIGNUP_REDIRECT_URL)
 
@@ -81,7 +79,7 @@ class ProfileSocialAccountAdapter(DefaultSocialAccountAdapter):
                 user.id) + "_profile_picture.jpg")
         except (KeyError, AttributeError):
             pass
-        
+
         if 'user_email' in request.session:
             del request.session['user_email']
         request.session['user_email'] = 'SocialLogin'

@@ -12,7 +12,12 @@ def index(request):
     """Render index page."""
     return render(request, "users/index.html")
 
+
 def profile(request):
-    """Render index page."""
+    """Render Profile page.
+    
+    Return:
+        HTTPResponse: link of profile and content.
+    """
     profile = get_object_or_404(Profile, user=request.user)
-    return render(request, "users/profile.html", {'profile':profile})
+    return render(request, "users/profile.html", {'profile': profile})

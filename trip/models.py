@@ -48,7 +48,7 @@ class TripPlan(models.Model):
 
     def get_absolute_url(self):
         """Return redirect to all trip pages."""
-        return reverse("trip:tripdetail", args=(str(self.id)))
+        return reverse("trip:tripdetail", args=((str(self.id),)))
 
     def total_like(self):
         """Return number of count."""
@@ -85,4 +85,4 @@ class Review(models.Model):
 
         When your like comment page will refesh itseft to show all like.
         """
-        return reverse("trip:tripdetail", args=(str(self.post.id)))
+        return reverse("trip:tripdetail", args=((str(self.post.id),)))

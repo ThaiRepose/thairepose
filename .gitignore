@@ -140,6 +140,6 @@ dmypy.json
 ._.DS_Store
 **/._.DS_Store
 
-# User profile
-users/static/profile_pic/*
-!users/static/profile_pic/blank-profile-picture.png
+# Media file
+media/user/profile_picture/*
+!media/user/profile_picture/blank-profile-picture.png

@@ -148,6 +148,7 @@ SOCIALACCOUNT_PROVIDERS = {
 is_travis = 'TRAVIS' in os.environ
 
 # Profile photo directory
+PROFILE_ROOT = '/profile_pic/'
 PROFILE_PIC_LOCATION = os.path.join(BASE_DIR, 'users/static/profile_pic')
 
 # Internationalization

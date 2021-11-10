@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block main_content %}
+    <img src="{{profile.profile_pic.url}}" width="300" height="200">
+    <p>{{profile.user.username}}</p>
+    <p>{{profile.birthday}}</p>
+{% endblock %}

@@ -1,5 +1,5 @@
-from django.shortcuts import render
-
+from django.shortcuts import render, get_object_or_404
+from .models import Profile
 # Create your views here.
 
 
@@ -11,3 +11,8 @@ def home(request):
 def index(request):
     """Render index page."""
     return render(request, "users/index.html")
+
+def profile(request):
+    """Render index page."""
+    profile = get_object_or_404(Profile, user=request.user)
+    return render(request, "users/profile.html", {'profile':profile})

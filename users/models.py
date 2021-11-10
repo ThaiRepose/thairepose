@@ -24,4 +24,4 @@ class Profile(models.Model):
         Returns:
             str: username of model
         """
-        return str(self.user)
+        return str(self.user.username)

@@ -25,11 +25,3 @@ class Profile(models.Model):
             str: username of model
         """
         return str(self.user.username)
-
-    def save(self):
-        super().save()
-        img = Image.open(self.profile_pic)
-        if img.height > 200 and img.width > 300:
-            outpit_size = (200, 300)
-            img.thumbnail(outpit_size)
-            img.save(self.profile_pic.path)

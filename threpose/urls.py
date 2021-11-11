@@ -23,8 +23,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', include('trip.urls', namespace="trip")),
-    path('profile/', views.profile, name='profile')
+    path('profile/', views.profile, name='profile'),
+    path('editprofile/', views.edit_profile, name='editprofile')
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.PROFILE_ROOT, document_root=settings.PROFILE_PIC_LOCATION)
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

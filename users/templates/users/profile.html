@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block main_content %}
     <img src="{{profile.profile_pic.url}}" width="300" height="200">
+    <p>{{user.first_name}}</p>
+    <p>{{user.last_name}}</p>
     <p>{{profile.user.username}}</p>
     <p>{{profile.birthday}}</p>
+    <a href="{% url 'editprofile' %}">---edit---</a>
 {% endblock %}

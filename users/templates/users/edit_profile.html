@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block header %}
+<style>
+    body {
+        background: url("{% static '/images/bg-blur.jpg' %}") no-repeat fixed;
+        background-size: cover;
+    }
+</style>
+{% endblock %}
+
 {% block main_content %}
-<div class="bg-gray-200 min-h-screen pt-2 font-mono my-16">
+<div class="h-70 pt-2 font-mono my-16 bg-white shadow-lg rounded-lg overflow-hidden my-4 mx-auto">
     <div class="container mx-auto">
         <div class="inputs w-full max-w-2xl p-6 mx-auto">
             <h2 class="text-2xl text-gray-900">Account Setting</h2>

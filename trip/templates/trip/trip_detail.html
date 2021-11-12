@@ -39,10 +39,10 @@
                         {% if user.id == post.author.id %}
                             <div class="flex">
                                 <button onclick="document.location='{% url 'trip:editpost' post.pk%}'" class="px-2 py-1 mr-1 bg-gray-400 font-medium text-gray-700 text-sm rounded shadow-md">
-                                    edit
+                                    Edit
                                 </button>
                                 <button id="background-delete-button" class="px-2 py-1 bg-red-600 font-medium text-gray-100 text-sm rounded shadow-md">
-                                    delete
+                                    Delete
                                 </button>
                             </div>
                         {% endif %}
@@ -104,7 +104,7 @@
                                     <p>{{commend.date_added}}</p>
                                 </div>
                                 <div>
-                                    <p class="flex justify-center pt-2 text-xl font-semibold -mb-2">{{ commend.total_like }}</p>
+                                    <p class="flex justify-center pt-2 text-2xl font-semibold -mb-2">{{ commend.total_like }}</p>
                                     <div class="flex flex-grow">
                                         <form action="{% url 'trip:list_commend' post.pk %}" method="POST">
                                             {% csrf_token %}
@@ -114,10 +114,10 @@
                                                 </button>
                                             </div>
                                         </form>
-                                        <div class="pt-12 pr-2 hover:scale-110">
-                                            <span class="text-5xl text-gray-600">&#8681;</span>
+                                            <div class="pt-12 pr-2 hover:scale-110">
+                                                <span class="text-5xl text-gray-600">&#8681;</span>
+                                            </div>
                                         </div>
-                                    </div>
                                         {% comment %} <button type="submit" name="commend_id" value="{{ commend.id }}">Like</button>
                                     - {{ commend.total_like }} {% endcomment %}
                                 </div>
@@ -143,8 +143,8 @@
 </div>
 
 <div id="overlay" class="absolute hidden h-full w-full justify-center items-center" style="background-color: rgba(0,0,0,0.5);">
-    <div class="bg-gray-100 px-4 py-2 rounded-lg">
-        <h3 class="text-xl text-black">Confirm Delete?</h3>
+    <div class="bg-gray-100 px-6 py-4 rounded-lg animate-fade-in-up">
+        <h3 class="text-xl text-black mb-4">Confirm Delete?</h3>
         <div>
             Are you sure to delete this post.</br>Click yes to continue
         </div>
@@ -152,7 +152,7 @@
             <button id="cancel-btn" class="px-3 py-1 rounded bg-gray-300 hover:bg-gray-200">Cancel</button>
             <form action="{% url 'trip:deletepost' post.pk %}" method="post">
             {% csrf_token %}
-                <button class="px-3 py-1 rounded bg-red-800 text-gray-200 hover:bg-red-600" type="submit" value="Delete post">Delete</button>
+                <button class="px-3 py-1 rounded bg-red-700 text-gray-200 hover:bg-red-600" type="submit" value="Delete post">Delete</button>
             </form>
         </div>
     </div>
@@ -167,18 +167,32 @@
         const content = document.querySelector('#main-content')
 
         const toggleModal = () => {
+            overlay.classList.toggle("animate-fadeIn")
             overlay.classList.toggle('hidden')
             overlay.classList.toggle('flex')
             window.scrollTo(0, 0)
+        }
+
+        const ModalVisible = () => {
+            overlay.classList.add("animate-fadeIn")
+            overlay.classList.toggle('hidden')
+            overlay.classList.toggle('flex')
+            window.scrollTo(0, 0)
+        }
+
+        const ModalInvisible = () => {
+            overlay.classList.remove("animate-fadeIn")
+            overlay.classList.toggle('hidden')
+            overlay.classList.toggle('flex')
         }
 
         const toggleOverFlow = () => {
             content.classList.toggle('overflow-hidden')
         }
 
-        delBtn.addEventListener('click', toggleModal)
+        delBtn.addEventListener('click', ModalVisible)
 
-        CancelBtn.addEventListener('click', toggleModal)
+        CancelBtn.addEventListener('click', ModalInvisible)
 
         delBtn.addEventListener('click', toggleOverFlow)
 

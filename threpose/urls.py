@@ -23,7 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', include('trip.urls', namespace="trip")),
-    path('profile/', views.profile, name='profile'),
+    path('profile', views.profile, name='profile'),
     path('editprofile/', views.edit_profile, name='editprofile')
 ]
 

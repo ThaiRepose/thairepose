@@ -1,9 +1,39 @@
 {% extends 'base.html' %}
 {% block main_content %}
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ u_form }}
-    {{ p_form }}
-    <button type="submit">update</button>
-</form>
+<div class="bg-gray-200 min-h-screen pt-2 font-mono my-16">
+    <div class="container mx-auto">
+        <div class="inputs w-full max-w-2xl p-6 mx-auto">
+            <h2 class="text-2xl text-gray-900">Account Setting</h2>
+            <form method="POST" enctype="multipart/form-data" class="mt-6 border-t border-gray-400 pt-4">
+                {% csrf_token %}
+                <div class='flex flex-wrap -mx-3 mb-6'>
+                    <div class="personal w-full border-t border-gray-400 pt-4">
+                        <h2 class="text-2xl text-gray-900">Personal info:</h2>
+                        <div class="flex items-center justify-between mt-4">
+                            <div class='w-full md:w-1/2 px-3 mb-6'>
+                                <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >first name</label>
+                                {{ u_form.first_name}}
+                            </div>
+                            <div class='w-full md:w-1/2 px-3 mb-6'>
+                                <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >last name</label>
+                                {{ u_form.last_name}}
+                            </div>
+                        </div>
+                        <div class='w-full md:w-full px-3 mb-6'>
+                            <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2'>Birthday</label>
+                            {{ p_form.birthday }}
+                        </div>
+                        <div class='w-full md:w-full px-3 mb-6'>
+                            <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >Profile Picture</label>
+                            {{ p_form.profile_pic }}
+                        </div>
+                        <div class="flex justify-end">
+                            <button class="appearance-none bg-gray-200 text-gray-900 px-2 py-1 shadow-sm border border-gray-400 rounded-md mr-3" type="submit">save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

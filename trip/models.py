@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 from ckeditor.fields import RichTextField
+from ckeditor_uploader.fields import RichTextUploadingField
 
 
 class CategoryPlan(models.Model):
@@ -37,7 +38,7 @@ class TripPlan(models.Model):
         User, on_delete=models.CASCADE)
     duration = models.IntegerField(null=True)
     price = models.IntegerField(null=True)
-    body = RichTextField(blank=True, null=True)
+    body = RichTextUploadingField(null=True)
     category = models.ForeignKey(
         CategoryPlan, on_delete=models.PROTECT, blank=True, null=True)
     post_date = models.DateField(auto_now_add=True)

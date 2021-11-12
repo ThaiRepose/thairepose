@@ -25,62 +25,124 @@
 {% endblock %}
 
 {% block main_content %}
-<div id="content" class="flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10 mb-20">
-    <div>
-        <h1>{{ post.title }} </h1>
-    </div>
-    <div>
-        <small> By: {{ post.author }}</small>
-        <p>Create at: {{ post.post_date }}</p>
-        <P>durations: {{ post.duration }}</P>
-        <P>price: {{ post.price }}</P>
-    </div>
-    <div>
-        <p>{{ post.body|safe }}<p>
-        <form action="{% url 'trip:list_trip' post.pk %}" method="POST">
-            {% csrf_token %}
-            <button type="submit" name="trip_id" value="{{ post.id }}">Like</button>
-            - {{ post.total_like }}
-        </form>
-    </div>
-    {% if user.is_authenticated %}
-        {% if user.id == post.author.id %}
-    <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>
-    <a href="{% url 'trip:deletepost' post.pk%}">(!!!DELETE!!!)</a>
-        {% endif %}
-    {% endif %}
-    <a href="{% url 'trip:tripplan' %}">(ALL TRIP)</a>
-    <br/><br>
-    <h2>Review</h2>
-    <br>
-    {% if not post.review.all %}
-        No review Yet
-        <a href="{% url 'trip:addreview' post.pk%}">---Add commend---</a>
-    {% else %}
-        {% for commend in post.review.all %}
-        <strong>{{commend.name}} - {{commend.date_added}} </strong>
-        {{commend.body}}
-        <form action="{% url 'trip:list_commend' post.pk %}" method="POST">
-            {% csrf_token %}
-            <button type="submit" name="commend_id" value="{{ commend.id }}">Like</button>
-            - {{ commend.total_like }}
-        </form>
-        <br>
-        {% endfor %}
-        <a href="{% url 'trip:addreview' post.pk%}">---Add commend---</a>
-    {% endif %}
-    {% if user.is_authenticated %}
-        {% if user.id == post.author.id %}
-            <div>
-                <button id="background-delete-button" class="px-6 py-3 bg-red-600 text-gray-100 rounded shadow">
-                    delete
-                </button>
+<div id="main-content">
+    <div id="content" class="flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10 mb-20">
+        <div class="justify-center items-center rounded-lg lg:w-7/12 mx-auto pb-4" style="background-color: rgba(255,255,255,0.75);">
+            <div class="flex justify-between mx-8 pt-4">
+                <div>
+                    <p class='text-4xl'>{{ post.title }} </p>
+                    <p>Create at: {{ post.post_date }}</p>
+                    <small> By: {{ post.author }}</small>
+                </div>
+                <div>
+                    {% if user.is_authenticated %}
+                        {% if user.id == post.author.id %}
+                            <div class="flex">
+                                <button onclick="document.location='{% url 'trip:editpost' post.pk%}'" class="px-2 py-1 mr-1 bg-gray-400 font-medium text-gray-700 text-sm rounded shadow-md">
+                                    edit
+                                </button>
+                                <button id="background-delete-button" class="px-2 py-1 bg-red-600 font-medium text-gray-100 text-sm rounded shadow-md">
+                                    delete
+                                </button>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
             </div>
-        {% endif %}
-    {% endif %}
+            <div class="2xl:flex mx-4 mt-6 justify-between">
+                <div class="carousel js-flickity 2xl:w-8/12 ml-4 mb-6 js-show-on-scroll bg-black" style="max-height: 30rem;">
+                    {% comment %} {% if images %}
+                        {% for image in images %} {% endcomment %}
+                            <div style="height: 100%">
+                                {% comment %} <img src="{{ image }}" alt="{{ name }}" /> {% endcomment %}
+                                <img src="{% static 'test_pic\france-in-pictures-beautiful-places-to-photograph-eiffel-tower.jpg' %}" alt="{{ name }}" />
+                            </div>
+                        {% comment %} {% endfor %}
+                        {% else %}
+                            <div class="carousel-cell" style="height: 100%">
+                                <img src="{% static 'trip/images/img_not_found.jpg' %}" alt="NotFound" />
+                            </div>
+                        {% endif %} {% endcomment %}
+                </div>
+                {% comment %} Durarion and price {% endcomment %}
+                <div class="2xl:w-4/12 2xl:ml-4">
+                    <div class="px-4 pb-2 h-32">
+                        <p class="text-xl font-bold">Trip information</p>
+                        <P class="font-bold mt-1">Durations: {{ post.duration }}</P>
+                        <P class="font-bold">Price: {{ post.price }}</P>
+                        <form action="{% url 'trip:list_trip' post.pk %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" name="trip_id" class="font-bold" value="{{ post.id }}">Like</button>
+                            <span class="font-bold">: </span class="font-bold"><span>{{ post.total_like }}</span>
+                        </form>
+                    </div>
+                    {% comment %} Writer card {% endcomment %}
+                    <hr class="flex my-3 border-gray-400 w-11/12 mx-auto">
+                    <div class="px-4 py-3 mt-4 bg-white max-h-80">
+                        <p class="text-xl font-bold">Writer information</p>
+                    </div>
+                </div>
+            </div>
+            {% comment %} Lower block {% endcomment %}
+            <div class="mx-4 px-4 py-3 rounded-lg">
+                <p class="text-xl font-bold">Short Description</p>
+                <p>{{ post.body|safe }}<p>
+            </div>
+            <hr class="flex my-6 border-gray-400 w-11/12 mx-auto">
+            <p class="text-xl font-bold mx-8 pb-4 pt-3">Review</p >
+            <div class="mx-4 px-4 rounded-lg overflow-y-scroll js-show-on-scroll no-scrollbar" style="max-height:50rem">           
+                    <br>
+                    {% if not post.review.all %}
+                        No review Yet</br>
+                        <a href="{% url 'trip:addreview' post.pk%}">---Add commend---</a>
+                    {% else %}
+                    {% for commend in post.review.all %}
+                        <div class="bg-translucent rounded-lg mb-8 px-4 py-2 js-show-on-scroll">
+                            <div class="flex justify-between">
+                                <div>
+                                    <strong>{{commend.name}}</strong>
+                                    <p>{{commend.date_added}}</p>
+                                </div>
+                                <div>
+                                    <p class="flex justify-center pt-2 text-xl font-semibold -mb-2">{{ commend.total_like }}</p>
+                                    <div class="flex flex-grow">
+                                        <form action="{% url 'trip:list_commend' post.pk %}" method="POST">
+                                            {% csrf_token %}
+                                            <div class="pt-6 hover:scale-110">
+                                                <button type="submit" name="commend_id" value="{{ commend.id }}">
+                                                    <span class="text-5xl text-gray-600">&#8679;</span>
+                                                </button>
+                                            </div>
+                                        </form>
+                                        <div class="pt-12 pr-2 hover:scale-110">
+                                            <span class="text-5xl text-gray-600">&#8681;</span>
+                                        </div>
+                                    </div>
+                                        {% comment %} <button type="submit" name="commend_id" value="{{ commend.id }}">Like</button>
+                                    - {{ commend.total_like }} {% endcomment %}
+                                </div>
+                            </div>
+                            <p class="-mt-10 relative w-9/12">{{commend.body}}</p>
+                        </div>
+                    {% endfor %}
+                    <a href="{% url 'trip:addreview' post.pk%}">---Add commend---</a>
+                {% endif %}
+                <div>
+                    {% if user.is_authenticated %}
+                        {% if user.id == post.author.id %}
+                    <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>
+                    <a href="{% url 'trip:deletepost' post.pk%}">(!!!DELETE!!!)</a>
+                        {% endif %}
+                    {% endif %}
+                    <a href="{% url 'trip:tripplan' %}">(ALL TRIP)</a>
+                    <br/><br>
+                </div>    
+            </div>
+        </div>    
+    </div>
 </div>
 
-<div id="overlay" class="absolute inset-0 hidden justify-center items-center" style="background-color: rgba(0,0,0,0.5);">
+<div id="overlay" class="absolute hidden h-full w-full justify-center items-center" style="background-color: rgba(0,0,0,0.5);">
     <div class="bg-gray-100 px-4 py-2 rounded-lg">
         <h3 class="text-xl text-black">Confirm Delete?</h3>
         <div>
@@ -102,16 +164,46 @@
         const overlay = document.querySelector('#overlay')
         const delBtn = document.querySelector('#background-delete-button')
         const CancelBtn = document.querySelector('#cancel-btn')
+        const content = document.querySelector('#main-content')
 
         const toggleModal = () => {
             overlay.classList.toggle('hidden')
             overlay.classList.toggle('flex')
+            window.scrollTo(0, 0)
+        }
+
+        const toggleOverFlow = () => {
+            content.classList.toggle('overflow-hidden')
         }
 
         delBtn.addEventListener('click', toggleModal)
 
         CancelBtn.addEventListener('click', toggleModal)
+
+        delBtn.addEventListener('click', toggleOverFlow)
+
+        CancelBtn.addEventListener('click', toggleOverFlow)
     })
+
+        const callback = function (entries) {
+          entries.forEach((entry) => {
+            console.log(entry);
+
+            if (entry.isIntersecting) {
+              entry.target.classList.add("animate-fadeIn");
+            } else {
+              entry.target.classList.remove("animate-fadeIn");
+            }
+          });
+        };
+
+        const observer = new IntersectionObserver(callback);
+
+        const targets = document.querySelectorAll(".js-show-on-scroll");
+        targets.forEach(function (target) {
+          target.classList.add("opacity-0");
+          observer.observe(target);
+        });
 </script>
 
 {% endblock %}

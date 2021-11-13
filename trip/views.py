@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 
 import json
 import os
@@ -18,7 +18,8 @@ from .models import TripPlan, Review, CategoryPlan
 api_caching = APICaching()
 
 
-PLACE_IMG_PATH = os.path.join(BASE_DIR,'theme','static','images','places_image')
+PLACE_IMG_PATH = os.path.join(BASE_DIR, 'theme', 'static', 'images', 'places_image')
+
 
 # View page
 def index(request):
@@ -201,7 +202,7 @@ def place_info(request, place_id: str):
             return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
         context = get_details_context(data, api_key)
         cache_data = restruct_detail_context_data(context)
-        api_caching.add(f"{place_id}detailpage", json.dumps({'cache':cache_data}, indent=3).encode())
+        api_caching.add(f"{place_id}detailpage", json.dumps({'cache': cache_data}, indent=3).encode())
 
     context = resturct_to_place_detail(cache_data)
     context['blank_rating'] = range(round(context['blank_rating']))
@@ -209,6 +210,7 @@ def place_info(request, place_id: str):
     context['api_key'] = api_key
     context = check_downloaded_image(context)
     return render(request, "trip/place_details.html", context)
+
 
 # Helper function
 def get_details_context(place_data: dict, api_key: str) -> dict:
@@ -335,15 +337,15 @@ def restruct_detail_context_data(context):
     """
     init_data = []
     main_data = {
-                'place_name': context['place_name'],
-                'place_id': context['place_id'],
-                'photo_ref': [img for img in context['images']],
-                'types': context['types'],
-                'reviews': context['reviews'],
-                'phone': context['phone'],
-                'rating': context['rating'],
-                'blank_rating': context['blank_rating']
-                }
+        'place_name': context['place_name'],
+        'place_id': context['place_id'],
+        'photo_ref': [img for img in context['images']],
+        'types': context['types'],
+        'reviews': context['reviews'],
+        'phone': context['phone'],
+        'rating': context['rating'],
+        'blank_rating': context['blank_rating']
+    }
     if 'website' in context:
         main_data["website"] = context['website']
     init_data.append(main_data)
@@ -367,15 +369,15 @@ def resturct_to_place_detail(context):
         }
     """
     init_data = {
-                    "place_name": context[0]['place_name'],
-                    "place_id": context[0]['place_id'],
-                    "types": [context[0]['types']],
-                    "rating": context[0]['rating'],
-                    "blank_rating": context[0]['blank_rating'],
-                    "images": [img for img in context[0]['photo_ref']],
-                    "reviews": context[0]['reviews'],
-                    "suggestions": [place for place in context[1:]]
-                }
+        "place_name": context[0]['place_name'],
+        "place_id": context[0]['place_id'],
+        "types": [context[0]['types']],
+        "rating": context[0]['rating'],
+        "blank_rating": context[0]['blank_rating'],
+        "images": [img for img in context[0]['photo_ref']],
+        "reviews": context[0]['reviews'],
+        "suggestions": [place for place in context[1:]]
+    }
     if 'website' in context[0]:
         init_data["website"] = context[0]['website']
     if 'phone' in context[0]:

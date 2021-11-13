@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'search',
     'ckeditor'
 ]
-NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
+
 # Config for Tailwind CSS
 TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [

@@ -87,3 +87,15 @@ class Review(models.Model):
         When your like comment page will refesh itseft to show all like.
         """
         return reverse("trip:tripdetail", args=((str(self.post.id),)))
+
+
+class UploadImage(models.Model):
+    """Extend TripPlan classto stroe image in blog.txt
+    
+    Attributes:
+        post(TripPlan): trip plan that host of review
+        image(file): image of user who uploaded
+    """
+    post = models.ForeignKey(
+        TripPlan, related_name="image", on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='trip/static/pic')

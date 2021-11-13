@@ -91,7 +91,7 @@ class Review(models.Model):
 
 class UploadImage(models.Model):
     """Extend TripPlan classto stroe image in blog.txt
-    
+
     Attributes:
         post(TripPlan): trip plan that host of review
         image(file): image of user who uploaded

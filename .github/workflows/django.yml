@@ -1,4 +1,4 @@
-name: CI-CD pipeline to AWS
+name: Django-CI/CD
 on:
   push:
     branches: 

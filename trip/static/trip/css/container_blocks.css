@@ -37,6 +37,10 @@
   margin-top: 3.75rem;
 }
 
+.places-table {
+    width: 20vw;
+}
+
 .carousel {
     background: transparent;
 }

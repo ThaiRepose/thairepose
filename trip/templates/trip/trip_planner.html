@@ -49,115 +49,170 @@
         .material-icons.md-48 {
             font-size: 48px;
         }
+
+        #place-search:disabled {
+            background-color: rgba(156, 163, 175, 0.7);
+        }
+
+        .pac-container {
+            box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+            border-radius: 0.375rem;
+            --tw-bg-opacity: 1;
+            background-color: rgba(255, 255, 255, var(--tw-bg-opacity));
+            width: 12rem;
+            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
+            transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+            transition-duration: 150ms;
+        }
+
+        .pac-item {
+            height: 30px;
+            padding-right: 10px;
+            padding-left: 10px;
+        }
+
+        .pac-item:hover {
+            font-family: 'sf_thonburiregular', 'Prompt', sans-serif;
+            background-color: rgba(245, 189, 140, 0.5);
+            cursor: pointer;
+        }
+
+        .pac-icon {
+            display: none;
+        }
+
+        .limit-text {
+            display: block;
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        #map {
+          height: 100%;
+          width: 100%;
+          margin: 0px;
+          padding: 0px
+        }
+    </style>
+    <style>
+        .top-100 {
+            top: 100%
+        }
+
+        .bottom-100 {
+            bottom: 100%
+        }
+
+        .max-h-select {
+            max-height: 300px;
+        }
     </style>
     <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}"/>
+    <link href="https://cdn.jsdelivr.net/npm/@tailwindcss/custom-forms@0.2.1/dist/custom-forms.css" rel="stylesheet"/>
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places"></script>
+    <script>
+        function initialize() {
+            let input = document.getElementById('place-search');
+            let options = {
+                componentRestrictions: {country: "th"}
+            };
+            let autocomplete = new google.maps.places.Autocomplete(input, options);
+            google.maps.event.addListener(autocomplete, 'place_changed', function () {
+                let place = {};
+                place.vicinity = undefined;
+                place.place_id = undefined;
+                place = autocomplete.getPlace();
+                let photo_url = place.photos[0].getUrl();
+                console.log(place);
+                console.log(place.name);
+                console.log(place.place_id);
+                console.log("Lat:");
+                console.log("Lng:");
+                let input_day = document.getElementsByName("add-place_day-selector")[0].value;
+                console.log(input_day);
+                addPlaceToTable(input_day, place.name, place.vicinity, photo_url, place.place_id);
+            });
+        }
+
+        google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
 {% endblock %}
 
 {% block main_content %}
-    <div class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10">
-        <div class="w-full h-full rounded-3xl container-lg flex flex-col">
-            <div id="place_name" class="mx-8 my-6">
-                <h1 class="text-3xl font-bold" style="line-height: 1.6;">Trip planner</h1>
-            </div>
-            <!-- Days button -->
-            <div class="flex flex-row items-center custom-number-input h-10 mx-8">
-                <label for="custom-input-number" class="w-36 mr-4 text-gray-700 text-sm font-semibold">Day(s) for this
-                    trip (maximum 10)</label>
-                <div class="flex flex-row h-10 w-36 rounded-lg relative bg-transparent mt-1">
-                    <button data-action="decrement"
-                            class=" bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-l cursor-pointer outline-none">
-                        <span class="m-auto text-2xl font-thin">−</span>
-                    </button>
-                    <input readonly type="number"
-                           id="days-selector"
-                           class="outline-none border-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-basecursor-default flex items-center text-gray-700"
-                           name="custom-input-number" value="1">
-                    <button data-action="increment"
-                            class="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-r cursor-pointer">
-                        <span class="m-auto text-2xl font-thin">+</span>
-                    </button>
+    <div class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10 w-screen">
+        <div class="h-full w-full rounded-3xl container-lg flex flex-col pb-8">
+            <div class="flex flex-col md:flex-row">
+                <!-- Left column (details) -->
+                <div class="w-full md:w-1/2">
+                    <!-- Page title -->
+                    <div id="place_name" class="mx-8 my-6">
+                        <h1 class="text-3xl font-bold" style="line-height: 1.6;">Trip Organizer</h1>
+                    </div>
+                    <!-- Days button -->
+                    <div class="flex flex-row items-center custom-number-input h-10 mx-8">
+                        <label for="days-amount" class="w-36 mr-4 text-gray-700 text-sm font-semibold">Day(s) for this
+                            trip (maximum 6)</label>
+                        <div class="flex flex-row h-10 w-36 rounded-lg relative bg-transparent mt-1">
+                            <button data-action="decrement"
+                                    class=" bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-l cursor-pointer outline-none">
+                                <span class="m-auto text-2xl font-thin">−</span>
+                            </button>
+                            <input readonly type="number"
+                                   id="days-selector"
+                                   class="outline-none border-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-basecursor-default flex items-center text-gray-700"
+                                   name="days-amount" value="{{ days_amount|default:1 }}">
+                            <button data-action="increment"
+                                    class="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-r cursor-pointer">
+                                <span class="m-auto text-2xl font-thin">+</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Add place section -->
+                    <div class="mx-8 w-full md:w-3/5 my-3 flex flex-row items-center">
+                        <div class="text-lg mr-3">Add:</div>
+                        <div class="mr-3 pb-1">
+                            <label class="block text-left shadow-lg rounded-lg border-none" style="max-width: 400px">
+                                <select class="form-select block w-24 mt-1" name="add-place_day-selector"></select>
+                            </label>
+                        </div>
+                        <div class="text-lg mr-3">Place:</div>
+                        <div class="w-48">
+                            <div class="relative text-gray-600">
+                                <input type="search" id="place-search" name="search" placeholder="Search"
+                                       class="bg-white h-10 w-48 px-5 pr-10 rounded-lg border-none shadow-lg text-sm focus:outline-none">
+                                <button type="submit" class="absolute right-0 top-0 mt-3 mr-4">
+                                    <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg"
+                                         xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px"
+                                         y="0px"
+                                         viewBox="0 0 56.966 56.966" style="enable-background:new 0 0 56.966 56.966;"
+                                         xml:space="preserve" width="512px" height="512px">
+                                      <path d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Calculate time button -->
+                    <div class="px-8 pb-4 md:pb-0">
+                        <button class="p-2 px-8 bg-transparent border-2 border-green-500 text-green-500 text-lg rounded-lg hover:bg-green-500 hover:text-gray-100"
+                                onclick="getTravelTime()">Calculate Traveling Time
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right column (map) -->
+                <div class="w-full md:w-1/2 px-8 md:px-0 md:pt-8 md:pr-8 h-48 md:h-full">
+                    <div class="w-full h-full text-center flex justify-center items-center text-2xl rounded-xl">
+                        <!-- <div id="map"></div> -->
+                    </div>
                 </div>
             </div>
-
             <!-- Trip day row -->
             <div id="trip-days">
-
-                <!-- Day number -->
-                <div id="day-title" class="mt-6 mx-8">
-                    <h1 class="text-2xl">Day 1</h1>
-                </div>
-
-                <!-- Places list table -->
-                <div id="day-table" class="overflow-auto lg:overflow-visible mx-8 w-full md:w-3/5">
-                    <table class="table w-full text-gray-400 border-separate space-y-6 text-sm">
-                        <thead class="bg-translucent text-gray-700 rounded-lg">
-                        <tr class="shadow-lg">
-                            <th class="py-3 text-center">Arrival</th>
-                            <th class="py-3 text-center">Place</th>
-                            <th class="py-3 text-center">Departure</th>
-                            <th class="py-3 text-center">Action</th>
-                        </tr>
-                        </thead>
-                        <tbody class="text-gray-700">
-                        <tr class="">
-                            <td id="arrival-1" class="p-3 text-center"></td>
-                            <td class="p-3">
-                                <div class="flex align-items-center">
-                                    <img class="rounded-full h-12 w-12 object-cover"
-                                         src="https://images.unsplash.com/photo-1613588718956-c2e80305bf61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=634&q=80"
-                                         alt="unsplash image">
-                                    <div class="ml-3">
-                                        <div class="">Apple</div>
-                                        <div class="text-gray-500">mail@rgmail.com</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="p-3 text-center">
-                                <input class="rounded-lg bg-translucent rounded-lg shadow-xl border-gray-200" type="time" id="time" name="appt" value="01:00" required>
-                            </td>
-                            <td class="p-3 text-center">
-                                <button class="text-gray-700 hover:text-gray-100 mr-2 focus:outline-none">
-                                    <span class="material-icons material-icons-outlined md-18">north</span>
-                                </button>
-                                <button class="text-gray-700 hover:text-gray-100 mx-2 focus:outline-none">
-                                    <span class="material-icons material-icons-outlined md-18">south</span>
-                                </button>
-                                <button class="text-gray-700 hover:text-gray-100 mx-2 focus:outline-none">
-                                    <span class="material-icons material-icons-outlined md-18">delete_outline</span>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td id="arrival-2" class="p-3 text-center">Time</td>
-                            <td class="p-3">
-                                <div class="flex align-items-center">
-                                    <img class="rounded-full h-12 w-12 object-cover"
-                                         src="https://images.unsplash.com/photo-1423784346385-c1d4dac9893a?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"
-                                         alt="unsplash image">
-                                    <div class="ml-3">
-                                        <div class="">Realme</div>
-                                        <div class="text-gray-500">mail@rgmail.com</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="p-3 text-center">
-                                <input class="rounded-lg bg-translucent rounded-lg shadow-xl border-gray-200" type="time" id="time" name="appt" value="01:00" required>
-                            </td>
-                            <td class="p-3 text-center">
-                                <button class="text-gray-700 hover:text-black mr-2 focus:outline-none">
-                                    <span class="material-icons material-icons-outlined md-18">north</span>
-                                </button>
-                                <button class="text-gray-700 hover:text-black mx-2 focus:outline-none">
-                                    <span class="material-icons material-icons-outlined md-18">south</span>
-                                </button>
-                                <button class="text-gray-700 hover:text-black mx-2 focus:outline-none">
-                                    <span class="material-icons material-icons-outlined md-18">delete_outline</span>
-                                </button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <!-- Table created by JS -->
             </div>
         </div>
     </div>
@@ -172,8 +227,10 @@
             );
             const target = btn.nextElementSibling;
             let value = Number(target.value);
-            if (value > 1)
+            if (value > 1) {
+                removeDay(value);
                 value--;
+            }
             target.value = value;
         }
 
@@ -183,9 +240,12 @@
             );
             const target = btn.nextElementSibling;
             let value = Number(target.value);
-            if (value < 10)
+            if (value < 6) {
                 value++;
+                addNewDay(value);
+            }
             target.value = value;
+
         }
 
         const decrementButtons = document.querySelectorAll(
@@ -206,38 +266,45 @@
 
         document.getElementById('days-selector').addEventListener('change', function () {
             if (this.value < 1)
-                this.value = 1
-            else if (this.value > 10)
-                this.value = 10
-
+                this.value = 1;
+            else if (this.value > 6)
+                this.value = 6;
         });
     </script>
     <!-- Script for table -->
     <script>
-        function getLastRow() {
-            let amount = $('[id="day-title"]');
-            return amount.length;
+        const MAXIMUM_PLACES_PER_DAY = 10;
+
+        function amountPlacesinDay(day_number) {
+            let table_id = "table-day-" + day_number;
+            let table = document.getElementById(table_id);
+            return table.tBodies[0].rows.length;
         }
-        function tableCreate() {
+
+        function tableCreate(day_number) {
             let body = document.getElementById('trip-days'),
                 title_div = document.createElement('div'),
                 title_text = document.createElement('h1');
-            title_div.id = "day-title";
-            title_div.classList.add("mt-6", "mx-8");
-            title_text.classList.add("text-2xl");
-            title_text.textContent = "Day";
 
+            title_div.id = "day-title";
+            title_div.classList.add("mt-10", "mx-8");
+            title_text.classList.add("text-2xl");
+            title_text.innerHTML = "Day " + day_number;
             body.appendChild(title_div);
             title_div.appendChild(title_text);
-            body = document.getElementById('trip-days'),
-                table_div = document.createElement('div'),
+
+            let table_div = document.createElement('div'),
                 tbl = document.createElement('table');
-            table_div.id = "day-table";
-            table_div.classList.add("overflow-auto", "lg:overflow-visible", "mx-8", "w-3/5");
-            tbl.classList.add("table", "w-full", "text-gray-400", "border-separate", "space-y-6", "text-sm");
-            const head = tbl.createTHead();
-            const tr = head.insertRow();
-            head.classList.add("bg-translucent", "text-gray-700", "shadow-lg");
+            table_div.id = day_number;
+            table_div.setAttribute("name", "day-table");
+            table_div.classList.add("w-full", "px-8");
+            tbl.classList.add("w-full", "md:w-3/5", "text-gray-400", "text-sm");
+            tbl.id = "table-day-" + day_number;
+            const thead = tbl.createTHead();
+            const tbody = tbl.createTBody();
+            const tr = thead.insertRow();
+            thead.classList.add("bg-translucent", "text-gray-700", "shadow-lg");
+            tbody.classList.add("text-gray-700");
             tr.insertCell().outerHTML = "<th class='py-3 text-center'>Arrival</th>";
             tr.insertCell().outerHTML = "<th class='py-3 text-center'>Place</th>";
             tr.insertCell().outerHTML = "<th class='py-3 text-center'>Departure</th>";
@@ -246,8 +313,337 @@
             table_div.appendChild(tbl);
         }
 
-        tableCreate();
-        tableCreate();
-        console.log(getLastRow());
+        function addPlaceToTable(day_number, place_name, place_vicinity, photo_url, place_id) {
+            let table_id = "table-day-" + day_number;
+            let table = document.getElementById(table_id);
+            if (amountPlacesinDay(day_number) >= MAXIMUM_PLACES_PER_DAY) {
+                alert("You've reached maximum places for Day " + day_number + ". Please add to another day or delete some place in Day " + day_number + ".");
+                return;
+            }
+            let div = document.createElement('div'),
+                child_div = document.createElement('div'),
+                name_div = document.createElement('div'),
+                desc_div = document.createElement('div');
+            let row = table.getElementsByTagName('tbody')[0].insertRow();
+            row.setAttribute("name", "place");
+            row.id = place_id;
+            let cell1 = row.insertCell(0);
+            let cell2 = row.insertCell(1);
+            let cell3 = row.insertCell(2);
+            let cell4 = row.insertCell(3);
+            cell1.setAttribute("name", "arrival-" + (place_id));
+            cell1.id = "time";
+            cell1.classList.add("p-3", "text-center", "text-xl");
+
+            div.classList.add("flex", "align-items-center");
+            child_div.classList.add("ml-3");
+            name_div.classList.add("w-52");
+            name_div.innerHTML = `<a href="/place/${place_id}/" target="_blank"><span class="limit-text">${place_name}</span></a>`;
+            div.innerHTML = `<img class="rounded-full h-12 w-12 object-cover" src="${photo_url}" alt="${place_name}">`;
+            child_div.appendChild(name_div);
+            desc_div.classList.add("text-gray-500", "w-52");
+            desc_div.innerHTML = `<span class="limit-text">${place_vicinity}</span>`;
+            child_div.appendChild(desc_div);
+            div.appendChild(child_div);
+            cell2.appendChild(div);
+            cell2.classList.add("p-3");
+
+            cell3.classList.add("p-3", "text-center");
+            cell3.innerHTML = `<input class="rounded-lg bg-translucent rounded-lg shadow-xl border-gray-200" type="time" id="time" name="departure-${place_id}" value="00:00" required="">`;
+
+            cell4.classList.add("p-3", "text-center");
+            cell4.innerHTML = `<button class="text-gray-700 hover:text-black lg:mx-1 focus:outline-none hover:scale-150" onclick="moveUp(this)">
+                                   <span class="material-icons material-icons-outlined md-18">north</span>
+                               </button>
+                               <button class="text-gray-700 hover:text-black lg:mx-1 focus:outline-none hover:scale-150" onclick="moveDown(this)">
+                                   <span class="material-icons material-icons-outlined md-18">south</span>
+                               </button>
+                               <button class="text-gray-700 hover:text-red-600 lg:mx-1 focus:outline-none hover:scale-150" onclick="delPlace(this)">
+                                   <span class="material-icons material-icons-outlined md-18">delete_outline</span>
+                               </button>`;
+            cell3.children[0].addEventListener("change", time_changed);
+        }
+
+        function delPlace(obj) {
+            var currRow = $(obj).parent().parent();
+            currRow.remove();
+            change_directions_time();
+        }
+
+        function moveUp(obj) {
+            let row = $(obj).parents("tr");
+            if (row.index() === 0) {
+                let prev_table = $(obj).parents("table").parents("div").prev().prev();
+                let prev_table_places = prev_table.children().children().closest("tbody").children();
+                // Check that previous table does not reach limit
+                while (prev_table_places.length >= MAXIMUM_PLACES_PER_DAY) {
+                    if (prev_table[0].id === "1") {
+                        alert("All above days have reached maximum places. Please move to another day or delete some place in any above table.");
+                        return;
+                    }
+                    prev_table = prev_table.prev().prev();
+                    prev_table_places = prev_table.children().children().closest("tbody").children();
+                    if (prev_table_places.length < MAXIMUM_PLACES_PER_DAY) {
+                        alert("Some days have reached maximum places. This place will be moved to Day " + prev_table[0].id);
+                    }
+                }
+                if (prev_table_places.length === 0) {
+                    // create temporary tr and remove after moved
+                    let prev_body = prev_table.children().children().closest("tbody");
+                    try {
+                        let tr = prev_body[0].insertRow();
+                        prev_table_places = prev_table.children().children().closest("tbody").children();
+                        row.insertBefore(prev_table_places);
+                        tr.remove();
+                    } catch (error) {
+                        return;
+                    }
+                } else
+                    row.insertAfter(prev_table_places.last());
+                return;
+            }
+            row.insertBefore(row.prev());
+            change_directions_time();
+        }
+
+        function moveDown(obj) {
+            let row = $(obj).parents("tr");
+            let this_body = $(obj).closest("tbody");
+            let totalPlace = this_body.children().length;
+            if (row.index() === totalPlace - 1) {
+                // Move to below table
+                let next_table = $(obj).parents("table").parents("div").next().next();
+                let next_table_places = next_table.children().children().closest("tbody").children();
+                let totalDays = $('#days-selector')[0].value;
+                // Check that next table does not reach limit
+                while (next_table_places.length >= MAXIMUM_PLACES_PER_DAY) {
+                    if (next_table[0].id === totalDays) {
+                        alert("All below days have reached maximum places. Please move to another day or delete some place in any below table.");
+                        return;
+                    }
+                    next_table = next_table.next().next();
+                    next_table_places = next_table.children().children().closest("tbody").children();
+                    if (next_table_places.length < MAXIMUM_PLACES_PER_DAY) {
+                        alert("Some days have reached maximum places. This place will be moved to Day " + next_table[0].id);
+                    }
+                }
+                if (next_table_places.length === 0) {
+                    // create temporary tr and remove after moved
+                    let next_body = next_table.children().children().closest("tbody");
+                    try {
+                        let tr = next_body[0].insertRow();
+                        next_table_places = next_table.children().children().closest("tbody").children();
+                        row.insertBefore(next_table_places);
+                        tr.remove();
+                    } catch (error) {
+                        return;
+                    }
+                } else
+                    row.insertBefore(next_table_places);
+                return;
+            }
+            row.insertAfter(row.next());
+            change_directions_time();
+        }
+
+        const MAXIMUM_DAYS = 6;
+        const addNewDay = function (day_number) {
+            for (let i = 1; i <= day_number && i <= MAXIMUM_DAYS; i++) {
+                let table_exist = $("#table-day-" + i).length > 0;
+                if (table_exist)
+                    continue;
+                // Create new table
+                tableCreate(i);
+                // Add option in add place
+                addDayPlaceOption(i);
+            }
+        }
+
+        const removeDay = function (day_number) {
+            for (let i = MAXIMUM_DAYS; i >= day_number; i--) {
+                // Remove table and day title
+                let obj = $(`div[name="day-table"][id=${i}]`);
+                let obj_title = obj.prev();
+                obj.remove();
+                obj_title.remove();
+                // Remove option in add place
+                removeDayPlaceOption(i);
+            }
+        }
+
+        function addDayPlaceOption(day_number) {
+            let option = $('[name="add-place_day-selector"]');
+            option.append($('<option>', {
+                value: day_number,
+                text: "Day " + day_number
+            }));
+        }
+
+        function removeDayPlaceOption(day_number) {
+            $(`[name="add-place_day-selector"] option[value="${day_number}"]`).remove();
+        }
+
+        function initialize() {
+            var input = document.getElementById('place-search');
+            new google.maps.places.Autocomplete(input);
+        }
+
+        function time_changed(event) {
+            setTimeout(function () {
+                let arrival = $(event.target).parent().prev().prev();
+                let departure = event.target;
+                console.log(departure.value);
+                let departure_time = createTime(departure.value);
+                let arrival_time = createTime(arrival.text());
+                if (arrival_time > departure_time)
+                    departure.value = getTimeFormat(arrival_time);
+                console.log(arrival_time);
+                change_directions_time();
+            }, 3000);
+        }
+
+        function change_directions_time() {
+            $.each($('[name^="arrival-"]'), function (index, obj) {
+                obj.innerText = "";
+            })
+            for (let i in direction) {
+                displayTravelTime(direction[i]);
+            }
+        }
+    </script>
+    <!-- Script for map marker -->
+    <!-- Considering to remove due to API budget
+    <script>
+        var geocoder;
+        var map;
+        var directionsDisplay;
+        var directionsService = new google.maps.DirectionsService();
+        var locations = [
+            ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],
+            ['Bondi Beach', -33.890542, 151.274856, 4],
+            ['Coogee Beach', -33.923036, 151.259052, 5],
+            ['Maroubra Beach', -33.950198, 151.259302, 1],
+            ['Cronulla Beach', -34.028249, 151.157507, 3]
+        ];
+
+        function initialize() {
+            directionsDisplay = new google.maps.DirectionsRenderer();
+
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 10,
+                center: new google.maps.LatLng(-33.92, 151.25),
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+            directionsDisplay.setMap(map);
+            var infowindow = new google.maps.InfoWindow();
+
+            var marker, i;
+            var request = {
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+            for (i = 0; i < locations.length; i++) {
+                marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+                });
+
+                google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                    return function () {
+                        infowindow.setContent(locations[i][0]);
+                        infowindow.open(map, marker);
+                    }
+                })(marker, i));
+
+                if (i == 0) request.origin = marker.getPosition();
+                else if (i == locations.length - 1) request.destination = marker.getPosition();
+                else {
+                    if (!request.waypoints) request.waypoints = [];
+                    request.waypoints.push({
+                        location: marker.getPosition(),
+                        stopover: true
+                    });
+                }
+
+            }
+            directionsService.route(request, function (result, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    console.log("API Called");
+                    directionsDisplay.setDirections(result);
+                }
+            });
+        }
+        google.maps.event.addDomListener(window, "load", initialize);
+    </script> -->
+    <!-- Main script -->
+    <script>
+        var direction;
+        let days = $('input[name="days-amount"]')[0].value;
+        for (let i = 1; i <= days; i++) {
+            addNewDay(i);
+        }
+
+        function getDirectionTime(places_list) {
+            let response = $.ajax({
+                type: "POST",
+                url: "{% url 'trip:get_travel_time' %}",
+                async: false,
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    places: JSON.stringify(places_list)
+                }
+            });
+            return response.responseJSON;
+        }
+
+        function createTime(timestr) {
+            let time = new Date('1970-01-01T' + timestr + ':00Z');
+            time.setTime(time.getTime() + time.getTimezoneOffset() * 60 * 1000);
+            return time;
+        }
+
+        function getTimeFormat(timeObj) {
+            return timeObj.toTimeString().replace(/.*(\d{2}:\d{2}):\d{2}.*/, "$1");
+        }
+
+        function getTravelTime() {
+            let places = $('div[name="day-table"]');
+            $.each(places, function (index, obj) {
+                let places_in_day = $(obj).find('tr[name="place"]');
+                let table_id = $(obj).children()[0].id;
+                let places_list = [];
+                if (places_in_day.length <= 1)
+                    return;
+                $.each(places_in_day, function (index, obj) {
+                    places_list.push(obj.id);
+                });
+                if (places_list.length !== 0) {
+                    let directions = getDirectionTime(places_list);
+                    direction = Object.assign({[table_id]: directions});
+                    displayTravelTime(directions);
+                    console.log(directions);
+                }
+            });
+        }
+
+        function displayTravelTime(directions) {
+            for (let i = 1; i < directions.geocoded_waypoints.length; i++) {
+                let start = directions.geocoded_waypoints[i - 1].place_id;
+                let stop = directions.geocoded_waypoints[i].place_id;
+                let direction_time = directions.routes[0].legs[i - 1].duration.value;
+                let departure = document.getElementsByName("departure-" + start)[0];
+                let next_place = $(departure).parent().parent().next().children()[0];
+                let arrival = document.getElementsByName("arrival-" + stop)[0];
+                if (next_place !== arrival)
+                    continue;
+                let time = createTime(departure.value);
+                time.setTime(time.getTime() + (direction_time * 1000));
+                console.log(time);
+                arrival.innerText = getTimeFormat(time);
+                let next_departure = document.getElementsByName("departure-" + stop)[0];
+                next_departure.min = getTimeFormat(time);
+                if (createTime(next_departure.value) < time) {
+                    next_departure.value = getTimeFormat(time);
+                }
+            }
+        }
     </script>
 {% endblock %}

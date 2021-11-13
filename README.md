@@ -1,5 +1,5 @@
-[![Build Status](https://app.travis-ci.com/ThaiRepose/thairepose.svg?branch=oauth)](https://app.travis-ci.com/ThaiRepose/thairepose)
-[![codecov](https://codecov.io/gh/ThaiRepose/thairepose/branch/oauth/graph/badge.svg?token=uocBU8wW8W)](https://codecov.io/gh/ThaiRepose/thairepose)
+![workflow](https://github.com/ThaiRepose/thairepose/actions/workflows/django.yml/badge.svg)
+[![codecov](https://codecov.io/gh/ThaiRepose/thairepose/branch/beta/graph/badge.svg?token=uocBU8wW8W)](https://codecov.io/gh/ThaiRepose/thairepose)
 # ThaiRepose
 **ThaiRepose** website is a web application that helps to find areas that users want to travel and it can help people to make decisions for making trips. People who don't even have any experience planning a trip before, it can help them to easily plan a trip. ThaiRepose.com will be a community for people who love to travel.
 

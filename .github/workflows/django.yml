@@ -1,5 +1,10 @@
 name: Django CI
-
+env:
+   SECRET_KEY:'THREPOSE'
+   DEBUG:True 
+   HOSTS:127.0.0.1,localhost
+   EMAIL_FROM_USER:"test@email.com"
+   EMAIL_HOST_PASSWORD:"Test1234@"
 on:
   push:
     branches: 
@@ -30,6 +35,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - name: Build
+      
       run: |
           python manage.py migrate
           python manage.py makemigrations users

@@ -40,7 +40,7 @@ class PlaceDetailsViewTest(TestCase):
         expected_photo_url = f"https://maps.googleapis.com/maps/api/place/photo?" \
                              f"maxwidth=600&photo_reference=1234&key={self.frontend_api_key}"
         context = get_details_context(mock_data, self.frontend_api_key)
-        self.assertEqual("Tawan Boonma", context['name'])
+        self.assertEqual("Tawan Boonma", context['place_name'])
         self.assertEqual("191", context['phone'])
         self.assertEqual("tawanb.dev", context['website'])
         self.assertEqual(range(4), context['rating'])

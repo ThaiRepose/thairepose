@@ -45,3 +45,4 @@ jobs:
       run: |
         coverage run manage.py test
         flake8 --config config.cfg
+        bash <(curl -s https://codecov.io/bash)

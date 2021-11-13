@@ -13,6 +13,7 @@ urlpatterns = [
     path('tripdetail/edit/<int:pk>', views.EditPost.as_view(), name='editpost'),
     path('tripdetail/<int:pk>/remove', views.DeletePost.as_view(), name='deletepost'),
     path('category/<category>', views.CatsListView.as_view(), name='category'),
+    path('uploadimage/', views.image_upload_view, name='imageupload'),
     # 127.0.0.1/domnfoironkwe_0394
     path('place/<str:place_id>/', views.place_info, name='place')
 ]

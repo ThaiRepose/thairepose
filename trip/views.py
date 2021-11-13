@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import TripPlan, Review, CategoryPlan
-from .forms import TripPlanForm
+from .forms import TripPlanForm, TripPlanImageForm
 from django.contrib.auth.decorators import login_required
 
 
@@ -260,3 +260,17 @@ def place_info(request, place_id: str):
         return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
     context = get_details_context(data, os.getenv('API_KEY'))
     return render(request, "trip/place_details.html", context)
+
+
+def image_upload_view(request):
+    """Process images uploaded by users"""
+    if request.method == 'POST':
+        form = TripPlanImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            # Get the current instance object to display in the template
+            img_obj = form.instance
+            return render(request, 'trip/image_upload.html', {'form': form, 'img_obj': img_obj})
+    else:
+        form = TripPlanImageForm()
+    return render(request, 'trip/image_upload.html', {'form': form})

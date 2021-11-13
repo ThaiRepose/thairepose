@@ -30,6 +30,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
       with:
+        path: node_modules
         node-version: '14'
         cache: 'npm'
 

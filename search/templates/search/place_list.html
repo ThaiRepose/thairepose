@@ -25,9 +25,9 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
     <!--Card 1-->
     {% for place in places %}
     <a id="place_box" class="rounded-3xl overflow-hidden shadow-lg bg-gray-300" href="{% url 'trip:place-detail' place.place_id %}"">
-    {% if place.downloaded == True and place.name_img %}
+    {% if place.downloaded == True and place.photo_ref.0 %}
       <img class="object-cover w-full h-80 rounded-3xl p-2" src="{% static 'images/places_image/' %}{{ place.place_id }}photo.jpeg"> 
-    {% elif not img_downloaded and place.photo_ref.0%}
+    {% elif not place.downloaded and place.photo_ref.0%}
       <img class="object-cover w-full h-80 rounded-3xl p-2" src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference={{ place.photo_ref.0 }}&key={{ api_key }}">
     {% else %} 
       <img class="object-cover w-full h-80 rounded-3xl p-2" src="{% static '/images/img_not_found.jpg' %}" alt="NotFound" />

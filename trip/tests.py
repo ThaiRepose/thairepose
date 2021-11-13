@@ -20,7 +20,7 @@ class PlaceDetailsViewTest(TestCase):
 
     def test_invalid_place_id(self):
         """Test viewing place details page with invalid place_id."""
-        response = self.client.get(reverse('trip:place', args=['123']))
+        response = self.client.get(reverse('trip:place-detail', args=['123']))
         self.assertEqual(response.status_code, 404)
 
     def test_get_details_function(self):
@@ -59,7 +59,7 @@ class PlaceDetailsViewTest(TestCase):
         """Test viewing Kasetsart University (place_id = ChIJVysBBt6c4jARcDELPbMAAQ8)
         because there are completely informations."""
         response = self.client.get(
-            reverse('trip:place', args=['ChIJVysBBt6c4jARcDELPbMAAQ8']))
+            reverse('trip:place-detail', args=['ChIJVysBBt6c4jARcDELPbMAAQ8']))
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.context['images'], list)
         self.assertIsInstance(response.context['suggestions'], list)

@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 
-import os, json
+import os
+import json
 import time
 from .api import GoogleAPI
 from threpose.settings import BASE_DIR
@@ -13,7 +14,8 @@ load_dotenv()
 gapi = GoogleAPI()
 api_caching = APICaching()
 
-PLACE_IMG_PATH = os.path.join(BASE_DIR,'theme','static','images','places_image')
+PLACE_IMG_PATH = os.path.join(BASE_DIR, 'theme', 'static', 'images', 'places_image')
+
 
 # Place List page
 def get_next_page_from_token(request):
@@ -29,8 +31,10 @@ def get_next_page_from_token(request):
     context = []
 
     # Check next_page cache
-    if api_caching.get(f'{token[:30]}') is None: # Don't have cache
-        for _ in range(6):  # Request data for 6 times, if response is not OK and reached maximum, it will return empty
+    if api_caching.get(f'{token[:30]}') is None:
+        for _ in range(6):
+            # Request data for 6 times, if response is not OK
+            # and reached maximum, it will return empty
             data = json.loads(gapi.next_search_nearby(token))
             if data['status'] == "OK":
                 context = restruct_nearby_place(data['results'])
@@ -42,16 +46,17 @@ def get_next_page_from_token(request):
         if len(context) > 0:
             return JsonResponse({"places": context, "status": "OK"})
         return JsonResponse({"places": context, "status": "NOT FOUND"})
-    else: # Have cache
+    else:  # Have cache
         # load cache
         context = json.loads(api_caching.get(f'{token[:30]}'))
         # check place images
         context = check_downloaded_image(context['cache'])
         return JsonResponse({"places": context, "status": "OK"})
 
+
 def place_list(request, *args, **kwargs):
     """Place_list view for list place that nearby the user search input."""
-    data = request.GET # get lat and lng from url
+    data = request.GET  # get lat and lng from url
     # Our default search type
     types = ['restaurant', 'zoo', 'tourist_attraction', 'museum', 'cafe', 'aquarium']
 
@@ -77,7 +82,7 @@ def place_list(request, *args, **kwargs):
 # Helper function
 def get_new_context(types: list, lat: int, lng: int) -> list:
     """Cache new data and return the new data file
-    
+
     Args:
         types: place type
 
@@ -88,7 +93,8 @@ def get_new_context(types: list, lat: int, lng: int) -> list:
         token: next page token
     """
     token = {}
-    tempo_context = [] # This create for keeping data from search nearby
+    # This create for keeping data from search nearby
+    tempo_context = []
     for type in types:
         data = json.loads(gapi.search_nearby(lat, lng, type))
         if 'next_page_token' in data:
@@ -97,10 +103,12 @@ def get_new_context(types: list, lat: int, lng: int) -> list:
         restructed_places = restruct_nearby_place(places)
         tempo_context = add_more_place(tempo_context, restructed_places)
     # Caching places nearby
-    api_caching.add(f'{lat}{lng}searchresult', json.dumps({'cache':tempo_context, 'next_page_token':token}, indent=3).encode())
+    cache = {'cache': tempo_context, 'next_page_token': token}
+    api_caching.add(f'{lat}{lng}searchresult', json.dumps(cache, indent=3).encode())
     # Load data from cache
     context = json.loads(api_caching.get(f'{lat}{lng}searchresult'))['cache']
     return context, token
+
 
 def restruct_nearby_place(places: dict) -> list:
     """Process data for frontend
@@ -110,11 +118,10 @@ def restruct_nearby_place(places: dict) -> list:
 
     Returns:
         context: A place data that place-list page needed.
-            
 
     Data struct:
     [
-        {   
+        {
             # Essential key
             'place_name': <name>,
             'place_id': <place_id>,
@@ -128,14 +135,16 @@ def restruct_nearby_place(places: dict) -> list:
     context = []
     for place in places:
         init_place = {
-                        'place_name': None,
-                        'place_id': None,
-                        'photo_ref': [],
-                        'type': [],
-                     }
+            'place_name': None,
+            'place_id': None,
+            'photo_ref': [],
+            'type': [],
+        }
+
         if 'photos' in place:
             # Place have an image
-            init_place['photo_ref'].append(place['photos'][0]['photo_reference'])
+            photo_ref = place['photos'][0]['photo_reference']
+            init_place['photo_ref'].append(photo_ref)
         else:
             # Place don't have an image
             continue
@@ -145,43 +154,50 @@ def restruct_nearby_place(places: dict) -> list:
         context.append(init_place)
     return context
 
+
 def check_downloaded_image(context: list) -> list:
     """Check that image from static/images/place_image that is ready for frontend to display or not
-    
+
     Args:
         context: place nearby data
 
     Returns:
         context: place nearby data with telling the image of each place were downloaded or not
     """
-    if os.path.exists(PLACE_IMG_PATH): # Check places_image dir that is exists
+    # Check places_image dir that is exists
+    if os.path.exists(PLACE_IMG_PATH):
         # Get image file name from static/images/places_image
-        all_img_file = [f for f in os.listdir(PLACE_IMG_PATH) if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
+        all_img_file = [f for f in os.listdir(PLACE_IMG_PATH)
+                        if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
         for place in context:
-            if 'photo_ref' in place: # If place that have photo_ref imply that place have an images
+            # If place that have photo_ref imply that place have an images
+            if 'photo_ref' in place:
                 place_id = place['place_id']
-                if f'{place_id}photo.jpeg' in all_img_file or len(place['photo_ref']) == 0:
+                downloaded_img = f'{place_id}photo.jpeg' in all_img_file
+                have_image = len(place['photo_ref']) == 0
+                if downloaded_img or have_image:
                     place['downloaded'] = True
                 else:
                     place['downloaded'] = False
     return context
 
+
 def add_more_place(context: list, new: list):
     """Append places to context
-    
+
     Args:
         context: total nearby palce data
 
         new: new data by next page tokens
-    
+
     Returns:
-        context: total nearby place that append new to is's with out duplicated place
+        context: total nearby place that append
+        new to is's with out duplicated place
     """
     place_exist = [place['place_id'] for place in context]
     for place in new:
-        if place['place_id'] in place_exist: # Check that place is exists or not
+        # Check that place is exists or not
+        if place['place_id'] in place_exist:
             continue
         context.append(place)
     return context
-
-

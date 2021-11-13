@@ -8,14 +8,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-
 class GoogleAPI:
 
     api_key = os.getenv("API_KEY")
 
-    def search_nearby(self,lat,lng, type):
+    def search_nearby(self, lat, lng, type):
         """Call search nearby place from google map API.
-        
+
         Args:
             lat: float or str
                 latitude from place_list URL
@@ -29,8 +28,9 @@ class GoogleAPI:
             response.content: bytes
                 A response content in form of JSON.
         """
-        url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat}%2C{lng}&radius=1500&type={type}&key={self.api_key}"
-        payload={}
+        url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat}"\
+            f"%2C{lng}&radius=1500&type={type}&key={self.api_key}"
+        payload = {}
         headers = {}
         response = requests.request("GET", url, headers=headers, data=payload)
         return response.content
@@ -40,7 +40,7 @@ class GoogleAPI:
 
         Args:
             token: next_page_token from google map api search nearby places.
-        
+
         Returns:
             response.content: next place nearby page data.
         """

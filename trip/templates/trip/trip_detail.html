@@ -22,6 +22,7 @@
     </style>
     <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}" />
     <link rel="stylesheet" href="https://npmcdn.com/flickity@2/dist/flickity.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 {% endblock %}
 
 {% block main_content %}
@@ -38,10 +39,10 @@
                     {% if user.is_authenticated %}
                         {% if user.id == post.author.id %}
                             <div class="flex">
-                                <button onclick="document.location='{% url 'trip:editpost' post.pk%}'" class="px-2 py-1 mr-1 bg-gray-400 font-medium text-gray-700 text-sm rounded shadow-md">
+                                <button onclick="document.location='{% url 'trip:editpost' post.pk%}'" class="px-2 py-1 mr-1 bg-gray-400 font-medium text-gray-700 text-sm rounded shadow-md hover:bg-gray-300">
                                     Edit
                                 </button>
-                                <button id="background-delete-button" class="px-2 py-1 bg-red-600 font-medium text-gray-100 text-sm rounded shadow-md">
+                                <button id="background-delete-button" class="px-2 py-1 bg-red-600 hover:bg-red-500 font-medium text-gray-100 text-sm rounded shadow-md">
                                     Delete
                                 </button>
                             </div>
@@ -93,8 +94,8 @@
             <div class="mx-4 px-4 rounded-lg overflow-y-scroll js-show-on-scroll no-scrollbar" style="max-height:50rem">           
                     <br>
                     {% if not post.review.all %}
-                        No review Yet</br>
-                        <a href="{% url 'trip:addreview' post.pk%}">---Add commend---</a>
+                        <p class="mx-auto text-center text-xl">No review yet</p>
+                            <a href="{% url 'trip:addreview' post.pk%}">---Add commend---</a>
                     {% else %}
                     {% for commend in post.review.all %}
                         <div class="bg-translucent rounded-lg mb-8 px-4 py-2 js-show-on-scroll">
@@ -104,17 +105,14 @@
                                     <p>{{commend.date_added}}</p>
                                 </div>
                                 <div>
-                                    <p class="flex justify-center pt-2 text-2xl font-semibold -mb-2">{{ commend.total_like }}</p>
+                                    <p id="total-like-{{commend.id}}"class="flex justify-center pt-1 text-2xl font-semibold -mb-2">{{ commend.total_like }}</p>
                                     <div class="flex flex-grow">
-                                        <form action="{% url 'trip:list_commend' post.pk %}" method="POST">
-                                            {% csrf_token %}
-                                            <div class="pt-6 hover:scale-110">
-                                                <button type="submit" name="commend_id" value="{{ commend.id }}">
+                                            <div class="pt-2 hover:scale-110">
+                                                <button id="review-like-button" value="{{ commend.id }}">
                                                     <span class="text-5xl text-gray-600">&#8679;</span>
                                                 </button>
                                             </div>
-                                        </form>
-                                            <div class="pt-12 pr-2 hover:scale-110">
+                                            <div class="pt-10 pb-2 pr-2 hover:scale-110">
                                                 <span class="text-5xl text-gray-600">&#8681;</span>
                                             </div>
                                         </div>
@@ -127,18 +125,12 @@
                     {% endfor %}
                     <a href="{% url 'trip:addreview' post.pk%}">---Add commend---</a>
                 {% endif %}
-                <div>
-                    {% if user.is_authenticated %}
-                        {% if user.id == post.author.id %}
-                    <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>
-                    <a href="{% url 'trip:deletepost' post.pk%}">(!!!DELETE!!!)</a>
-                        {% endif %}
-                    {% endif %}
-                    <a href="{% url 'trip:tripplan' %}">(ALL TRIP)</a>
-                    <br/><br>
-                </div>    
             </div>
-        </div>    
+            <hr class="flex my-6 border-gray-400 w-11/12 mx-auto">
+            <div>
+                <a href="{% url 'trip:tripplan' %}">(ALL TRIP)</a>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -157,7 +149,6 @@
         </div>
     </div>
 </div>
-
 <script>
     window.addEventListener
     ('DOMContentLoaded', () =>{
@@ -218,6 +209,31 @@
           target.classList.add("opacity-0");
           observer.observe(target);
         });
+
+$(document).ready(function(){
+    $(document).on('click', '#review-like-button', function (e) {
+        e.preventDefault();
+        var pk = {{ post.pk|safe }};
+        console.log(pk);
+        $.ajax({
+            type: 'POST',
+            url: '{% url "trip:list_commend" %}',
+            dataType: 'json',
+            data: {
+                commend_id: $(this).val(),
+                pk: pk,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post'
+            },
+            success: function (json) {
+                document.getElementById("total-like-" + json['id']).innerHTML = json['result']
+            },
+            error: function (xhr, errmsg, err) {
+
+            }
+        });
+    });
+});
 </script>
 
 {% endblock %}

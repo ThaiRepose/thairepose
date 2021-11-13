@@ -1,6 +1,7 @@
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 import json
 import os
+from django.http.response import JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
 import requests
 from dotenv import load_dotenv
@@ -221,18 +222,16 @@ def delete_post(request, pk):
 
 
 @login_required
-def like_view(request, pk):
-    """Methid for store user like of each commend.
+def like_view(request):
+    """Method that store user like in comment model
 
-    Args:
-        pk(str): review id of link located.
-
-    Return:
-        HttpResponse: Redirect to page that link review located.
+    Returns:
+        JsonResponse: result and comment id
     """
-    post = get_object_or_404(Review, id=request.POST.get('commend_id'))
-    post.like.add(request.user)
-    return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
+    if request.method == 'POST':
+        post = get_object_or_404(Review, id=request.POST.get('commend_id'))
+        post.like.add(request.user)
+        return JsonResponse({'result':post.total_like, 'id':request.POST.get('commend_id')})
 
 
 @login_required

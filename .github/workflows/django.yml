@@ -1,9 +1,6 @@
 name: Django-CI/CD
-on:
+on: 
   push:
-    branches: 
-      - main
-      - beta
   pull_request:
     branches:
       - main

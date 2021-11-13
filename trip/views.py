@@ -1,9 +1,9 @@
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse
-from django.views.generic import ListView, DetailView, CreateView
-from .forms import TripPlanForm
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse, reverse_lazy4
 
 import json
 import os
@@ -11,7 +11,8 @@ import requests
 from threpose.settings import BASE_DIR
 from src.caching.caching_gmap import APICaching
 from dotenv import load_dotenv
-from .models import TripPlan, Review
+from .forms import TripPlanForm
+from .models import TripPlan, Review, CategoryPlan
 
 
 api_caching = APICaching()

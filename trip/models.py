@@ -1,6 +1,21 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from ckeditor.fields import RichTextField
+
+
+class CategoryPlan(models.Model):
+    """Class for store Category of Trip plan.
+
+    Attributes:
+        name(str): category of trip
+
+    """
+
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
 
 
 class TripPlan(models.Model):
@@ -9,19 +24,35 @@ class TripPlan(models.Model):
     Attributes:
         title(str): title of post
         author(user): user who write post
+        duration(int): all day in trip
+        print(int): money to cover all trip
         body(str): descriptions
+        category(str): category of trip
+        post_date(datetime): datetime of trip is created
+        like(User): store all use press like button
     """
 
     title = models.CharField(max_length=200)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
-    body = models.TextField()
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE)
+    duration = models.IntegerField(null=True)
+    price = models.IntegerField(null=True)
+    body = RichTextField(blank=True, null=True)
+    category = models.ForeignKey(
+        CategoryPlan, on_delete=models.PROTECT, blank=True, null=True)
+    post_date = models.DateField(auto_now_add=True)
+    like = models.ManyToManyField(User, related_name='trip_like', blank=True)
 
     def __str__(self):
         return self.title + ' | ' + str(self.author)
 
     def get_absolute_url(self):
         """Return redirect to all trip pages."""
-        return reverse("trip:tripdetail", args=(str(self.id)))
+        return reverse("trip:tripdetail", args=((str(self.id),)))
+
+    def total_like(self):
+        """Return number of count."""
+        return self.like.count()
 
 
 class Review(models.Model):
@@ -54,4 +85,4 @@ class Review(models.Model):
 
         When your like comment page will refesh itseft to show all like.
         """
-        return reverse("trip:tripdetail", args=(str(self.post.id)))
+        return reverse("trip:tripdetail", args=((str(self.post.id),)))

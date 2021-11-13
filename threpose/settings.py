@@ -45,11 +45,13 @@ INSTALLED_APPS = [
     'trip',
     'tailwind',
     'theme',
+    'widget_tweaks',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'search',
+    'ckeditor'
 ]
 NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 # Config for Tailwind CSS

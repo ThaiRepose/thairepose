@@ -1,5 +1,5 @@
-[![Build Status](https://app.travis-ci.com/ThaiRepose/thairepose.svg?branch=oauth)](https://app.travis-ci.com/ThaiRepose/thairepose)
-[![codecov](https://codecov.io/gh/ThaiRepose/thairepose/branch/oauth/graph/badge.svg?token=uocBU8wW8W)](https://codecov.io/gh/ThaiRepose/thairepose)
+![workflow](https://github.com/ThaiRepose/thairepose/actions/workflows/django.yml/badge.svg)
+[![codecov](https://codecov.io/gh/ThaiRepose/thairepose/branch/beta/graph/badge.svg?token=uocBU8wW8W)](https://codecov.io/gh/ThaiRepose/thairepose)
 # ThaiRepose
 **ThaiRepose** website is a web application that helps to find areas that users want to travel and it can help people to make decisions for making trips. People who don't even have any experience planning a trip before, it can help them to easily plan a trip. ThaiRepose.com will be a community for people who love to travel.
 
@@ -44,8 +44,6 @@
     ```
     pip install -r requirements.txt
     ```
-    [Our caching system](https://github.com/ThaiRepose/thairepose/tree/caching/src/caching#installation)
-
 6. Create `.env` file in the same level as manage.py and write down:
 
     ```
@@ -80,10 +78,6 @@
     ```
     python manage.py runserver
     ```
-    ```
-    tr-caching start
-    ```
-
 11. Add Oauth API Key
     Go to domain/admin/socialaccount/socialapp/ (local: http://127.0.0.1:8000/admin/socialaccount/socialapp/) 
     - Add provider to Google.
@@ -103,3 +97,4 @@
 | Tanin Pewluangsawat | [💤 TaninDean](https://github.com/TaninDean) |
 | Vitvara Varavithya | [💦 vitvara](https://github.com/vitvara) |
 | Nabhan Suwanachote | [ ☔ nabhan-au](https://github.com/nabhan-au) |
+

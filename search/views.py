@@ -16,6 +16,79 @@ api_caching = APICaching()
 
 PLACE_IMG_PATH = os.path.join(BASE_DIR,'theme','static','images','places_image')
 
+# Place List page
+def get_next_page_from_token(request):
+    """Get places list data by next_page_token."""
+    if request.method != 'POST':
+        return JsonResponse({"status": "INVALID METHOD"})
+    if 'token' not in request.POST:
+        return JsonResponse({"status": "INVALID PAYLOAD"})
+    token = request.POST['token']
+    context = []
+    if api_caching.get(f'{token[:30]}') is None:
+        for _ in range(6):  # Request data for 6 times, if response is not OK and reached maximum, it will return empty
+            data = json.loads(gapi.next_search_nearby(token))
+            if data['status'] == "OK":
+                context = restruct_nearby_place(data['results'])
+                break
+            time.sleep(0.2)
+        byte_context = json.dumps({"cache": context, "status": "OK"}, indent=3).encode()
+        api_caching.add(f'{token[:30]}', byte_context)
+        if len(context) > 0:
+            return JsonResponse({"places": context, "status": "OK"})
+        return JsonResponse({"places": context, "status": "NOT FOUND"})
+    else:
+        context = json.loads(api_caching.get(f'{token[:30]}'))
+        context = check_downloaded_image(context['cache'])
+        return JsonResponse({"places": context, "status": "OK"})
+
+def place_list(request, *args, **kwargs):
+    """Place_list view for list place that nearby the user search input."""
+    data = request.GET
+    types = ['restaurant', 'zoo', 'tourist_attraction', 'museum', 'cafe', 'aquarium']
+    lat = data['lat']
+    lng = data['lng']
+    # Get place cache
+    if api_caching.get(f'{lat}{lng}searchresult'):
+        # data exists
+        data = json.loads(api_caching.get(f'{lat}{lng}searchresult'))
+        context = data['cache']
+        token = data['next_page_token']
+    else:
+        # data not exist
+        context, token = get_new_context(types, lat, lng)
+    context = check_downloaded_image(context)
+    # get all image file name in static/images/place_image
+    api_key = os.getenv('API_KEY')
+    return render(request, "search/place_list.html", {'places': context, 'all_token': token, 'api_key': api_key})
+
+
+# Helper function
+def get_new_context(types: list, lat: int, lng: int) -> list:
+    """Cache new data and return the new data file
+    
+    Args:
+        types: place type
+
+        lat, lng: latitude and longitude of user search input for
+
+    Returns:
+        context: places nearby data
+        token: next page token
+    """
+    token = {}
+    tempo_context = []
+    for type in types:
+        data = json.loads(gapi.search_nearby(lat, lng, type))
+        if 'next_page_token' in data:
+            token[type] = data['next_page_token']
+        places = data['results']
+        restructed_places = restruct_nearby_place(places)
+        tempo_context = add_more_place(tempo_context, restructed_places)  
+    api_caching.add(f'{lat}{lng}searchresult', json.dumps({'cache':tempo_context, 'next_page_token':token}, indent=3).encode())
+    context = json.loads(api_caching.get(f'{lat}{lng}searchresult'))['cache']
+    return context, token
+
 def restruct_nearby_place(places: dict) -> list:
     """Process data for frontend
 
@@ -58,26 +131,6 @@ def restruct_nearby_place(places: dict) -> list:
         context.append(init_place)
     return context
 
-def place_list(request, *args, **kwargs):
-    """Place_list view for list place that nearby the user search input."""
-    data = request.GET
-    types = ['restaurant', 'zoo', 'tourist_attraction', 'museum', 'cafe', 'aquarium']
-    lat = data['lat']
-    lng = data['lng']
-    # Get place cache
-    if api_caching.get(f'{lat}{lng}searchresult'):
-        # data exists
-        data = json.loads(api_caching.get(f'{lat}{lng}searchresult'))
-        context = data['cache']
-        token = data['next_page_token']
-    else:
-        # data not exist
-        context, token = get_new_context(types, lat, lng)
-    context = check_downloaded_image(context)
-    # get all image file name in static/images/place_image
-    api_key = os.getenv('API_KEY')
-    return render(request, "search/place_list.html", {'places': context, 'all_token': token, 'api_key': api_key})
-
 def check_downloaded_image(context):
     """Check that image from static/images/place_image that is ready for frontend to display or not"""
     if os.path.exists(PLACE_IMG_PATH):
@@ -100,53 +153,4 @@ def add_more_place(context, new):
         context.append(place)
     return context
 
-def get_new_context(types: list, lat: int, lng: int) -> list:
-    """Cache new data and return the new data file
-    
-    Args:
-        types: place type
 
-        lat, lng: latitude and longitude of user search input for
-
-    Returns:
-        context: places nearby data
-        token: next page token
-    """
-    token = {}
-    tempo_context = []
-    for type in types:
-        data = json.loads(gapi.search_nearby(lat, lng, type))
-        if 'next_page_token' in data:
-            token[type] = data['next_page_token']
-        places = data['results']
-        restructed_places = restruct_nearby_place(places)
-        tempo_context = add_more_place(tempo_context, restructed_places)  
-    api_caching.add(f'{lat}{lng}searchresult', json.dumps({'cache':tempo_context, 'next_page_token':token}, indent=3).encode())
-    context = json.loads(api_caching.get(f'{lat}{lng}searchresult'))['cache']
-    return context, token
-
-
-def get_next_page_from_token(request):
-    """Get places list data by next_page_token."""
-    if request.method != 'POST':
-        return JsonResponse({"status": "INVALID METHOD"})
-    if 'token' not in request.POST:
-        return JsonResponse({"STATUS": "INVALID PAYLOAD"})
-    token = request.POST['token']
-    context = []
-    if api_caching.get(f'{token[:30]}') is None:
-        for _ in range(6):  # Request data for 6 times, if response is not OK and reached maximum, it will return empty
-            data = json.loads(gapi.next_search_nearby(token))
-            if data['status'] == "OK":
-                context = restruct_nearby_place(data['results'])
-                break
-            time.sleep(0.2)
-        byte_context = json.dumps({"cache": context, "status": "OK"}, indent=3).encode()
-        api_caching.add(f'{token[:30]}', byte_context)
-        if len(context) > 0:
-            return JsonResponse({"places": context, "status": "OK"})
-        return JsonResponse({"places": context, "status": "NOT FOUND"})
-    else:
-        context = json.loads(api_caching.get(f'{token[:30]}'))
-        context = check_downloaded_image(context['cache'])
-        return JsonResponse({"places": context, "status": "OK"})

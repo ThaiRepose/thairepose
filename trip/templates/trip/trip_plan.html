@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-{% extends 'base.html' %}
-
-{% block main_content %}
-<ul>
-{% for post in object %}
-    <li><a href="{% url 'trip:tripdetail' post.pk %}" type="submit">{{ post.title }}</a> 
-    {{ post.author }}
-    <br>
-    {{ post.body }}</li>
-{% endfor %}</ul>
-<li><a href="{% url 'trip:addpost' %}">---Add post---</a></li>
-{% endblock %}
-=======
 {% extends 'base.html' %}
 
 {% block main_content %}
@@ -76,4 +62,3 @@
     }
 </script>
 {% endblock %}
->>>>>>> beta

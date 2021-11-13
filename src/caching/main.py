@@ -1,16 +1,39 @@
+"""
+TR-CACHING system is a caching system or auto 
+download image system you can call it what you want
+It will read a cache file that have a 'cache' in it 
+and element in 'cache' that have photo reference
+it will autometic download image by photo reference.
+
+# Installation
+`pip install --editable ~/caching/.`
+
+# TR_CACHING CLI
+- `tr-caching start`: run auto download image.
+
+..Author Vitvara Varavithya
+This is my first time writting something like this, it will have
+a lot of bug that I can not find it all by my self if you find it contact me or
+you can open issue on our repository to let me know. And If you have an idea to
+solve it or have a better way to do it fork and make a pull request and request me to be
+your reviewer I will review it as fast as I can.
+GitHub `vitvara`
+
+"""
+
+import json, os
+import requests
+import datetime
+import click
 from os import listdir
 from os.path import isfile, join
 from pathlib import Path
-import json, os
-import requests
 from caching_gmap import APICaching
-import datetime
-import click
-import pathlib
 
-api_caching = APICaching()
 from dotenv import load_dotenv
 load_dotenv()
+
+api_caching = APICaching()
 
 BASE_DIR = Path(__file__).resolve().parent
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent

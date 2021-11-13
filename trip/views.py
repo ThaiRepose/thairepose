@@ -1,7 +1,7 @@
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import ListView, DetailView, CreateView
-from forms import TripPlanForm
+from .forms import TripPlanForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 

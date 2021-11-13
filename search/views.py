@@ -80,14 +80,15 @@ def place_list(request, *args, **kwargs):
 
 def check_downloaded_image(context):
     """Check that image from static/images/place_image that is ready for frontend to display or not"""
-    all_img_file = [f for f in os.listdir(PLACE_IMG_PATH) if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
-    for place in context:
-        if 'name_img' in place:
-            place_id = place['place_id']
-            if f'{place_id}photo.jpeg' in all_img_file or len(place['photo_ref']) == 0:
-                place['downloaded'] = True
-            else:
-                place['downloaded'] = False
+    if os.path.exists(PLACE_IMG_PATH):
+        all_img_file = [f for f in os.listdir(PLACE_IMG_PATH) if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
+        for place in context:
+            if 'name_img' in place:
+                place_id = place['place_id']
+                if f'{place_id}photo.jpeg' in all_img_file or len(place['photo_ref']) == 0:
+                    place['downloaded'] = True
+                else:
+                    place['downloaded'] = False
     return context
 
 def add_more_place(context, new):

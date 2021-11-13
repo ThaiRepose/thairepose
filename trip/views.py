@@ -12,7 +12,10 @@ from django.views.generic import ListView, DetailView, CreateView
 from .models import TripPlan, Review
 from django.contrib.auth.decorators import login_required
 import pickle
+from threpose.settings import BASE_DIR
 api_caching = APICaching()
+
+PLACE_IMG_PATH = os.path.join(BASE_DIR,'theme','static','images','places_image')
 
 def restruct_detail_context_data(context):
     """Process data for frontend
@@ -177,6 +180,24 @@ def check(context):
             return False
     return True
 
+def check_downloaded_image(context):
+    """Check that image from static/images/place_image that is ready for frontend to display or not"""
+    all_img_file = [f for f in os.listdir(PLACE_IMG_PATH) if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
+    if os.path.exists(PLACE_IMG_PATH):
+        place_id = context['place_id']
+        context['downloaded'] = True
+        for idx in range(len(context['images'])):
+            if f'{place_id}_{idx}photo.jpeg' not in all_img_file:
+                context['downloaded'] = False
+        if context['downloaded']:
+            context['images'] = range(len(context['images']))
+        for idx in range(len(context['suggestions'])):
+            sug_id = context['suggestions'][idx]['place_id']
+            if f'{sug_id}photo.jpeg' in all_img_file:
+                context['suggestions'][idx]['downloaded'] = True
+            else:
+                context['suggestions'][idx]['downloaded'] = False      
+    return context
 
 def index(request):
     """Render Index page."""
@@ -260,6 +281,7 @@ def place_info(request, place_id: str):
     context['rating'] = range(round(context['rating']))
     check_image(context)
     context['api_key'] = api_key
+    context = check_downloaded_image(context)
     return render(request, "trip/place_details.html", context)
 
 def check_image(context):

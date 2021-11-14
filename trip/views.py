@@ -227,14 +227,24 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
     if 'result' in place_data.keys():
         if 'name' in place_data['result'].keys():
             context['place_name'] = place_data['result']['name']
+        else:
+            context['place_name'] = "N/A"
         if 'place_id' in place_data['result'].keys():
             context['place_id'] = place_data['result']['place_id']
+        else:
+            context['place_id'] = "N/A"
         if 'types' in place_data['result'].keys():
             context['types'] = place_data['result']['types']
+        else:
+            context['types'] = []
         if 'formatted_phone_number' in place_data['result'].keys():
             context['phone'] = place_data['result']['formatted_phone_number']
+        else:
+            context['phone'] = "N/A"    
         if 'website' in place_data['result'].keys():
             context['website'] = place_data['result']['website']
+        else:
+            context['website'] = "N/A"  
         if 'rating' in place_data['result'].keys():
             context['rating'] = int(place_data['result']['rating'])
             context['blank_rating'] = 5 - int(place_data['result']['rating'])

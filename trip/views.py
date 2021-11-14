@@ -240,11 +240,11 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
         if 'formatted_phone_number' in place_data['result'].keys():
             context['phone'] = place_data['result']['formatted_phone_number']
         else:
-            context['phone'] = "N/A"    
+            context['phone'] = "N/A"
         if 'website' in place_data['result'].keys():
             context['website'] = place_data['result']['website']
         else:
-            context['website'] = "N/A"  
+            context['website'] = "N/A"
         if 'rating' in place_data['result'].keys():
             context['rating'] = int(place_data['result']['rating'])
             context['blank_rating'] = 5 - int(place_data['result']['rating'])

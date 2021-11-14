@@ -15,14 +15,14 @@
 
 {% block main_content %}
     <div class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10">
-        <div class="w-full h-full rounded-3xl container-lg flex flex-col">
+        <div class="w-full rounded-3xl container-lg container-height flex flex-col md:overflow-hidden">
             <div id="place_name" class="mx-8 my-6">
                 <h1 class="text-3xl font-bold underline-md" style="line-height: 1.6;">{{ place_name }}</h1>
             </div>
             <div class="h-full flex flex-col md:flex-row">
                 <div class="w-full md:w-2/5">
                     <!-- Flickity HTML init -->
-                    <div class="carousel js-flickity h-60 md:h-3/5 js-show-on-scroll">
+                    <div class="carousel js-flickity h-60 md:h-2/5 js-show-on-scroll">
                         {% if images %}
                             {% for image in images %}
                                 <div class="carousel-cell" style="height: 100%">
@@ -31,11 +31,11 @@
                                     {% else %}
                                     <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={{ image }}&key={{ api_key }}" alt="{{ name }}">
                                     {% endif %}
-                                </div>
+                               </div>
                             {% endfor %}
                             {% else %}
                                 <div class="carousel-cell" style="height: 100%">
-                                    <img src="{% static 'images/img_not_found.jpg' %}" alt="NotFound" />
+                                    <img src="{% static 'trip/images/img_not_found.jpg' %}" alt="NotFound" />
                                 </div>
                         {% endif %}
                     </div>
@@ -50,10 +50,10 @@
                                     <a class="text-lg">N/A</a>
                                 {% endif %}
                             </div>
-                            <div class="flex flex-row h-8" style="display: inline;">
+                            <div class="w-4/5 md:w-full h-full">
                                 <p class="text-lg">Website:&nbsp;</p>
                                 {% if website %}
-                                    <a href="{{ website }}" class="text-lg text-indigo-500 underline" target="_blank">{{ website }}</a>
+                                    <a href="{{ website }}" class="text-lg text-indigo-500 underline" target="_blank"><span class="limit-text">{{ website }}</span></a>
                                 {% else %}
                                     <a class="text-lg">N/A</a>
                                 {% endif %}
@@ -73,11 +73,11 @@
                 </div>
                 <div class="w-full md:w-2/5">
                     <h1 class="text-2xl font-bold mt-6 ml-10">REVIEWS</h1>
-                    <div class="overflow-y-scroll px-10 h-5/6 py-2" style="height: 28rem;">
+                    <div class="overflow-y-scroll hide-scrollbar px-10 py-2 detail-scrolllist">
                     {% for review in reviews %}
-                        <div class="rounded-2xl bg-translucent h-28 flex flex-row my-2 js-show-on-scroll">
-                            <div class="overflow-y-auto px-6 w-4/5">
-                                <h1 class="pt-3 text-lg font-bold">{{ review.author }}</h1>
+                        <div class="rounded-2xl bg-translucent flex flex-row my-2 transition duration-75 js-show-on-scroll" style="min-height: 7rem;">
+                            <div class="px-6 py-4 w-4/5">
+                                <h1 class="text-lg font-bold">{{ review.author }}</h1>
                                 <p class="text-sm">{{ review.text }}</p>
                             </div>
                             <div class="flex flex-grow">
@@ -93,20 +93,20 @@
                     </div>
                 </div>
                 <div class="w-full md:w-1/5">
-                    <h1 class="text-xl font-bold mt-6 md:mt-2 md:my-6 ml-6">SUGGESTIONS</h1>
-                    <div class="overflow-y-scroll px-1" style="height: 28rem;">
+                    <h1 class="text-xl font-bold mt-6 ml-6">SUGGESTIONS</h1>
+                    <div class="overflow-y-scroll hide-scrollbar detail-scrolllist px-10">
                         {% for place in suggestions %}
-                            <div class="overflow-y-scroll px-2 py-2 flex justify-center hover:scale-110 transition duration-300 js-show-on-scroll">
-                                <a class="rounded-2xl h-52 w-44 bg-translucent px-2 py-2 flex flex-col bg-gray-900" href="{% url 'trip:place-detail' place.place_id %}">
+                            <div class="px-2 py-2 flex justify-center hover:scale-110 transition duration-75 js-show-on-scroll">
+                                <a class="rounded-2xl h-52 w-44 bg-translucent px-2 py-2 flex flex-col bg-gray-900" href="{% url 'trip:place' place.place_id %}">
                                     <div class="rounded-2xl bg-gray-300 w-40 h-40">
                                         {% if place.downloaded == True %}
                                         <img class="object-cover h-full w-full rounded-xl" src="{% static 'images/places_image/' %}{{ place.place_id }}photo.jpeg">
                                         {% else %}
                                         <img class="object-cover h-full w-full rounded-xl" src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={{ place.photo_ref }}&key={{ api_key }}" alt="{{ name }}">
                                         {% endif %}
-                                    </div>
-                                    <div class="overflow-y-scroll flex justify-center">
-                                        <h1 class="font-bold">{{ place.place_name }}</h1>
+                                   </div>
+                                    <div class="flex justify-center items-center">
+                                        <h1 class="font-bold text-center">{{ place.name }}</h1>
                                     </div>
                                 </a>
                             </div>

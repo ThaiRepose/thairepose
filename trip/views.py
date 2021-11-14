@@ -161,7 +161,7 @@ class CatsListView(ListView):
 
 def add_post(request):
     """Method for link html of add post page.
-    
+
     Return:
         if post return to trip detail else return to add blog page.
     """

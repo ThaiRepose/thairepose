@@ -45,10 +45,13 @@ INSTALLED_APPS = [
     'trip',
     'tailwind',
     'theme',
+    'widget_tweaks',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'search',
+    'ckeditor'
 ]
 
 # Config for Tailwind CSS

@@ -2,9 +2,6 @@
     /* Backfround color */
     background-color: rgba(209, 213, 219, 0.3);
 
-    /* Full height */
-    height: 100%;
-
     /* Center and scale the image nicely */
     background-position: center;
     background-repeat: no-repeat;
@@ -16,12 +13,51 @@
     word-wrap:break-word;
 }
 
+.container-height {
+    /* Full height */
+    height: 73vh;
+}
+
+.detail-scrolllist {
+    height: 66.666667%;
+}
+
+@media only screen and (max-width: 766px) {
+    .container-height {
+        /* Full height */
+        height: 100%;
+    }
+    .detail-scrolllist {
+        height: 100%;
+    }
+
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
 .bg-translucent {
     /* Backfround color */
     background-color: rgba(209, 213, 219, 0.35);
 
     /* Shadow */
     box-shadow: 2px 5px 10px rgb(0 0 0 / 0.1);
+}
+
+.limit-text {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .fade {

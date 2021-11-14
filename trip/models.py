@@ -1,8 +1,11 @@
+import os
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
-from ckeditor.fields import RichTextField
 from ckeditor_uploader.fields import RichTextUploadingField
+from uuid import uuid4
+from django.utils.deconstruct import deconstructible
+from django.conf import settings
 
 
 class CategoryPlan(models.Model):
@@ -90,8 +93,23 @@ class Review(models.Model):
         return reverse("trip:tripdetail", args=((str(self.post.id),)))
 
 
-def path_imag(instance, filename):
-    return '/'.join(filter(None, (instance.image, filename)))
+@deconstructible
+class UploadToPathAndRename(object):
+    """Class for rename image file."""
+
+    def __init__(self, path):
+        self.sub_path = path
+
+    def __call__(self, instance, filename):
+        ext = filename.split('.')[-1]
+        # get filename
+        if instance.post.pk:
+            filename = '{}/{}'.format(instance.post.pk, filename)
+        else:
+            # set filename as random string
+            filename = '{}.{}'.format(uuid4().hex, ext)
+        # return the whole path to the file
+        return os.path.join(self.sub_path, filename)
 
 
 class UploadImage(models.Model):
@@ -103,4 +121,4 @@ class UploadImage(models.Model):
     """
     post = models.ForeignKey(
         TripPlan, related_name="image", on_delete=models.CASCADE, null=True)
-    image = models.ImageField(upload_to=path_imag)
+    image = models.ImageField(upload_to=UploadToPathAndRename(os.path.join(settings.MEDIA_ROOT)))

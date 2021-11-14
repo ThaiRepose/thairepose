@@ -18,7 +18,7 @@ PLACE_IMG_PATH = os.path.join(BASE_DIR, 'theme', 'static', 'images', 'places_ima
 
 
 # Place List page
-def get_next_page_from_token(request):
+def get_next_page_from_token(request):  # pragma: no cover
     """Get places list data by next_page_token."""
     # Check request
     if request.method != 'POST':
@@ -54,7 +54,7 @@ def get_next_page_from_token(request):
         return JsonResponse({"places": context, "status": "OK"})
 
 
-def place_list(request, *args, **kwargs):
+def place_list(request, *args, **kwargs):  # pragma: no cover
     """Place_list view for list place that nearby the user search input."""
     data = request.GET  # get lat and lng from url
     # Our default search type
@@ -73,14 +73,13 @@ def place_list(request, *args, **kwargs):
         # data not exist
         context, token = get_new_context(types, lat, lng)
     context = check_downloaded_image(context)
-    print(context)
     # get all image file name in static/images/place_image
     api_key = os.getenv('API_KEY')
     return render(request, "search/place_list.html", {'places': context, 'all_token': token, 'api_key': api_key})
 
 
 # Helper function
-def get_new_context(types: list, lat: int, lng: int) -> list:
+def get_new_context(types: list, lat: int, lng: int) -> list:  # pragma: no cover
     """Cache new data and return the new data file
 
     Args:
@@ -110,7 +109,7 @@ def get_new_context(types: list, lat: int, lng: int) -> list:
     return context, token
 
 
-def restruct_nearby_place(places: dict) -> list:
+def restruct_nearby_place(places: list) -> list:
     """Process data for frontend
 
     Args:
@@ -126,7 +125,7 @@ def restruct_nearby_place(places: dict) -> list:
             'place_name': <name>,
             'place_id': <place_id>,
             'photo_ref': [<photo_ref],
-            'type': [],
+            'types': [],
             # other...
         }
         . . .
@@ -138,7 +137,7 @@ def restruct_nearby_place(places: dict) -> list:
             'place_name': None,
             'place_id': None,
             'photo_ref': [],
-            'type': [],
+            'types': [],
         }
 
         if 'photos' in place:
@@ -150,7 +149,7 @@ def restruct_nearby_place(places: dict) -> list:
             continue
         init_place['place_name'] = place['name']
         init_place['place_id'] = place['place_id']
-        init_place['type'] = place['types']
+        init_place['types'] = place['types']
         context.append(init_place)
     return context
 

@@ -2,8 +2,13 @@ from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from dotenv import load_dotenv
 import os
+import time
 import unittest
+from threpose.settings import BASE_DIR
 from .views import get_details_context
+from .views import check_downloaded_image
+from .views import restruct_detail_context_data
+from .views import resturct_to_place_detail
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from .models import Review, TripPlan, CategoryPlan
@@ -27,6 +32,7 @@ class PlaceDetailsViewTest(TestCase):
         """Test for get_details_context() function."""
         mock_data = {
             "result": {
+                'place_id': '123456',
                 'name': "Tawan Boonma",
                 'formatted_phone_number': "191",
                 'website': "tawanb.dev",
@@ -34,7 +40,8 @@ class PlaceDetailsViewTest(TestCase):
                 'photos': [{'photo_reference': "1234"}],
                 'reviews': [{'author_name': "Tawan", "text": "Good"},
                             {'author_name': "Unknown", "text": ""}],
-                'geometry': {'location': {'lat': 10, 'lng': 10}}
+                'geometry': {'location': {'lat': 10, 'lng': 10}},
+                'types': ['school']
             }
         }
         context = get_details_context(mock_data, self.frontend_api_key)
@@ -45,6 +52,25 @@ class PlaceDetailsViewTest(TestCase):
         self.assertEqual(1, context['blank_rating'])
         self.assertIn("1234", context['images'])
         self.assertEqual(1, len(context['reviews']))
+        self.assertEqual('123456', context['place_id'])
+        self.assertEqual(['school'], context['types'])
+        self.assertIsInstance(context['suggestions'], list)
+
+    def test_get_details_function_dont_have_data(self):
+        """Test for get_details_context() function."""
+        mock_data = {
+            "result": {
+                'geometry': {'location': {'lat': 10, 'lng': 10}}
+            }
+        }
+        context = get_details_context(mock_data, self.frontend_api_key)
+        self.assertEqual("N/A", context['place_name'])
+        self.assertEqual("N/A", context['phone'])
+        self.assertEqual("N/A", context['website'])
+        self.assertEqual(0, context['rating'])
+        self.assertEqual(0, context['blank_rating'])
+        self.assertEqual([], context['images'])
+        self.assertEqual(0, len(context['reviews']))
         self.assertIsInstance(context['suggestions'], list)
 
     def test_empty_get_details_function(self):
@@ -68,6 +94,115 @@ class PlaceDetailsViewTest(TestCase):
         self.assertEqual(response.context['phone'], "02 942 8200")
         self.assertEqual(response.context['website'], "http://www.ku.ac.th/")
 
+    def test_check_downloaded_image(self):
+        PLACE_IMG_PATH = os.path.join(BASE_DIR, 'theme', 'static', 'images', 'places_image')
+        if not os.path.exists(PLACE_IMG_PATH):
+            os.mkdir(PLACE_IMG_PATH)
+        mockup_data ={
+            "place_name": "test1",
+            "place_id": "test1",
+            "images": [
+                "test1",
+                "test11"
+            ],
+            "suggestions": [{"place_name": "test2", "photo_ref": "test2", "place_id": "test2"}]
+            }
+        context = check_downloaded_image(mockup_data)
+        self.assertEqual(False, context['downloaded'])
+        self.assertEqual(False, context['suggestions'][0]['downloaded'])
+        new = open(os.path.join(PLACE_IMG_PATH, 'test1_0photo.jpeg'), 'wb')
+        new.close()
+        context = check_downloaded_image(mockup_data)
+        self.assertEqual(False, context['downloaded'])
+        new = open(os.path.join(PLACE_IMG_PATH, 'test1_1photo.jpeg'), 'wb')
+        new.close()
+        context = check_downloaded_image(mockup_data)
+        self.assertEqual(True, context['downloaded'])
+        new = open(os.path.join(PLACE_IMG_PATH, 'test2photo.jpeg'), 'wb')
+        new.close()
+        context = check_downloaded_image(mockup_data)
+        self.assertEqual(True, context["suggestions"][0]['downloaded'])
+        os.remove(os.path.join(PLACE_IMG_PATH, 'test1_0photo.jpeg'))
+        os.remove(os.path.join(PLACE_IMG_PATH, 'test1_1photo.jpeg'))
+        os.remove(os.path.join(PLACE_IMG_PATH, 'test2photo.jpeg'))
+        mockup_data ={
+            "place_name": "test1",
+            "place_id": "test1",
+            "images": [
+                "test1",
+            ],
+            "suggestions": [{"place_name": "test2", "photo_ref": "test2", "place_id": "test2"}]
+            }
+        context = check_downloaded_image(mockup_data)
+        self.assertEqual(False, context['downloaded'])
+        new = open(os.path.join(PLACE_IMG_PATH, 'test1photo.jpeg'), 'wb')
+        new.close()
+        context = check_downloaded_image(mockup_data)
+        self.assertEqual(True, context['downloaded'])
+        os.remove(os.path.join(PLACE_IMG_PATH, 'test1photo.jpeg'))
+
+    def test_restruct_detail_context_data(self):
+        mockup_data = {
+            "place_name": "test1",
+            "place_id": "test1",
+            "images": [
+                "test1",
+            ],"reviews": [
+            {
+               "author": "- - SHJR",
+               "text": "It was perfect"
+            }],
+            "types": [ "lodging"],
+            "phone": "11223344",
+            "rating": 4,
+            "blank_rating": 1,
+            "website": "www.ku.ac.th",
+            "suggestions": [{"place_name": "test2", "photo_ref": "test2", "place_id": "test2"}]
+            }
+        self.assertEqual(2, len(restruct_detail_context_data(mockup_data)))
+
+    def test_resturct_to_place_detail(self):
+        mockup_data =[
+            {
+                "place_name": "The tr",
+                "place_id": "ChIJBaF",
+                "photo_ref": [
+                    "Aap_uECILxxdbdn"
+                ],
+                "types": ["lodging"],
+                "reviews": [
+                    {
+                    "author": "- - SHJR",
+                    "text": "It was perfect"
+                    }
+                ],
+                "phone": "1111111",
+                "rating": 4,
+                "blank_rating": 1,
+                "website": "threpose"
+            },
+            {
+                "place_name": "Ban",
+                "photo_ref": "A",
+                "place_id": "ChIJae"
+            }
+        ]
+        expected_data = {
+            'place_name': 'The tr',
+            'place_id': 'ChIJBaF',
+            'types': [['lodging']],
+            'rating': 4,
+            'blank_rating': 1,
+            'images': ['Aap_uECILxxdbdn'],
+            'reviews': [
+                {'author': '- - SHJR',
+                'text': 'It was perfect'}
+                ],
+            'suggestions': [{'place_name': 'Ban', 'photo_ref': 'A', 'place_id': 'ChIJae'}],
+            'website': 'threpose',
+            'phone': '1111111'}
+        context = resturct_to_place_detail(mockup_data)
+        self.assertEqual(expected_data, context)
 
 class IndexViewTest(TestCase):
     """Test for index page."""

@@ -308,9 +308,13 @@ def check_downloaded_image(context):
         all_img_file = [f for f in os.listdir(PLACE_IMG_PATH) if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
         place_id = context['place_id']
         context['downloaded'] = True
-        for idx in range(len(context['images'])):
-            if f'{place_id}_{idx}photo.jpeg' not in all_img_file:
-                context['downloaded'] = False
+        if len(context['images']) > 1:
+            for idx in range(len(context['images'])):
+                if f'{place_id}_{idx}photo.jpeg' not in all_img_file:
+                    context['downloaded'] = False
+        else:
+            if f'{place_id}photo.jpeg' not in all_img_file:
+                    context['downloaded'] = False
         if context['downloaded']:
             context['images'] = range(len(context['images']))
         for idx in range(len(context['suggestions'])):

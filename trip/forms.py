@@ -1,5 +1,6 @@
 from django import forms
-from .models import TripPlan, UploadImage
+from django.forms import widgets
+from .models import TripPlan, UploadImage, Review
 
 choice_list = ['Uncategorize']
 
@@ -23,3 +24,11 @@ class TripPlanImageForm(forms.ModelForm):
     class Meta:
         model = UploadImage
         fields = ('image',)
+
+
+class ReviewForm(forms.ModelForm):
+    """Class for create review form."""
+
+    class Meta:
+        model = Review
+        fields = ['body']

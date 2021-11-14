@@ -162,7 +162,7 @@ class TripModelTests(TestCase):
         """Test like post."""
         post = get_object_or_404(TripPlan, id='1')
         post.like.add(self.user)
-        self.assertEqual(TripPlan.objects.filter(id='1')[0].total_like(), 1)
+        self.assertEqual(TripPlan.objects.filter(id='1')[0].total_like, 1)
 
     def test_like_more_than_one_user(self):
         """Test have more than one user like same post."""
@@ -171,14 +171,14 @@ class TripModelTests(TestCase):
         post = get_object_or_404(TripPlan, id='1')
         post.like.add(self.user)
         post.like.add(self.user2)
-        self.assertEqual(TripPlan.objects.filter(id='1')[0].total_like(), 1)
+        self.assertEqual(TripPlan.objects.filter(id='1')[0].total_like, 1)
 
     def test_dont_count_like_by_same_user(self):
         """Test post like not count user like if same user."""
         post = get_object_or_404(TripPlan, id='1')
         post.like.add(self.user)
         post.like.add(self.user)
-        self.assertEqual(TripPlan.objects.filter(id='1')[0].total_like(), 1)
+        self.assertEqual(TripPlan.objects.filter(id='1')[0].total_like, 1)
 
     def test_cant_delete_category_when_have_post_in_category(self):
         with self.assertRaises(models.ProtectedError):

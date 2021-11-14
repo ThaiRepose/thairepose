@@ -51,6 +51,7 @@ class TripPlan(models.Model):
         """Return redirect to all trip pages."""
         return reverse("trip:tripdetail", args=((str(self.id),)))
 
+    @property
     def total_like(self):
         """Return number of count."""
         return self.like.count()
@@ -89,6 +90,10 @@ class Review(models.Model):
         return reverse("trip:tripdetail", args=((str(self.post.id),)))
 
 
+def path_imag(instance, filename):
+    return '/'.join(filter(None, (instance.image, filename)))
+
+
 class UploadImage(models.Model):
     """Extend TripPlan classto stroe image in blog.txt
 
@@ -97,5 +102,5 @@ class UploadImage(models.Model):
         image(file): image of user who uploaded
     """
     post = models.ForeignKey(
-        TripPlan, related_name="image", on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='trip/static/pic')
+        TripPlan, related_name="image", on_delete=models.CASCADE, null=True)
+    image = models.ImageField(upload_to=path_imag)

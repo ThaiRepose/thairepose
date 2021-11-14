@@ -159,25 +159,22 @@ class CatsListView(ListView):
         return content
 
 
-class AddPost(CreateView):
-    """Class for link html of add trip page."""
-
-    model = TripPlan
-    template_name = "trip/add_blog.html"
-    form_class = TripPlanForm
-
-    def form_valid(self, form):
-        """Auto choose current post for add comment.
-
-        Args:
-            form(form): form of user input in field.
-
-        Returns:
-            Complete form with put username in author.
-        """
-
-        form.instance.author = self.request.user
-        return super().form_valid(form)
+def add_post(request):
+    """Method for link html of add post page.
+    
+    Return:
+        if post return to trip detail else return to add blog page.
+    """
+    if request.method == 'POST':
+        form = TripPlanForm(request.POST)
+        if form.is_valid():
+            post_form = form.save(commit=False)
+            post_form.author = request.user
+            post_form.save()
+            return HttpResponseRedirect(reverse('trip:tripdetail', args=[post_form.pk]))
+    else:
+        form = TripPlanForm()
+    return render(request, 'trip/add_blog.html', {'form': form})
 
 
 class EditPost(UpdateView):

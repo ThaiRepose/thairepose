@@ -15,7 +15,6 @@ from .models import TripPlan, Review, CategoryPlan
 load_dotenv()
 
 
-
 api_caching = APICaching()
 
 
@@ -260,6 +259,8 @@ def get_travel_time(request) -> JsonResponse:
         return JsonResponse({"status": "NOT ENOUGH PLACE"})
     data = get_direction(places)
     return JsonResponse(data)
+
+
 # Helper function
 def get_details_context(place_data: dict, api_key: str) -> dict:
     """Get context for place details page.

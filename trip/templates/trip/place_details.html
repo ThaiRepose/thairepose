@@ -97,7 +97,7 @@
                     <div class="overflow-y-scroll hide-scrollbar detail-scrolllist px-10">
                         {% for place in suggestions %}
                             <div class="px-2 py-2 flex justify-center hover:scale-110 transition duration-75 js-show-on-scroll">
-                                <a class="rounded-2xl h-52 w-44 bg-translucent px-2 py-2 flex flex-col bg-gray-900" href="{% url 'trip:place' place.place_id %}">
+                                <a class="rounded-2xl h-52 w-44 bg-translucent px-2 py-2 flex flex-col bg-gray-900" href="{% url 'trip:place-detail' place.place_id %}">
                                     <div class="rounded-2xl bg-gray-300 w-40 h-40">
                                         {% if place.downloaded == True %}
                                         <img class="object-cover h-full w-full rounded-xl" src="{% static 'images/places_image/' %}{{ place.place_id }}photo.jpeg">

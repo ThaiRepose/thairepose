@@ -263,15 +263,15 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
             context['images'] = images
         else:
             context['images'] = []
+        reviews = []
         if 'reviews' in place_data['result'].keys():
-            reviews = []
             for i in place_data['result']['reviews']:
                 if i['text'] != "":
                     reviews.append({
                         'author': i['author_name'],
                         'text': i['text']
                     })
-            context['reviews'] = reviews
+        context['reviews'] = reviews
         lat, lng = None, None
         if 'geometry' in place_data['result'].keys():
             if 'location' in place_data['result']['geometry'].keys():

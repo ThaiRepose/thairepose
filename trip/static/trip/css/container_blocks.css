@@ -2,6 +2,8 @@
     /* Backfround color */
     background-color: rgba(209, 213, 219, 0.3);
 
+    /* height */
+    height: 73vh;
     /* Center and scale the image nicely */
     background-position: center;
     background-repeat: no-repeat;

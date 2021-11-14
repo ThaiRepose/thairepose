@@ -51,7 +51,7 @@
                 </div>
             </div>
             <div class="2xl:flex mx-4 mt-6 justify-between">
-                <div class="carousel js-flickity 2xl:w-8/12 ml-4 mb-6 js-show-on-scroll bg-black" style="max-height: 30rem;">
+                <div class="carousel js-flickity 2xl:w-8/12 2xl:ml-4 mb-6 js-show-on-scroll bg-black" style="max-height: 30rem;">
                     {% comment %} {% if images %}
                         {% for image in images %} {% endcomment %}
                             <div style="height: 100%">
@@ -105,15 +105,12 @@
                                     <p>{{commend.date_added}}</p>
                                 </div>
                                 <div>
-                                    <p id="total-like-{{commend.id}}"class="flex justify-center pt-1 text-2xl font-semibold -mb-2">{{ commend.total_like }}</p>
                                     <div class="flex flex-grow">
-                                            <div class="pt-2 hover:scale-110">
+                                        <p id="total-like-{{commend.id}}"class="flex justify-center pt-3 pb-20 pr-2 text-2xl font-semibold -mb-2">{{ commend.total_like }}</p>
+                                            <div class="pt-1 hover:scale-110">
                                                 <button id="review-like-button" value="{{ commend.id }}">
                                                     <span class="text-5xl text-gray-600">&#8679;</span>
                                                 </button>
-                                            </div>
-                                            <div class="pt-10 pb-2 pr-2 hover:scale-110">
-                                                <span class="text-5xl text-gray-600">&#8681;</span>
                                             </div>
                                         </div>
                                         {% comment %} <button type="submit" name="commend_id" value="{{ commend.id }}">Like</button>
@@ -217,10 +214,10 @@ $(document).ready(function(){
         console.log(pk);
         $.ajax({
             type: 'POST',
-            url: '{% url "trip:list_commend" %}',
+            url: '{% url "trip:like_comment" %}',
             dataType: 'json',
             data: {
-                commend_id: $(this).val(),
+                comment_id: $(this).val(),
                 pk: pk,
                 csrfmiddlewaretoken: '{{ csrf_token }}',
                 action: 'post'

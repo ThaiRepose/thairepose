@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 import json
 import os
@@ -222,16 +223,24 @@ def delete_post(request, pk):
 
 
 @login_required
-def like_view(request):
-    """Method that store user like in comment model
-
-    Returns:
-        JsonResponse: result and comment id
-    """
+def like_comment_view(request):
+    """Method that store user like in comment model"""
     if request.method == 'POST':
-        post = get_object_or_404(Review, id=request.POST.get('commend_id'))
-        post.like.add(request.user)
-        return JsonResponse({'result':post.total_like, 'id':request.POST.get('commend_id')})
+        post = get_object_or_404(Review, id=request.POST.get('comment_id'))
+        if post.like.filter(id=request.user.id).exists():
+            post.like.remove(request.user)
+        else:
+            post.like.add(request.user)
+        return JsonResponse({'result':post.total_like, 'id':request.POST.get('comment_id')})
+
+
+@login_required
+def dislike_comment_view(request):
+    """Method that store user like in comment model"""
+    if request.method == 'POST':
+        post = get_object_or_404(Review, id=request.POST.get('comment_id'))
+        post.like.remove(request.user)
+        return JsonResponse({'result':post.total_like, 'id':request.POST.get('comment_id')})
 
 
 @login_required

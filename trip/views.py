@@ -111,6 +111,14 @@ class AllTrip(ListView):
 
 
 def trip_detail(request, pk):
+    """Methof for link html to trip detail and add review form.
+
+    Args:
+        pk(str): post id
+
+    Return:
+        Httpresponse(Http):redirect to trip detail page.
+    """
     post = get_object_or_404(TripPlan, id=pk)
     commend = Review.objects.filter(post=post)
     if request.method == 'POST':

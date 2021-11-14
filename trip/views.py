@@ -304,8 +304,8 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
 
 def check_downloaded_image(context):
     """Check that image from static/images/place_image that is ready for frontend to display or not"""
-    all_img_file = [f for f in os.listdir(PLACE_IMG_PATH) if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
     if os.path.exists(PLACE_IMG_PATH):
+        all_img_file = [f for f in os.listdir(PLACE_IMG_PATH) if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
         place_id = context['place_id']
         context['downloaded'] = True
         for idx in range(len(context['images'])):

@@ -32,6 +32,15 @@
         i {
             font-size: 1rem !important;
         }
+        .blink-bg {
+            color: #fff;
+            animation: blinkingBackground 3s infinite;
+        }
+        @keyframes blinkingBackground{
+            0%		{ background-color: #f02435;}
+            50%		{ background-color: transparent;}
+            100%	{ background-color: #f02435;}
+        }
     </style>
     <style>
         .material-icons.md-18 {
@@ -370,7 +379,12 @@
             change_directions_time();
         }
 
-        function moveUp(obj) {
+        async function moveUp(obj) {
+            await moveItemUp(obj);
+            change_directions_time();
+        }
+
+        function moveItemUp(obj) {
             let row = $(obj).parents("tr");
             if (row.index() === 0) {
                 let prev_table = $(obj).parents("table").parents("div").prev().prev();
@@ -403,10 +417,14 @@
                 return;
             }
             row.insertBefore(row.prev());
+        }
+
+        async function moveDown(obj) {
+            await moveItemDown(obj);
             change_directions_time();
         }
 
-        function moveDown(obj) {
+        function moveItemDown(obj) {
             let row = $(obj).parents("tr");
             let this_body = $(obj).closest("tbody");
             let totalPlace = this_body.children().length;
@@ -443,7 +461,6 @@
                 return;
             }
             row.insertAfter(row.next());
-            change_directions_time();
         }
 
         const MAXIMUM_DAYS = 6;
@@ -492,12 +509,10 @@
             setTimeout(function () {
                 let arrival = $(event.target).parent().prev().prev();
                 let departure = event.target;
-                console.log(departure.value);
                 let departure_time = createTime(departure.value);
                 let arrival_time = createTime(arrival.text());
                 if (arrival_time > departure_time)
                     departure.value = getTimeFormat(arrival_time);
-                console.log(arrival_time);
                 change_directions_time();
             }, 3000);
         }
@@ -604,8 +619,20 @@
             return timeObj.toTimeString().replace(/.*(\d{2}:\d{2}):\d{2}.*/, "$1");
         }
 
+        const MAX_PLACES_PER_LIST = 25;
         function getTravelTime() {
-            let places = $('div[name="day-table"]');
+            let places = $('table[id^="table-day-"]');
+            /*
+            let places_id_list = [];
+            for (let place in places.toArray()) {
+                places_id_list.push(places[place].id);
+            }
+            if (places_id_list.length <= 1)
+                return;
+            let directions = getDirectionTime(places_id_list);
+            direction = directions;
+            displayTravelTime(directions);
+            */
             $.each(places, function (index, obj) {
                 let places_in_day = $(obj).find('tr[name="place"]');
                 let table_id = $(obj).children()[0].id;
@@ -619,16 +646,16 @@
                     let directions = getDirectionTime(places_list);
                     direction = Object.assign({[table_id]: directions});
                     displayTravelTime(directions);
-                    console.log(directions);
                 }
             });
         }
 
-        function displayTravelTime(directions) {
+        function displayTime(directions) {
+            console.log("Directions: ", directions);
             for (let i = 1; i < directions.geocoded_waypoints.length; i++) {
                 let start = directions.geocoded_waypoints[i - 1].place_id;
                 let stop = directions.geocoded_waypoints[i].place_id;
-                let direction_time = directions.routes[0].legs[i - 1].duration.value;
+                let direction_time = Math.ceil((directions.routes[0].legs[i - 1].duration.value)/60)*60;
                 let departure = document.getElementsByName("departure-" + start)[0];
                 let next_place = $(departure).parent().parent().next().children()[0];
                 let arrival = document.getElementsByName("arrival-" + stop)[0];
@@ -636,7 +663,9 @@
                     continue;
                 let time = createTime(departure.value);
                 time.setTime(time.getTime() + (direction_time * 1000));
-                console.log(time);
+                let table_date = ($(arrival).closest("table")[0].id).replace("table-day-", "");
+                console.log("Table Date:", $(arrival).closest("table"));
+                arrival.setAttribute("value", time);
                 arrival.innerText = getTimeFormat(time);
                 let next_departure = document.getElementsByName("departure-" + stop)[0];
                 next_departure.min = getTimeFormat(time);
@@ -645,5 +674,45 @@
                 }
             }
         }
+        async function displayTravelTime(directions) {
+            await displayTime(directions);
+            checkOverDate();
+        }
+
+        function checkOverDate() {
+            $.each($('[id^="table-day-"]'), function (key, table) {
+                let places = $(table).find('[name^="arrival"]');
+                let overDate = false;
+                let first_place = true;
+                $.each(places, function(index, date) {
+                    if (first_place) {
+                        let new_time = createTime($(date)[0].innerText);
+                        $(date)[0].setAttribute("value", new_time);
+                        first_place = false;
+                    }
+                    let arrival_date = new Date($(date)[0].getAttribute("value"));
+                    if (overDate) {
+                        date.closest("tr").classList.add("bg-red-400", "blink-bg");
+                    }
+                    else if ($(date)[0].innerText === "") {
+                        date.closest("tr").classList.remove("bg-red-400", "blink-bg");
+                        overDate = false;
+                    }
+                    else if (arrival_date.getDate() > 1) {
+                        date.closest("tr").classList.add("bg-red-400", "blink-bg");
+                        overDate = true;
+                    }
+                    else {
+                        date.closest("tr").classList.remove("bg-red-400", "blink-bg");
+                        overDate = false;
+                    }
+                });
+            });
+        }
+        /*
+        addPlaceToTable(1, "THE iKON APARTMENT - ดิไอคอน อพาร์ทเม้นต์", "19/12 Saraburi - Lom Sak Road, Tambon Chong Sarika, Amphoe Phatthana Nikhom", "/static/images/logo.png", "ChIJj27KtGwKHjERmnWXrAslAH8");
+        addPlaceToTable(1, "Kasetsart University", "50 Thanon Ngam Wong Wan, Khwaeng Lat Yao, Khet Chatuchak", "/static/images/logo.png", "ChIJVysBBt6c4jARcDELPbMAAQ8");
+        addPlaceToTable(1, "Vibhavadi Hospital", "51, 3 Thanon Ngam Wong Wan, Khwaeng Lat Yao, Khet Chatuchak", "/static/images/logo.png", "ChIJzeXAwuec4jARr_cLIFqTNvk");
+        */
     </script>
 {% endblock %}

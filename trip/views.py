@@ -159,7 +159,7 @@ def place_info(request, place_id: str):
 @login_required
 def trip_planner(request):
     """Render trip planner page."""
-    return render(request, "trip/trip_planner.html", {'aapi_key': os.getenv('API_KEY')})
+    return render(request, "trip/trip_planner.html", {'api_key': os.getenv('API_KEY')})
 
 
 def get_direction(places: list) -> dict:
@@ -171,14 +171,10 @@ def get_direction(places: list) -> dict:
     Returns:
         Details including places and route in each place to next place.
     """
-    if len(places) > 10:
-        return {"status": "TOO MANY PLACES"}
-    if len(places) <= 0:
-        return {"status": "BLANK PLACE LIST"}
     api_key = os.getenv("API_KEY")
     waypoints = ""
     if len(places) > 2:
-        waypoints = "&waypoints=optimize:true|place_id:"
+        waypoints = "&waypoints=place_id:"
         waypoints += '|place_id:'.join(places[1:-1])
     # Concatenate url to get request url
     url = f"https://maps.googleapis.com/maps/api/directions/json?origin=place_id:{places[0]}" \
@@ -202,5 +198,9 @@ def get_travel_time(request) -> JsonResponse:
     if request.method != 'POST':
         return JsonResponse({"status": "METHOD ERROR"})
     places = json.loads(request.POST['places'])
+    if len(places) > 25:
+        return JsonResponse({"status": "TOO MANY PLACES"})
+    if len(places) <= 1:
+        return JsonResponse({"status": "NOT ENOUGH PLACE"})
     data = get_direction(places)
     return JsonResponse(data)

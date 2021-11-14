@@ -314,7 +314,7 @@ def check_downloaded_image(context):
                     context['downloaded'] = False
         else:
             if f'{place_id}photo.jpeg' not in all_img_file:
-                    context['downloaded'] = False
+                context['downloaded'] = False
         if context['downloaded']:
             context['images'] = range(len(context['images']))
         for idx in range(len(context['suggestions'])):

@@ -98,7 +98,7 @@ class PlaceDetailsViewTest(TestCase):
         PLACE_IMG_PATH = os.path.join(BASE_DIR, 'theme', 'static', 'images', 'places_image')
         if not os.path.exists(PLACE_IMG_PATH):
             os.mkdir(PLACE_IMG_PATH)
-        mockup_data ={
+        mockup_data = {
             "place_name": "test1",
             "place_id": "test1",
             "images": [
@@ -106,7 +106,7 @@ class PlaceDetailsViewTest(TestCase):
                 "test11"
             ],
             "suggestions": [{"place_name": "test2", "photo_ref": "test2", "place_id": "test2"}]
-            }
+        }
         context = check_downloaded_image(mockup_data)
         self.assertEqual(False, context['downloaded'])
         self.assertEqual(False, context['suggestions'][0]['downloaded'])
@@ -125,14 +125,14 @@ class PlaceDetailsViewTest(TestCase):
         os.remove(os.path.join(PLACE_IMG_PATH, 'test1_0photo.jpeg'))
         os.remove(os.path.join(PLACE_IMG_PATH, 'test1_1photo.jpeg'))
         os.remove(os.path.join(PLACE_IMG_PATH, 'test2photo.jpeg'))
-        mockup_data ={
+        mockup_data = {
             "place_name": "test1",
             "place_id": "test1",
             "images": [
                 "test1",
             ],
             "suggestions": [{"place_name": "test2", "photo_ref": "test2", "place_id": "test2"}]
-            }
+        }
         context = check_downloaded_image(mockup_data)
         self.assertEqual(False, context['downloaded'])
         new = open(os.path.join(PLACE_IMG_PATH, 'test1photo.jpeg'), 'wb')
@@ -145,24 +145,19 @@ class PlaceDetailsViewTest(TestCase):
         mockup_data = {
             "place_name": "test1",
             "place_id": "test1",
-            "images": [
-                "test1",
-            ],"reviews": [
-            {
-               "author": "- - SHJR",
-               "text": "It was perfect"
-            }],
-            "types": [ "lodging"],
+            "images": ["test1"],
+            "reviews": [{"author": "- - SHJR", "text": "It was perfect"}],
+            "types": ["lodging"],
             "phone": "11223344",
             "rating": 4,
             "blank_rating": 1,
             "website": "www.ku.ac.th",
             "suggestions": [{"place_name": "test2", "photo_ref": "test2", "place_id": "test2"}]
-            }
+        }
         self.assertEqual(2, len(restruct_detail_context_data(mockup_data)))
 
     def test_resturct_to_place_detail(self):
-        mockup_data =[
+        mockup_data = [
             {
                 "place_name": "The tr",
                 "place_id": "ChIJBaF",
@@ -170,12 +165,7 @@ class PlaceDetailsViewTest(TestCase):
                     "Aap_uECILxxdbdn"
                 ],
                 "types": ["lodging"],
-                "reviews": [
-                    {
-                    "author": "- - SHJR",
-                    "text": "It was perfect"
-                    }
-                ],
+                "reviews": [{"author": "- - SHJR", "text": "It was perfect"}],
                 "phone": "1111111",
                 "rating": 4,
                 "blank_rating": 1,
@@ -194,15 +184,14 @@ class PlaceDetailsViewTest(TestCase):
             'rating': 4,
             'blank_rating': 1,
             'images': ['Aap_uECILxxdbdn'],
-            'reviews': [
-                {'author': '- - SHJR',
-                'text': 'It was perfect'}
-                ],
+            'reviews': [{'author': '- - SHJR', 'text': 'It was perfect'}],
             'suggestions': [{'place_name': 'Ban', 'photo_ref': 'A', 'place_id': 'ChIJae'}],
             'website': 'threpose',
-            'phone': '1111111'}
+            'phone': '1111111'
+        }
         context = resturct_to_place_detail(mockup_data)
         self.assertEqual(expected_data, context)
+
 
 class IndexViewTest(TestCase):
     """Test for index page."""

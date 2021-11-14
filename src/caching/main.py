@@ -42,7 +42,14 @@ ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 PLACE_IMG_PATH = os.path.join(ROOT_DIR, 'theme', 'static', 'images', 'places_image')
 
 
-def write_img_from_gmap_api(key, photo_ref):
+def write_img_from_gmap_api(key: str, photo_ref: str):
+    """Write image by photo ref
+
+    Args:
+        key: name of the image file
+
+        photo_ref: photo reference from gmap api
+    """
     api_key = os.getenv('API_KEY')
     url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={photo_ref}&key={api_key}"
     payload = {}
@@ -55,18 +62,27 @@ def write_img_from_gmap_api(key, photo_ref):
 
 
 def download_img_by_photo_ref():
+    """
+    List all photo ref that need to download and make the place_id to key and send it
+    to write_img_from_gmap_api
+    """
+    # get cache file name
     all_cache_file = [f for f in listdir(join(ROOT_DIR, '__cache__')) if isfile(join(join(ROOT_DIR, '__cache__'), f))]
+    # get image filename
     all_img = [f for f in listdir(PLACE_IMG_PATH) if isfile(join(PLACE_IMG_PATH, f))]
     for file in all_cache_file:
+        # read cache
         cache = json.loads(api_caching.get(file[:-6]))['cache']
         for supdata in cache:
             name = supdata['place_id']
             max = len(supdata['photo_ref'])
+            # have one image
             if only_one_image(supdata, max) and (f'{name}photo.jpeg' not in all_img):
                 if isinstance(supdata['photo_ref'], str):
                     write_img_from_gmap_api(f'{name}', supdata['photo_ref'])
                 else:
                     write_img_from_gmap_api(f'{name}', supdata['photo_ref'][0])
+            # have more than one image
             elif not (f'{name}_{max-1}photo.jpeg' in all_img) and not (only_one_image(supdata, max)):
                 for idx in range(max):
                     if f'{name}_{idx}photo.jpeg' in all_img:
@@ -75,10 +91,12 @@ def download_img_by_photo_ref():
 
 
 def only_one_image(supdata, max):
+    """Place have one image"""
     return max == 1 or isinstance(supdata['photo_ref'], str)
 
 
 def run():
+    """run auto download image"""
     while True:
         if not os.path.exists(PLACE_IMG_PATH):
             os.mkdir(PLACE_IMG_PATH)

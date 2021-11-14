@@ -1,13 +1,14 @@
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 import json
 import os
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 import requests
 from dotenv import load_dotenv
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from requests.api import post
 from .models import TripPlan, Review, CategoryPlan
-from .forms import TripPlanForm, TripPlanImageForm
+from .forms import TripPlanForm, TripPlanImageForm, ReviewForm
 from django.contrib.auth.decorators import login_required
 
 
@@ -109,25 +110,25 @@ class AllTrip(ListView):
         return content
 
 
-class TripDetail(DetailView):
-    """Class for link html of detail of each trip."""
-
-    model = TripPlan
-    template_name = 'trip/trip_detail.html'
-    queryset = TripPlan.objects.all()
-    context_object_name = 'post'
-
-    def get_context_data(self, *args, **kwargs):
-        """Get variable to use in html.
-
-        Return:
-            content(dict): list of caliable can use in html.
-        """
-        context = super(TripDetail, self).get_context_data(*args, **kwargs)
-        all_like = get_object_or_404(TripPlan, id=self.kwargs['pk'])
-        total_like = all_like.total_like()
-        context['total_like'] = total_like
-        return context
+def trip_detail(request, pk):
+    post = get_object_or_404(TripPlan, id=pk)
+    commend = Review.objects.filter(post=post)
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review_form = form.save(commit=False)
+            review_form.post = TripPlan.objects.filter(id=pk)[0]
+            review_form.name = request.user
+            review_form.save()
+            return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
+    else:
+        form = ReviewForm()
+    context = {
+        'post': post,
+        'commend': commend,
+        'review_form': form
+    }
+    return render(request, 'trip/trip_detail.html', context)
 
 
 class CatsListView(ListView):
@@ -168,27 +169,6 @@ class AddPost(CreateView):
         """
 
         form.instance.author = self.request.user
-        return super().form_valid(form)
-
-
-class AddReview(CreateView):
-    """Class for link html of add review."""
-
-    model = Review
-    template_name = "trip/add_review.html"
-    fields = ('body',)
-
-    def form_valid(self, form):
-        """Auto choose current post for add comment.
-
-        Args:
-            form(form): form of user input in field.
-
-        Return:
-            form with trip plan post id and name of user who write review.
-        """
-        form.instance.post_id = self.kwargs['pk']
-        form.instance.name = self.request.user
         return super().form_valid(form)
 
 
@@ -262,11 +242,12 @@ def place_info(request, place_id: str):
     return render(request, "trip/place_details.html", context)
 
 
-def image_upload_view(request):
+def image_upload_view(request, pk):
     """Process images uploaded by users"""
     if request.method == 'POST':
         form = TripPlanImageForm(request.POST, request.FILES)
         if form.is_valid():
+
             form.save()
             # Get the current instance object to display in the template
             img_obj = form.instance

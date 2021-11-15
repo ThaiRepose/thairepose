@@ -252,11 +252,12 @@ def image_upload_view(request, pk):
     if request.method == 'POST':
         form = TripPlanImageForm(request.POST, request.FILES)
         if form.is_valid():
-
+            post_form = form.save(commit=False)
+            post_form.post = TripPlan.objects.get(id=pk)
+            image = request.FILES.get('image')
             form.save()
-            # Get the current instance object to display in the template
             img_obj = form.instance
-            return render(request, 'trip/image_upload.html', {'form': form, 'img_obj': img_obj})
+            return render(request, 'trip/image_upload.html', {'form': form, 'img_obj': img_obj, 'url': image.url})
     else:
         form = TripPlanImageForm()
     return render(request, 'trip/image_upload.html', {'form': form})

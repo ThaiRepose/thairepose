@@ -5,9 +5,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 import requests
 from dotenv import load_dotenv
 from django.urls import reverse, reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, UpdateView, DeleteView
 from requests.api import post
-from .models import TripPlan, Review, CategoryPlan
+from .models import TripPlan, Review, CategoryPlan, UploadImage
 from .forms import TripPlanForm, TripPlanImageForm, ReviewForm
 from django.contrib.auth.decorators import login_required
 
@@ -167,14 +167,23 @@ def add_post(request):
     """
     if request.method == 'POST':
         form = TripPlanForm(request.POST)
+        image_form = TripPlanImageForm(request.POST, request.FILES)
         if form.is_valid():
             post_form = form.save(commit=False)
             post_form.author = request.user
             post_form.save()
             return HttpResponseRedirect(reverse('trip:tripdetail', args=[post_form.pk]))
+        if image_form.is_valid():
+            post_form = image_form.save(commit=False)
+            # post_form.foler_image = TripPlan.objects.all()+1 ##Todo Need some model to get image verificate.
+            image = request.FILES.get('image')
+            form.save()
+            img_obj = image_form.instance
+            return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': img_obj, 'url': image.url})
     else:
         form = TripPlanForm()
-    return render(request, 'trip/add_blog.html', {'form': form})
+        image_form = TripPlanImageForm()
+    return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form})
 
 
 class EditPost(UpdateView):
@@ -247,6 +256,7 @@ def place_info(request, place_id: str):
     return render(request, "trip/place_details.html", context)
 
 
+## Base upload code will delete when finish combine to add post.
 def image_upload_view(request, pk):
     """Process images uploaded by users"""
     if request.method == 'POST':

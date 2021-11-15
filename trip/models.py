@@ -103,8 +103,8 @@ class UploadToPathAndRename(object):
     def __call__(self, instance, filename):
         ext = filename.split('.')[-1]
         # get filename
-        if instance.post.pk:
-            filename = '{}/{}'.format(instance.post.pk, filename)
+        if instance.user.pk:
+            filename = '{}/{}'.format(instance.user.pk, filename)
         else:
             # set filename as random string
             filename = '{}.{}'.format(uuid4().hex, ext)
@@ -121,4 +121,5 @@ class UploadImage(models.Model):
     """
     post = models.ForeignKey(
         TripPlan, related_name="image", on_delete=models.CASCADE, null=True)
+    foler_image = models.IntegerField(null=True, blank=True) ##Todo need some thing to verify.
     image = models.ImageField(upload_to=UploadToPathAndRename(os.path.join(settings.MEDIA_ROOT)))

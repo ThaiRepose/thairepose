@@ -2,12 +2,24 @@
 {% block main_content %}
 {% if user.is_authenticated %}
 <h1>Add post</h1>
-    <form method="POST">
-        {% csrf_token %}.
-        {{ form.media }}
-        {{ form.as_p }}
-        <button>Post</button>
-    </form>
+
+<form method="POST">
+    {% csrf_token %}.
+    {{ form.media }}
+    {{ form.as_p }}
+    <button>Post</button>
+</form>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ image_form.as_p }}
+    <button type="submit">Upload</button>
+</form>
+
+{% if img_obj %}
+<h3>Succesfully uploaded : {{img_obj.title}}</h3>
+<img src="{{ img_obj.image.url}}" alt="connect" style="max-height:300px">
+{% endif %}
 
 {% else %} 
 <script>alert('You need to login.')</script>

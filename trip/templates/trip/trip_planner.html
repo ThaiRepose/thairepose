@@ -402,16 +402,9 @@
                     }
                 }
                 if (prev_table_places.length === 0) {
-                    // create temporary tr and remove after moved
+                    // insert place into above table as a first place
                     let prev_body = prev_table.children().children().closest("tbody");
-                    try {
-                        let tr = prev_body[0].insertRow();
-                        prev_table_places = prev_table.children().children().closest("tbody").children();
-                        row.insertBefore(prev_table_places);
-                        tr.remove();
-                    } catch (error) {
-                        return;
-                    }
+                    prev_body.prepend(row);
                 } else
                     row.insertAfter(prev_table_places.last());
                 return;
@@ -446,18 +439,13 @@
                     }
                 }
                 if (next_table_places.length === 0) {
-                    // create temporary tr and remove after moved
+                    // insert into next day as a first place
                     let next_body = next_table.children().children().closest("tbody");
-                    try {
-                        let tr = next_body[0].insertRow();
-                        next_table_places = next_table.children().children().closest("tbody").children();
-                        row.insertBefore(next_table_places);
-                        tr.remove();
-                    } catch (error) {
-                        return;
-                    }
-                } else
-                    row.insertBefore(next_table_places);
+                    next_body.prepend(row);
+                }
+                else {
+                    row.insertBefore(next_table_places[0]);
+                }
                 return;
             }
             row.insertAfter(row.next());
@@ -621,18 +609,24 @@
 
         const MAX_PLACES_PER_LIST = 25;
         function getTravelTime() {
-            let places = $('table[id^="table-day-"]');
-            /*
-            let places_id_list = [];
-            for (let place in places.toArray()) {
-                places_id_list.push(places[place].id);
+            //let places = $('table[id^="table-day-"]');
+            let places = $('tr[name="place"]').toArray();
+            let places_id_list = {};
+            for (let idx=0; idx<places.length; idx++) {
+                let request_round = Math.floor(idx/MAX_PLACES_PER_LIST);
+                if (idx % MAX_PLACES_PER_LIST === 0)
+                    places_id_list[request_round] = [places[idx].id];
+                else
+                    places_id_list[request_round].push(places[idx].id);
             }
             if (places_id_list.length <= 1)
                 return;
-            let directions = getDirectionTime(places_id_list);
-            direction = directions;
-            displayTravelTime(directions);
-            */
+            for (let request_round in places_id_list) {
+                let requested_directions = getDirectionTime(places_id_list[request_round]);
+                direction = Object.assign({[request_round]: requested_directions});
+                displayTravelTime(requested_directions);
+            }
+            /*
             $.each(places, function (index, obj) {
                 let places_in_day = $(obj).find('tr[name="place"]');
                 let table_id = $(obj).children()[0].id;
@@ -648,6 +642,7 @@
                     displayTravelTime(directions);
                 }
             });
+            */
         }
 
         function displayTime(directions) {
@@ -663,8 +658,6 @@
                     continue;
                 let time = createTime(departure.value);
                 time.setTime(time.getTime() + (direction_time * 1000));
-                let table_date = ($(arrival).closest("table")[0].id).replace("table-day-", "");
-                console.log("Table Date:", $(arrival).closest("table"));
                 arrival.setAttribute("value", time);
                 arrival.innerText = getTimeFormat(time);
                 let next_departure = document.getElementsByName("departure-" + stop)[0];

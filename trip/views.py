@@ -256,7 +256,7 @@ def place_info(request, place_id: str):
     return render(request, "trip/place_details.html", context)
 
 
-## Base upload code will delete when finish combine to add post.
+# Base upload code will delete when finish combine to add post.
 def image_upload_view(request, pk):
     """Process images uploaded by users"""
     if request.method == 'POST':

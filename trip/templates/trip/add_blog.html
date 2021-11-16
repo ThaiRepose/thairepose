@@ -2,7 +2,7 @@
 {% block main_content %}
 {% if user.is_authenticated %}
 <h1>Add post</h1>
-
+{{test}}
 <form method="POST">
     {% csrf_token %}.
     {{ form.media }}

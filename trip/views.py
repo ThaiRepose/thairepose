@@ -165,25 +165,35 @@ def add_post(request):
     Return:
         if post return to trip detail else return to add blog page.
     """
+    if len(TripPlan.objects.filter(author=request.user, complete=False)) == 0 :
+        TripPlan.objects.create(author=request.user)
+        image_form = TripPlanImageForm()
+        post = get_object_or_404(TripPlan, author=request.user, complete=False)
+        form = TripPlanForm(instance=post)
+        image_form = TripPlanImageForm()
+        return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form})
     if request.method == 'POST':
-        form = TripPlanForm(request.POST)
+        post = get_object_or_404(TripPlan, author=request.user, complete=False)
+        form = TripPlanForm(request.POST, instance=post)
         image_form = TripPlanImageForm(request.POST, request.FILES)
-        if form.is_valid():
+        if image_form.is_valid():
             post_form = form.save(commit=False)
             post_form.author = request.user
             post_form.save()
-            return HttpResponseRedirect(reverse('trip:tripdetail', args=[post_form.pk]))
-        if image_form.is_valid():
             form = TripPlanForm()
             image = request.FILES.get('image')
-            img_obj = UploadImage.objects.create(image=image)
+            img_obj = UploadImage.objects.create(post=post_form, image=image)
             return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': img_obj})
-    else:
-        TripPlan.objects.create(author=request.user)
-        form = TripPlanForm()
-        image_form = TripPlanImageForm()
+        if form.is_valid():
+            post_form = form.save(commit=False)
+            post_form.author = request.user
+            post_form.complete = True
+            post_form.save()
+            return HttpResponseRedirect(reverse('trip:tripdetail', args=[post_form.pk]))
+    post = get_object_or_404(TripPlan, author=request.user, complete=False)
+    form = TripPlanForm(instance=post)
+    image_form = TripPlanImageForm()
     return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form})
-
 
 class EditPost(UpdateView):
     """Class for link html of edit post."""

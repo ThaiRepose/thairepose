@@ -29,7 +29,6 @@ class UploadToPathAndRename(object):
         self.sub_path = path
 
     def __call__(self, instance, filename):
-        ext = filename.split('.')[-1]
         # get filename
         filename = '{}/{}'.format(instance.post.pk, filename)
         # return the whole path to the file
@@ -50,9 +49,9 @@ class TripPlan(models.Model):
         like(User): store all use press like button
     """
 
-    title = models.CharField(max_length=200, blank=True, null=True)
+    title = models.CharField(max_length=200, null=True, blank=True)
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, null=True, blank=True)
+        User, on_delete=models.CASCADE,null=True, blank=True)
     duration = models.IntegerField(null=True, blank=True)
     price = models.IntegerField(null=True, blank=True)
     body = RichTextUploadingField(null=True, blank=True)
@@ -63,7 +62,7 @@ class TripPlan(models.Model):
     complete = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.title + ' | ' + str(self.author)
+        return f'{self.title} {self.author}'
 
     def get_absolute_url(self):
         """Return redirect to all trip pages."""

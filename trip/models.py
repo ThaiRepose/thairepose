@@ -47,11 +47,12 @@ class TripPlan(models.Model):
         category(str): category of trip
         post_date(datetime): datetime of trip is created
         like(User): store all use press like button
+        complete(bool): bool to check blog is complete or not
     """
 
     title = models.CharField(max_length=200, null=True, blank=True)
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE,null=True, blank=True)
+        User, on_delete=models.CASCADE, null=True, blank=True)
     duration = models.IntegerField(null=True, blank=True)
     price = models.IntegerField(null=True, blank=True)
     body = RichTextUploadingField(null=True, blank=True)

@@ -3,7 +3,7 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from .models import *
+from .models import Plan
 import requests
 import json
 import os
@@ -17,8 +17,7 @@ def edit_planner(request, planner_id):
     plan_detail = get_object_or_404(Plan, pk=planner_id)
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse('planner:view_plan', args=[planner_id],))
-    is_editable = plan_detail.author == request.user or \
-                  (len(plan_detail.editor_set.filter(user=request.user)) > 0)
+    is_editable = plan_detail.author == request.user or (len(plan_detail.editor_set.filter(user=request.user)) > 0)
     return render(request, "planner/edit_planner.html", {'api_key': os.getenv('API_KEY'),
                                                          'details': plan_detail,
                                                          'editable': is_editable})

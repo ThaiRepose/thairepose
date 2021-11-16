@@ -1,9 +1,8 @@
 from django.http import HttpResponseNotFound, HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy
 
 import json
 import os
@@ -13,6 +12,7 @@ from src.caching.caching_gmap import APICaching
 from dotenv import load_dotenv
 from .forms import TripPlanForm
 from .models import TripPlan, Review, CategoryPlan
+load_dotenv()
 
 
 api_caching = APICaching()
@@ -190,7 +190,6 @@ def place_info(request, place_id: str):
     Returns:
         HttpRequest: Return 200 if place_id is correct, and return 404 if invalid.
     """
-    load_dotenv()
     api_key = os.getenv('API_KEY')
     if api_caching.get(f"{place_id}detailpage"):
         cache_data = json.loads(api_caching.get(f"{place_id}detailpage"))['cache']

@@ -175,7 +175,7 @@ STATIC_URL = '/static/'
 
 # Meida root
 MEDIA_URL = '/pic/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'trip/static/pic')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'trip', 'static', 'pic')
 
 
 # Default primary key field type

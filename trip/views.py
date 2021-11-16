@@ -179,6 +179,7 @@ def add_post(request):
             img_obj = UploadImage.objects.create(image=image)
             return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': img_obj})
     else:
+        TripPlan.objects.create()
         form = TripPlanForm()
         image_form = TripPlanImageForm()
     return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form})

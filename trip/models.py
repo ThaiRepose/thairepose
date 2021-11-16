@@ -50,12 +50,12 @@ class TripPlan(models.Model):
         like(User): store all use press like button
     """
 
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, blank=True, null=True)
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE)
-    duration = models.IntegerField(null=True)
-    price = models.IntegerField(null=True)
-    body = RichTextUploadingField(null=True)
+        User, on_delete=models.CASCADE, null=True, blank=True)
+    duration = models.IntegerField(null=True, blank=True)
+    price = models.IntegerField(null=True, blank=True)
+    body = RichTextUploadingField(null=True, blank=True)
     category = models.ForeignKey(
         CategoryPlan, on_delete=models.PROTECT, blank=True, null=True)
     post_date = models.DateField(auto_now_add=True)

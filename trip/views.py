@@ -1,4 +1,4 @@
-from django.http import HttpResponseNotFound, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
@@ -209,56 +209,6 @@ def place_info(request, place_id: str):
     context['api_key'] = api_key
     context = check_downloaded_image(context)
     return render(request, "trip/place_details.html", context)
-
-
-@login_required
-def trip_planner(request):
-    """Render trip planner page."""
-    return render(request, "trip/trip_planner.html", {'api_key': os.getenv('API_KEY')})
-
-
-def get_direction(places: list) -> dict:
-    """Get direction time from Google Maps Platform including order suggestion.
-
-    Args:
-        places: places to get direction time ordered by index in the list. (Maximum length: 10)
-
-    Returns:
-        Details including places and route in each place to next place.
-    """
-    api_key = os.getenv("API_KEY")
-    waypoints = ""
-    if len(places) > 2:
-        waypoints = "&waypoints=place_id:"
-        waypoints += '|place_id:'.join(places[1:-1])
-    # Concatenate url to get request url
-    url = f"https://maps.googleapis.com/maps/api/directions/json?origin=place_id:{places[0]}" \
-          f"&destination=place_id:{places[-1]}" \
-          f"{waypoints}" \
-          f"&key={api_key}"
-    response = requests.get(url)
-    data = json.loads(response.text)
-    return data
-
-
-@login_required
-def get_travel_time(request) -> JsonResponse:
-    """Get How long does it takes between places receiving POST method as a list of place id.
-
-    POST params:
-        places: list of places that will be calculated the direction ordered by items order in the list.
-    Returns:
-        JsonResponse: all data about direction from origin to destination.
-    """
-    if request.method != 'POST':
-        return JsonResponse({"status": "METHOD ERROR"})
-    places = json.loads(request.POST['places'])
-    if len(places) > 25:
-        return JsonResponse({"status": "TOO MANY PLACES"})
-    if len(places) <= 1:
-        return JsonResponse({"status": "NOT ENOUGH PLACE"})
-    data = get_direction(places)
-    return JsonResponse(data)
 
 
 # Helper function

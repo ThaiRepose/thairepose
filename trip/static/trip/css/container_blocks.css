@@ -47,8 +47,9 @@
 .bg-translucent {
     /* Backfround color */
     background-color: rgba(209, 213, 219, 0.35);
+}
 
-    /* Shadow */
+.custom-shadow {
     box-shadow: 2px 5px 10px rgb(0 0 0 / 0.1);
 }
 
@@ -162,6 +163,7 @@
 
 .material-icons.md-18 { font-size: 18px; }
 .material-icons.md-24 { font-size: 24px; }
+.material-icons.md-30 { font-size: 30px; }
 .material-icons.md-36 { font-size: 36px; }
 .material-icons.md-48 { font-size: 48px; }
 

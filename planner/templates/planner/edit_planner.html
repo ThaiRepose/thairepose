@@ -2,7 +2,7 @@
 {% load static tailwind_tags %}
 
 {% block header %}
-    <title>Trip Planner | ThaiRepose</title>
+    <title>{{ details.name }} | ThaiRepose</title>
     <style>
         body {
             background: url("{% static 'images/bg-blur.jpg' %}") no-repeat fixed;
@@ -32,14 +32,22 @@
         i {
             font-size: 1rem !important;
         }
+
         .blink-bg {
             color: #fff;
             animation: blinkingBackground 3s infinite;
         }
-        @keyframes blinkingBackground{
-            0%		{ background-color: #f02435;}
-            50%		{ background-color: transparent;}
-            100%	{ background-color: #f02435;}
+
+        @keyframes blinkingBackground {
+            0% {
+                background-color: #f02435;
+            }
+            50% {
+                background-color: transparent;
+            }
+            100% {
+                background-color: #f02435;
+            }
         }
     </style>
     <style>
@@ -99,10 +107,10 @@
         }
 
         #map {
-          height: 100%;
-          width: 100%;
-          margin: 0px;
-          padding: 0px
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+            padding: 0px
         }
     </style>
     <style>
@@ -157,8 +165,13 @@
                 <!-- Left column (details) -->
                 <div class="w-full md:w-1/2">
                     <!-- Page title -->
-                    <div id="place_name" class="mx-8 my-6">
-                        <h1 class="text-3xl font-bold" style="line-height: 1.6;">Trip Organizer</h1>
+                    <div class="mx-8 my-6 flex flex-row">
+                        <h1 id="place_name" class="px-3 text-3xl font-bold hover:outline-black"
+                            style="line-height: 1.6;" contenteditable="true">{{ details.name }}</h1>
+                        {% if details.author == user %}
+                            <span id="cloud-connect"
+                                  class="ml-3 material-icons material-icons-outlined md-24 mt-4 opacity-50">cloud_done</span>
+                        {% endif %}
                     </div>
                     <!-- Days button -->
                     <div class="flex flex-row items-center custom-number-input h-10 mx-8">
@@ -172,7 +185,7 @@
                             <input readonly type="number"
                                    id="days-selector"
                                    class="outline-none border-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-basecursor-default flex items-center text-gray-700"
-                                   name="days-amount" value="{{ days_amount|default:1 }}">
+                                   name="days-amount" value="{{ details.days|default:1 }}">
                             <button data-action="increment"
                                     class="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-r cursor-pointer">
                                 <span class="m-auto text-2xl font-thin">+</span>
@@ -211,11 +224,9 @@
                         </button>
                     </div>
                 </div>
-
                 <!-- Right column (map) -->
                 <div class="w-full md:w-1/2 px-8 md:px-0 md:pt-8 md:pr-8 h-48 md:h-full">
                     <div class="w-full h-full text-center flex justify-center items-center text-2xl rounded-xl">
-                        <!-- <div id="map"></div> -->
                     </div>
                 </div>
             </div>
@@ -228,6 +239,37 @@
 {% endblock %}
 
 {% block script %}
+    <!-- Script for editing details -->
+    <script>
+        function send_edit(key, value) {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'planner:post_edit' %}",
+                data: {
+                    planner_id: {{ details.id }},
+                    [key]: value,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                }
+            });
+            LATEST_NAME = name;
+            document.title = name + " | ThaiRepose";
+            document.getElementById('cloud-connect').innerText = "cloud_done";
+        }
+
+        var NAME_CHANGE_QUEUE = [];
+        var LATEST_NAME = document.getElementById('place_name').innerText;
+        document.getElementById('place_name').addEventListener('input', function (event) {
+            document.getElementById('cloud-connect').innerText = "cloud_sync";
+            NAME_CHANGE_QUEUE.push();
+            setTimeout(function () {
+                NAME_CHANGE_QUEUE.pop();
+                let name = document.getElementById('place_name').innerText;
+                if (NAME_CHANGE_QUEUE.length === 0 && LATEST_NAME !== name) {
+                    send_edit('name', name);
+                }
+            }, 3000);
+        });
+    </script>
     <!-- Script for days button -->
     <script>
         function decrement(e) {
@@ -442,8 +484,7 @@
                     // insert into next day as a first place
                     let next_body = next_table.children().children().closest("tbody");
                     next_body.prepend(row);
-                }
-                else {
+                } else {
                     row.insertBefore(next_table_places[0]);
                 }
                 return;
@@ -514,69 +555,6 @@
             }
         }
     </script>
-    <!-- Script for map marker -->
-    <!-- Considering to remove due to API budget
-    <script>
-        var geocoder;
-        var map;
-        var directionsDisplay;
-        var directionsService = new google.maps.DirectionsService();
-        var locations = [
-            ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],
-            ['Bondi Beach', -33.890542, 151.274856, 4],
-            ['Coogee Beach', -33.923036, 151.259052, 5],
-            ['Maroubra Beach', -33.950198, 151.259302, 1],
-            ['Cronulla Beach', -34.028249, 151.157507, 3]
-        ];
-
-        function initialize() {
-            directionsDisplay = new google.maps.DirectionsRenderer();
-
-            var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 10,
-                center: new google.maps.LatLng(-33.92, 151.25),
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-            });
-            directionsDisplay.setMap(map);
-            var infowindow = new google.maps.InfoWindow();
-
-            var marker, i;
-            var request = {
-                travelMode: google.maps.TravelMode.DRIVING
-            };
-            for (i = 0; i < locations.length; i++) {
-                marker = new google.maps.Marker({
-                    position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-                });
-
-                google.maps.event.addListener(marker, 'click', (function (marker, i) {
-                    return function () {
-                        infowindow.setContent(locations[i][0]);
-                        infowindow.open(map, marker);
-                    }
-                })(marker, i));
-
-                if (i == 0) request.origin = marker.getPosition();
-                else if (i == locations.length - 1) request.destination = marker.getPosition();
-                else {
-                    if (!request.waypoints) request.waypoints = [];
-                    request.waypoints.push({
-                        location: marker.getPosition(),
-                        stopover: true
-                    });
-                }
-
-            }
-            directionsService.route(request, function (result, status) {
-                if (status == google.maps.DirectionsStatus.OK) {
-                    console.log("API Called");
-                    directionsDisplay.setDirections(result);
-                }
-            });
-        }
-        google.maps.event.addDomListener(window, "load", initialize);
-    </script> -->
-    <!-- Main script -->
     <script>
         var direction;
         let days = $('input[name="days-amount"]')[0].value;
@@ -587,7 +565,7 @@
         function getDirectionTime(places_list) {
             let response = $.ajax({
                 type: "POST",
-                url: "{% url 'trip:get_travel_time' %}",
+                url: "{% url 'planner:get_travel_time' %}",
                 async: false,
                 data: {
                     csrfmiddlewaretoken: '{{ csrf_token }}',
@@ -608,12 +586,13 @@
         }
 
         const MAX_PLACES_PER_LIST = 25;
+
         function getTravelTime() {
             //let places = $('table[id^="table-day-"]');
             let places = $('tr[name="place"]').toArray();
             let places_id_list = {};
-            for (let idx=0; idx<places.length; idx++) {
-                let request_round = Math.floor(idx/MAX_PLACES_PER_LIST);
+            for (let idx = 0; idx < places.length; idx++) {
+                let request_round = Math.floor(idx / MAX_PLACES_PER_LIST);
                 if (idx % MAX_PLACES_PER_LIST === 0)
                     places_id_list[request_round] = [places[idx].id];
                 else
@@ -650,7 +629,7 @@
             for (let i = 1; i < directions.geocoded_waypoints.length; i++) {
                 let start = directions.geocoded_waypoints[i - 1].place_id;
                 let stop = directions.geocoded_waypoints[i].place_id;
-                let direction_time = Math.ceil((directions.routes[0].legs[i - 1].duration.value)/60)*60;
+                let direction_time = Math.ceil((directions.routes[0].legs[i - 1].duration.value) / 60) * 60;
                 let departure = document.getElementsByName("departure-" + start)[0];
                 let next_place = $(departure).parent().parent().next().children()[0];
                 let arrival = document.getElementsByName("arrival-" + stop)[0];
@@ -667,6 +646,7 @@
                 }
             }
         }
+
         async function displayTravelTime(directions) {
             await displayTime(directions);
             checkOverDate();
@@ -677,7 +657,7 @@
                 let places = $(table).find('[name^="arrival"]');
                 let overDate = false;
                 let first_place = true;
-                $.each(places, function(index, date) {
+                $.each(places, function (index, date) {
                     if (first_place) {
                         let new_time = createTime($(date)[0].innerText);
                         $(date)[0].setAttribute("value", new_time);
@@ -686,22 +666,20 @@
                     let arrival_date = new Date($(date)[0].getAttribute("value"));
                     if (overDate) {
                         date.closest("tr").classList.add("bg-red-400", "blink-bg");
-                    }
-                    else if ($(date)[0].innerText === "") {
+                    } else if ($(date)[0].innerText === "") {
                         date.closest("tr").classList.remove("bg-red-400", "blink-bg");
                         overDate = false;
-                    }
-                    else if (arrival_date.getDate() > 1) {
+                    } else if (arrival_date.getDate() > 1) {
                         date.closest("tr").classList.add("bg-red-400", "blink-bg");
                         overDate = true;
-                    }
-                    else {
+                    } else {
                         date.closest("tr").classList.remove("bg-red-400", "blink-bg");
                         overDate = false;
                     }
                 });
             });
         }
+
         /*
         addPlaceToTable(1, "THE iKON APARTMENT - ดิไอคอน อพาร์ทเม้นต์", "19/12 Saraburi - Lom Sak Road, Tambon Chong Sarika, Amphoe Phatthana Nikhom", "/static/images/logo.png", "ChIJj27KtGwKHjERmnWXrAslAH8");
         addPlaceToTable(1, "Kasetsart University", "50 Thanon Ngam Wong Wan, Khwaeng Lat Yao, Khet Chatuchak", "/static/images/logo.png", "ChIJVysBBt6c4jARcDELPbMAAQ8");

@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'search',
-    'ckeditor'
+    'ckeditor',
+    'planner.apps.PlannerConfig'
 ]
 
 # Config for Tailwind CSS
@@ -149,14 +150,14 @@ SOCIALACCOUNT_PROVIDERS = {
 is_travis = 'TRAVIS' in os.environ
 
 # Profile photo directory
-PROFILE_PIC_LOCATION = BASE_DIR / 'users/static/profile_pic'
+PROFILE_PIC_LOCATION = os.path.join(BASE_DIR, 'users/static/profile_pic')
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Bangkok'
 
 USE_I18N = True
 

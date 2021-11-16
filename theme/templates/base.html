@@ -42,19 +42,19 @@
             </div>
             <!-- Navigation links -->
             <nav :class="{'flex': open, 'hidden': !open}" class="flex-col flex-grow pb-4 md:pb-0 hidden md:flex md:justify-end md:flex-row">
-                {% if request.resolver_match.app_name == "trip" and request.resolver_match.url_name != "planner" %}
+                {% if request.resolver_match.app_name == "trip"%}
                     <a class="px-4 py-2 mt-2 text-sm md:text-md font-extrabold text-gray-900 bg-gray-300 rounded-lg dark-mode:bg-gray-700 dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
                         href="/">TRIP</a>
                 {% else %}
                     <a class="px-4 py-2 mt-2 text-sm md:text-md font-medium dark-mode:bg-gray-700 dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
                         href="/">TRIP</a>
                 {% endif %}
-                {% if request.resolver_match.url_name == "planner" %}
+                {% if request.resolver_match.app_name == "planner" %}
                     <a class="px-4 py-2 mt-2 text-sm md:text-md font-extrabold text-gray-900 bg-gray-300 rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
-                        href="{% url 'trip:planner' %}">Planner</a>
+                        href="{% url 'planner:index' %}">Planner</a>
                 {% else %}
                     <a class="px-4 py-2 mt-2 text-sm md:text-md font-medium dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
-                        href="{% url 'trip:planner' %}">Planner</a>
+                        href="{% url 'planner:index' %}">Planner</a>
                 {% endif %}
                 {% if request.resolver_match.app_name == "search" %}
                     <a class="px-4 py-2 mt-2 text-sm md:text-md font-extrabold text-gray-900 bg-gray-300 rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"

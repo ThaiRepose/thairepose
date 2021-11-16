@@ -165,7 +165,7 @@ def add_post(request):
     Return:
         if post return to trip detail else return to add blog page.
     """
-    if len(TripPlan.objects.filter(author=request.user, complete=False)) == 0 :
+    if len(TripPlan.objects.filter(author=request.user, complete=False)) == 0:
         TripPlan.objects.create(author=request.user)
         image_form = TripPlanImageForm()
         post = get_object_or_404(TripPlan, author=request.user, complete=False)
@@ -194,6 +194,7 @@ def add_post(request):
     form = TripPlanForm(instance=post)
     image_form = TripPlanImageForm()
     return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form})
+
 
 class EditPost(UpdateView):
     """Class for link html of edit post."""

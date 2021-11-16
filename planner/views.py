@@ -71,8 +71,6 @@ def get_travel_time(request) -> JsonResponse:
 
     POST params:
         places: list of places that will be calculated the direction ordered by items order in the list.
-    Returns:
-        all data about direction from origin to destination.
     """
     if request.method != 'POST':
         return JsonResponse({"status": "METHOD ERROR"})

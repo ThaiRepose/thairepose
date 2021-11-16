@@ -3,7 +3,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 from ckeditor_uploader.fields import RichTextUploadingField
-from uuid import uuid4
 from django.utils.deconstruct import deconstructible
 from django.conf import settings
 
@@ -20,6 +19,32 @@ class CategoryPlan(models.Model):
 
     def __str__(self):
         return self.name
+
+
+@deconstructible
+class UploadToPathAndRename(object):
+    """Class for rename image file."""
+
+    def __init__(self, path):
+        self.sub_path = path
+
+    def __call__(self, instance, filename):
+        ext = filename.split('.')[-1]
+        # get filename
+        filename = '{}'.format(filename)
+        # return the whole path to the file
+        return os.path.join(self.sub_path, filename)
+
+
+class UploadImage(models.Model):
+    """Extend TripPlan classto stroe image in blog.txt
+
+    Attributes:
+        post(TripPlan): trip plan that host of review
+        image(file): image of user who uploaded
+    """
+    image = models.ImageField(upload_to=UploadToPathAndRename(
+        os.path.join(settings.MEDIA_ROOT)))
 
 
 class TripPlan(models.Model):
@@ -46,6 +71,7 @@ class TripPlan(models.Model):
         CategoryPlan, on_delete=models.PROTECT, blank=True, null=True)
     post_date = models.DateField(auto_now_add=True)
     like = models.ManyToManyField(User, related_name='trip_like', blank=True)
+    image = models.ManyToManyField(UploadImage, blank=True)
 
     def __str__(self):
         return self.title + ' | ' + str(self.author)
@@ -91,35 +117,3 @@ class Review(models.Model):
         When your like comment page will refesh itseft to show all like.
         """
         return reverse("trip:tripdetail", args=((str(self.post.id),)))
-
-
-@deconstructible
-class UploadToPathAndRename(object):
-    """Class for rename image file."""
-
-    def __init__(self, path):
-        self.sub_path = path
-
-    def __call__(self, instance, filename):
-        ext = filename.split('.')[-1]
-        # get filename
-        if instance.user.pk:
-            filename = '{}/{}'.format(instance.user.pk, filename)
-        else:
-            # set filename as random string
-            filename = '{}.{}'.format(uuid4().hex, ext)
-        # return the whole path to the file
-        return os.path.join(self.sub_path, filename)
-
-
-class UploadImage(models.Model):
-    """Extend TripPlan classto stroe image in blog.txt
-
-    Attributes:
-        post(TripPlan): trip plan that host of review
-        image(file): image of user who uploaded
-    """
-    post = models.ForeignKey(
-        TripPlan, related_name="image", on_delete=models.CASCADE, null=True)
-    foler_image = models.IntegerField(null=True, blank=True) ##Todo need some thing to verify.
-    image = models.ImageField(upload_to=UploadToPathAndRename(os.path.join(settings.MEDIA_ROOT)))

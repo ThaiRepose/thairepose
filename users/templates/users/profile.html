@@ -22,7 +22,7 @@
 <br>
 <body>
 
-    <div id="app" class="max-w-sm bg-white shadow-lg rounded-lg overflow-hidden my-4 mx-auto">
+    <div id="app" class="max-w-sm bg-white shadow-lg rounded-lg overflow-hidden my-60 mx-auto">
 
         <github-user-card username="yyx990803"></github-user-card>
 
@@ -30,7 +30,7 @@
 
     <script type="text/x-template" id="github-user-card-template">
     <div>
-        <img class="w-full h-56 object-cover object-center" src="{{profile.profile_pic.url}}" alt="avatar">
+        <img class="w-full h-55 object-cover object-center" src="{{profile.profile_pic.url}}" alt="avatar">
         <div class="py-4 px-6">
             <h1 class="text-2xl font-semibold text-gray-800 text-center">{{user.first_name}} {{user.last_name}}</h1>
             <div class="flex items-center mt-4 text-gray-700">
@@ -81,6 +81,8 @@
             el: '#app'
         })
     </script>
+    <br>
+    <br>
     <br>
     <br>
     <br>

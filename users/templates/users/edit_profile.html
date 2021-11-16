@@ -35,7 +35,8 @@
                         </div>
                         <div class='w-full md:w-full px-3 mb-6'>
                             <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >Profile Picture</label>
-                            {{ p_form.profile_pic }}
+                            <img src="{{ profile.profile_pic.url }}" width='200' height='200'>
+                            {{p_form.profile_pic}}
                         </div>
                         <div class="flex justify-end">
                             <button class="appearance-none bg-gray-200 text-gray-900 px-2 py-1 shadow-sm border border-gray-400 rounded-md mr-3" type="submit">save changes</button>

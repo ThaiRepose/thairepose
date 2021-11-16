@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class TripConfig(AppConfig):
+class SearchConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'trip'
+    name = 'search'

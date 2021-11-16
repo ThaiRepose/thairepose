@@ -1,5 +1,5 @@
-[![Build Status](https://app.travis-ci.com/ThaiRepose/thairepose.svg?branch=oauth)](https://app.travis-ci.com/ThaiRepose/thairepose)
-[![codecov](https://codecov.io/gh/ThaiRepose/thairepose/branch/oauth/graph/badge.svg?token=uocBU8wW8W)](https://codecov.io/gh/ThaiRepose/thairepose)
+![workflow](https://github.com/ThaiRepose/thairepose/actions/workflows/django.yml/badge.svg)
+[![codecov](https://codecov.io/gh/ThaiRepose/thairepose/branch/beta/graph/badge.svg?token=uocBU8wW8W)](https://codecov.io/gh/ThaiRepose/thairepose)
 # ThaiRepose
 **ThaiRepose** website is a web application that helps to find areas that users want to travel and it can help people to make decisions for making trips. People who don't even have any experience planning a trip before, it can help them to easily plan a trip. ThaiRepose.com will be a community for people who love to travel.
 
@@ -59,35 +59,42 @@
     **Warning: For anyone who use macOS. It may have problem while import email with os.environ.get. please try another way to import it**
     
     **Warning: If you use Gmail you have to adjust to less secure**
-7. Install TailwindCSS framework.
-
+7. Add location for store profile picture in setting.py
     ```
-    python manage.py tailwind install
+    PROFILE_PIC_LOCATION = your-storage-path-for-store-picture
     ```
-8. Build TailwindCSS frontend framework the get GUI.
-
-    ```
-    python manage.py tailwind build
-    ```
-9. Run this command to migrate the database.
-
-    ```
-    python manage.py migrate
-    ```
-10. Start running the server by this command.
-    ```
-    python manage.py runserver
-    ```
-11. Add Oauth API Key
+8. Add Oauth API Key
     Go to domain/admin/socialaccount/socialapp/ (local: http://127.0.0.1:8000/admin/socialaccount/socialapp/) 
     - Add provider to Google.
     - Add Client id and Secret key that retrieve form API owner.
     - Add site to chosen sites.
-12. Add location for store profile picture in setting.py
+9. Install TR-CACHING. (auto-download image from google api)
     ```
-    PROFILE_PIC_LOCATION = your-storage-path-for-store-picture
+    pip install --editable src\caching\.
     ```
     recommend: project-folder/users/static/profile_pic
+10. Install TailwindCSS framework.
+
+    ```
+    python manage.py tailwind install
+    ```
+11. Build TailwindCSS frontend framework the get GUI.
+
+    ```
+    python manage.py tailwind build
+    ```
+12. Run this command to migrate the database.
+
+    ```
+    python manage.py migrate
+    ```
+13. Start running the server by this command.
+    ```
+    tr-caching start
+    python manage.py runserver
+    ```
+
+
 
 
 ## Team Members
@@ -97,3 +104,4 @@
 | Tanin Pewluangsawat | [💤 TaninDean](https://github.com/TaninDean) |
 | Vitvara Varavithya | [💦 vitvara](https://github.com/vitvara) |
 | Nabhan Suwanachote | [ ☔ nabhan-au](https://github.com/nabhan-au) |
+

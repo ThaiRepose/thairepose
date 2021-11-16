@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from .utils import pic_profile_relative_path
-from PIL import Image
 
 
 class Profile(models.Model):

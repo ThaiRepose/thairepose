@@ -19,10 +19,9 @@ from users import views
 from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', include('trip.urls', namespace="trip")),
     path('search/', include('search.urls', namespace="search")),
-    path('profile', views.profile, name='profile'),
-    path('editprofile/', views.edit_profile, name='editprofile')
+    path('planner/', include('planner.urls', namespace="planner"))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

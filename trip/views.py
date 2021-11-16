@@ -174,12 +174,10 @@ def add_post(request):
             post_form.save()
             return HttpResponseRedirect(reverse('trip:tripdetail', args=[post_form.pk]))
         if image_form.is_valid():
-            post_form = image_form.save(commit=False)
-            # post_form.foler_image = TripPlan.objects.all()+1 ##Todo Need some model to get image verificate.
+            form = TripPlanForm()
             image = request.FILES.get('image')
-            form.save()
-            img_obj = image_form.instance
-            return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': img_obj, 'url': image.url})
+            img_obj = UploadImage.objects.create(image=image)
+            return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': img_obj})
     else:
         form = TripPlanForm()
         image_form = TripPlanImageForm()
@@ -262,11 +260,9 @@ def image_upload_view(request, pk):
     if request.method == 'POST':
         form = TripPlanImageForm(request.POST, request.FILES)
         if form.is_valid():
-            post_form = form.save(commit=False)
-            post_form.post = TripPlan.objects.get(id=pk)
             image = request.FILES.get('image')
-            form.save()
-            img_obj = form.instance
+            img_obj = UploadImage.objects.create(image=image)
+            form = TripPlanImageForm()
             return render(request, 'trip/image_upload.html', {'form': form, 'img_obj': img_obj, 'url': image.url})
     else:
         form = TripPlanImageForm()

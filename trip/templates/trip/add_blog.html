@@ -17,7 +17,10 @@
 </form>
 
 {% if img_obj %}
-<img src="{{img_obj.image.url}}" alt="connect" style="max-height:300px">
+{% for image in img_obj %}
+{{image.image.url}}
+<img src="{{image.image.url}}" alt="connect" height="300", width="300">
+{% endfor %}
 {% endif %}
 
 {% else %} 

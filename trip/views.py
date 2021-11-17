@@ -181,10 +181,13 @@ def add_post(request):
             post_form.author = request.user
             post_form.save()
             form = TripPlanForm()
-            image = request.FILES.get('image')
-            img_obj = UploadImage.objects.create(post=post_form, image=image)
-            img_obj.save()
-            return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': img_obj})
+            image = request.FILES.getlist('image')
+            list_img = []
+            for img in image:
+                img_obj = UploadImage.objects.create(post=post_form, image=img)
+                img_obj.save()
+                list_img.append(img_obj)
+            return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': list_img})
         if form.is_valid():
             post_form = form.save(commit=False)
             post_form.author = request.user

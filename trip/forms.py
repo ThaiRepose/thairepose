@@ -8,12 +8,6 @@ choice_list = ['Uncategorize']
 class TripPlanForm(forms.ModelForm):
     """Class for create trip form."""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['title'].required = True
-        self.fields['duration'].required = True
-        self.fields['price'].required = True
-
     class Meta:
         model = TripPlan
         fields = ('title', 'duration', 'price', 'category', 'body')

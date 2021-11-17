@@ -183,6 +183,7 @@ def add_post(request):
             form = TripPlanForm()
             image = request.FILES.get('image')
             img_obj = UploadImage.objects.create(post=post_form, image=image)
+            img_obj.save()
             return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': img_obj})
         if form.is_valid():
             post_form = form.save(commit=False)

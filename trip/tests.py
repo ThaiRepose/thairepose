@@ -1,4 +1,4 @@
-from django.http import request
+from django.http import request, response
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from dotenv import load_dotenv
@@ -11,6 +11,7 @@ from .views import restruct_detail_context_data
 from .views import resturct_to_place_detail
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
+from django.test import Client
 from .models import Review, TripPlan, CategoryPlan
 from django.db import models
 from .views import add_post
@@ -96,7 +97,8 @@ class PlaceDetailsViewTest(TestCase):
         self.assertEqual(response.context['website'], "http://www.ku.ac.th/")
 
     def test_check_downloaded_image(self):
-        PLACE_IMG_PATH = os.path.join(BASE_DIR, 'theme', 'static', 'images', 'places_image')
+        PLACE_IMG_PATH = os.path.join(
+            BASE_DIR, 'theme', 'static', 'images', 'places_image')
         if not os.path.exists(PLACE_IMG_PATH):
             os.mkdir(PLACE_IMG_PATH)
         mockup_data = {
@@ -309,22 +311,6 @@ class TripModelTests(TestCase):
         with self.assertRaises(models.ProtectedError):
             CategoryPlan.objects.filter(name='category1').delete()
 
-    def test_add_post(self):
-        """Test add_post method."""
-        request = self.re.get('/addpost/')
-        request.user = self.user
-        self.assertEqual(add_post(request).status_code, 200)
-        request.POST = TripPlan.objects.create()
-        self.assertEqual(add_post(request).status_code, 200)
-
-    def test_trip_detail(self):
-        """Test trip detail method."""
-        request = self.re.get('tripdetail/1/')
-        request.user = self.user
-        self.assertEqual(trip_detail(request, 1).status_code, 200)
-        request.POST = Review.objects.create(post=self.trip, name=self.user, body='test')
-        self.assertEqual(trip_detail(request, 1).status_code, 200)
-
     def test_delete_post(self):
         """Test delete post method."""
         request = self.re.get('tripdetail/<int:pk>/remove')
@@ -332,6 +318,72 @@ class TripModelTests(TestCase):
         self.assertEqual(delete_post(request, 1).status_code, 200)
         request.POST = self.trip
         self.assertEqual(delete_post(request, 1).status_code, 200)
+
+    def tearDown(self):
+        """Reset all user, all category and all tripplan"""
+        User.objects.all().delete()
+        TripPlan.objects.all().delete()
+        CategoryPlan.objects.all().delete()
+        return super().tearDown()
+
+
+class AddPostTests(TestCase):
+    """Class for test add)post method."""
+
+    def setUp(self):
+        """Set up trip, user and category."""
+        self.client = Client()
+        self.cat = CategoryPlan.objects.create(name='category1')
+        self.user = User.objects.create(username='tester', password='tester')
+        self.trip = TripPlan.objects.create()
+        self.re = RequestFactory()
+        return super().setUp()
+
+    def test_first_add_post(self):
+        """Test add_post method."""
+        request = self.re.get('/addpost/')
+        request.user = self.user
+        self.assertEqual(add_post(request).status_code, 200)
+
+    def test_add_post_method_post(self):
+        self.client.force_login(self.user)
+        info = {'form': {'title': 'test', 'duration': '0',
+                         'price': '1', 'category': 'category1', 'body': 'test'}}
+        response = self.client.post(reverse('trip:addpost'), data=info)
+        self.assertEqual(response.status_code, 200)
+
+    def tearDown(self):
+        """Reset all user, all category and all tripplan"""
+        User.objects.all().delete()
+        TripPlan.objects.all().delete()
+        CategoryPlan.objects.all().delete()
+        return super().tearDown()
+
+
+class TripDetailTests(TestCase):
+    """Class for test add)post method."""
+
+    def setUp(self):
+        """Set up trip, user and category."""
+        self.client = Client()
+        self.cat = CategoryPlan.objects.create(name='category1')
+        self.user = User.objects.create(username='tester', password='tester')
+        self.trip = TripPlan.objects.create()
+        self.re = RequestFactory()
+        return super().setUp()
+
+    def test_access_trip_detail(self):
+        """Test trip detail method."""
+        request = self.re.get('tripdetail/1/')
+        request.user = self.user
+        self.assertEqual(trip_detail(request, 1).status_code, 200)
+
+    def test_create_review_in_trip_detail(self):
+        self.client.force_login(self.user)
+        info = {'form': {'post': self.trip, 'name': self.user, 'body': 'test'}}
+        response = self.client.post(
+            reverse('trip:tripdetail', args=['1']), data=info)
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         """Reset all user, all category and all tripplan"""

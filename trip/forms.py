@@ -1,5 +1,4 @@
 from django import forms
-from django.forms import widgets
 from .models import TripPlan, UploadImage, Review
 
 choice_list = ['Uncategorize']

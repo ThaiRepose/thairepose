@@ -1,8 +1,9 @@
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
-from datetime import datetime
+from django.utils import timezone
 from dotenv import load_dotenv
 import os
+import json
 import unittest
 from threpose.settings import BASE_DIR
 from .views import delete_post, get_details_context, trip_detail
@@ -14,6 +15,7 @@ from django.contrib.auth.models import User
 from django.test import Client
 from .models import Review, TripPlan, CategoryPlan
 from django.db import models
+from .forms import TripPlanImageForm, TripPlanForm, ReviewForm
 from .views import add_post
 
 
@@ -339,9 +341,9 @@ class AddPostTests(TestCase):
 
     def test_add_post_method_post(self):
         self.client.force_login(self.user)
-        info = {'form': {'title': 'test', 'duration': '0',
+        info = {'title': 'test', 'duration': '0',
                          'price': '1', 'category': 'category1', 'body': 'test',
-                         'post_date': datetime.now(), 'like': '', 'complete': 'False'}}
+                         'post_date': timezone.now(), 'like': '', 'complete': 'False'}
         response = self.client.post(reverse('trip:addpost'), data=info)
         self.assertEqual(response.status_code, 200)
 
@@ -375,10 +377,11 @@ class TripDetailTests(TestCase):
         """Test post method of trip detail."""
         self.client.force_login(self.user)
         self.client.get('tripdetail/1/')
-        info = {'form': {'post': self.trip, 'name': self.user,
-                         'body': 'test', 'date_added': datetime.now(), 'like': ''}}
+        form_data = {'post': self.trip, 'name': self.user, 'body': 'test'}
+        review = ReviewForm(data=form_data)
+        self.assertTrue(review.is_valid())
         response = self.client.post(
-            reverse('trip:tripdetail', args=['1']), data=info)
+            reverse('trip:tripdetail', args=['1']), data={'form': form_data})
         self.assertEqual(response.status_code, 200)
 
     def tearDown(self):

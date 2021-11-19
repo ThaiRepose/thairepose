@@ -117,4 +117,4 @@ class UploadImage(models.Model):
     """
     post = models.ForeignKey(TripPlan, on_delete=models.CASCADE, null=True)
     image = models.ImageField(upload_to=UploadToPathAndRename(
-        os.path.join(settings.MEDIA_ROOT)))
+        os.path.join(settings.MEDIA_ROOT, 'pic')))

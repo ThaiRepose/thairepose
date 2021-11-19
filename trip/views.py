@@ -1,5 +1,6 @@
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
+from allauth.account.decorators import verified_email_required
 from django.contrib.auth.decorators import login_required
 import json
 import os
@@ -101,6 +102,7 @@ class CatsListView(ListView):
         return content
 
 
+@verified_email_required
 def add_post(request):
     """Method for link html of add post page.
 
@@ -163,7 +165,7 @@ def delete_post(request, pk):
     """
     post = get_object_or_404(TripPlan, id=pk)
     if request.method == "POST":
-        image_path = os.path.join(MEDIA_ROOT, str(pk))
+        image_path = os.path.join(MEDIA_ROOT, 'pic', str(pk))
         shutil.rmtree(image_path)
         post.delete()
         success_url = reverse_lazy('trip:tripplan')

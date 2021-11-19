@@ -153,9 +153,6 @@ SOCIALACCOUNT_PROVIDERS = {
 # Check travis
 is_travis = 'TRAVIS' in os.environ
 
-# Profile photo directory
-PROFILE_PIC_LOCATION = os.path.join(BASE_DIR, 'users/static/profile_pic')
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -176,8 +173,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Meida root
-MEDIA_URL = '/pic/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'trip', 'static', 'pic')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+# Profile picture path
+PROFILE_PIC_LOCATION = os.path.join(MEDIA_ROOT, 'user', 'profile_picture')
 
 
 # Default primary key field type

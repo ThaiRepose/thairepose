@@ -15,6 +15,7 @@ from .models import Review, TripPlan, CategoryPlan
 from django.db import models
 from .views import add_post
 
+
 class PlaceDetailsViewTest(TestCase):
     """Test for place details page."""
 
@@ -314,7 +315,6 @@ class TripModelTests(TestCase):
         request.user = self.user
         self.assertEqual(add_post(request).status_code, 200)
         print(TripPlan.objects.all())
-
 
     def tearDown(self):
         """Reset all user, all category and all tripplan"""

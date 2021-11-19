@@ -312,7 +312,7 @@ class TripModelTests(TestCase):
             CategoryPlan.objects.filter(name='category1').delete()
 
     def tearDown(self):
-        """Reset all user, all category and all tripplan"""
+        """Reset all user, all category and all tripplan."""
         User.objects.all().delete()
         TripPlan.objects.all().delete()
         CategoryPlan.objects.all().delete()
@@ -345,7 +345,7 @@ class AddPostTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
-        """Reset all user, all category and all tripplan"""
+        """Reset all user, all category and all tripplan."""
         User.objects.all().delete()
         TripPlan.objects.all().delete()
         CategoryPlan.objects.all().delete()
@@ -371,7 +371,7 @@ class TripDetailTests(TestCase):
         self.assertEqual(trip_detail(request, 1).status_code, 200)
 
     def test_create_review_in_trip_detail(self):
-        """Test post method of trip detail"""
+        """Test post method of trip detail."""
         self.client.force_login(self.user)
         info = {'form': {'post': self.trip, 'name': self.user, 'body': 'test'}}
         response = self.client.post(
@@ -379,7 +379,7 @@ class TripDetailTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
-        """Reset all user, all category and all tripplan"""
+        """Reset all user, all category and all tripplan."""
         User.objects.all().delete()
         TripPlan.objects.all().delete()
         CategoryPlan.objects.all().delete()
@@ -405,7 +405,7 @@ class DeletePostlTests(TestCase):
         self.assertEqual(delete_post(request, 1).status_code, 200)
 
     def tearDown(self):
-        """Reset all user, all category and all tripplan"""
+        """Reset all user, all category and all tripplan."""
         User.objects.all().delete()
         TripPlan.objects.all().delete()
         CategoryPlan.objects.all().delete()

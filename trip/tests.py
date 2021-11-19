@@ -340,7 +340,8 @@ class AddPostTests(TestCase):
     def test_add_post_method_post(self):
         self.client.force_login(self.user)
         info = {'form': {'title': 'test', 'duration': '0',
-                         'price': '1', 'category': 'category1', 'body': 'test', 'post_date': datetime.now(), 'like': '', 'complete': 'False'}}
+                         'price': '1', 'category': 'category1', 'body': 'test',
+                         'post_date': datetime.now(), 'like': '', 'complete': 'False'}}
         response = self.client.post(reverse('trip:addpost'), data=info)
         self.assertEqual(response.status_code, 200)
 

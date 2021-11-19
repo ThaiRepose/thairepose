@@ -340,7 +340,7 @@ class AddPostTests(TestCase):
     def test_add_post_method_post(self):
         self.client.force_login(self.user)
         info = {'form': {'title': 'test', 'duration': '0',
-                         'price': '1', 'category': 'category1', 'body': 'test', 'post_date':datetime.now(), 'like':'', 'complete':'False'}}
+                         'price': '1', 'category': 'category1', 'body': 'test', 'post_date': datetime.now(), 'like': '', 'complete': 'False'}}
         response = self.client.post(reverse('trip:addpost'), data=info)
         self.assertEqual(response.status_code, 200)
 
@@ -374,7 +374,8 @@ class TripDetailTests(TestCase):
         """Test post method of trip detail."""
         self.client.force_login(self.user)
         self.client.get('tripdetail/1/')
-        info = {'form': {'post': self.trip, 'name': self.user, 'body': 'test', 'date_added': datetime.now(), 'like':''}}
+        info = {'form': {'post': self.trip, 'name': self.user,
+                         'body': 'test', 'date_added': datetime.now(), 'like': ''}}
         response = self.client.post(
             reverse('trip:tripdetail', args=['1']), data=info)
         self.assertEqual(response.status_code, 200)

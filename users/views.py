@@ -45,6 +45,7 @@ def edit_profile(request):
     Return:
         HTTPResponse: link of profile and content.
     """
+    profile = get_object_or_404(Profile, user=request.user)
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=request.user)
         profile_form = ProfileUpdateForm(
@@ -58,6 +59,7 @@ def edit_profile(request):
         user_form = UserUpdateForm(instance=request.user)
         profile_form = ProfileUpdateForm(instance=request.user.profile)
     context = {'u_form': user_form,
-               'p_form': profile_form
+               'p_form': profile_form,
+               'profile': profile
                }
     return render(request, "users/edit_profile.html", context)

@@ -1,0 +1,48 @@
+name: Django-CI/CD
+on: 
+  push:
+  pull_request:
+    branches:
+      - main
+      - beta
+jobs:
+  weekday_job:
+    runs-on: ubuntu-latest
+    env:
+      SECRET_KEY: 'THREPOSE'
+      DEBUG: True 
+      HOSTS: 127.0.0.1, localhost
+      EMAIL_FROM_USER: "test@email.com"
+      EMAIL_HOST_PASSWORD: "Test1234@"
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Build
+      run: |
+          python manage.py migrate
+          python manage.py makemigrations users
+          python manage.py migrate users
+          python manage.py makemigrations trip
+          python manage.py migrate trip
+          python manage.py tailwind install
+          python manage.py tailwind build
+    - name: Run Tests
+      run: |
+        coverage run manage.py test
+        flake8 --config config.cfg
+        bash <(curl -s https://codecov.io/bash)

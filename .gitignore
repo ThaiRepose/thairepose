@@ -5,7 +5,8 @@ __pycache__/
 
 # C extensions
 *.so
-
+theme/static/images
+__cache__
 # Distribution / packaging
 .Python
 build/
@@ -134,12 +135,18 @@ dmypy.json
 # Django migrations
 */migrations/
 
+# Cache expire table
+expireTable.json
 # Macos finder cache
 **/.DS_Store
 .DS_Store
 ._.DS_Store
 **/._.DS_Store
 
-# Media file
+# User profile
 media/user/profile_picture/*
 !media/user/profile_picture/blank-profile-picture.png
+
+#trip picture
+media/pic/*
+!media/pic/.gitkeep

@@ -50,8 +50,10 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'search',
     'ckeditor',
-    'ckeditor_uploader'
+    'ckeditor_uploader',
+    'planner.apps.PlannerConfig'
 ]
 
 # Upload folder for ckeditorupload
@@ -159,7 +161,7 @@ PROFILE_PIC_LOCATION = os.path.join(BASE_DIR, 'users/static/profile_pic')
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Bangkok'
 
 USE_I18N = True
 

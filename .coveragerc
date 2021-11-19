@@ -6,3 +6,8 @@ cover_pylib = False
 # omit uninteresting files
 omit =
     */migrations/*
+    */api.py
+    */caching_gmap.py
+    */adapter.py
+    */manage.py
+    */tests*

@@ -153,6 +153,14 @@ class EditPost(UpdateView):
 
 @login_required
 def delete_post(request, pk):
+    """Method for delete post and remove images in local.
+
+    Args:
+        pk(str): post id.
+
+    Return:
+        HttpResponse: Redirect to all trip page.
+    """
     post = get_object_or_404(TripPlan, id=pk)
     if request.method == "POST":
         image_path = os.path.join(MEDIA_ROOT, str(pk))
@@ -168,7 +176,7 @@ def delete_post(request, pk):
 
 @login_required
 def like_view(request, pk):
-    """Methid for store user like of each commend.
+    """Method for store user like of each commend.
 
     Args:
         pk(str): review id of link located.
@@ -183,7 +191,7 @@ def like_view(request, pk):
 
 @login_required
 def like_post(request, pk):
-    """Methid for store user like of each trip.
+    """Method for store user like of each trip.
 
     Args:
         pk(str): blog id of link located.

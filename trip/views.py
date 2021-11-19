@@ -268,18 +268,3 @@ def place_info(request, place_id: str):
         return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
     context = get_details_context(data, os.getenv('API_KEY'))
     return render(request, "trip/place_details.html", context)
-
-
-# Base upload code will delete when finish combine to add post.
-def image_upload_view(request, pk):
-    """Process images uploaded by users"""
-    if request.method == 'POST':
-        form = TripPlanImageForm(request.POST, request.FILES)
-        if form.is_valid():
-            image = request.FILES.get('image')
-            img_obj = UploadImage.objects.create(image=image)
-            form = TripPlanImageForm()
-            return render(request, 'trip/image_upload.html', {'form': form, 'img_obj': img_obj, 'url': image.url})
-    else:
-        form = TripPlanImageForm()
-    return render(request, 'trip/image_upload.html', {'form': form})

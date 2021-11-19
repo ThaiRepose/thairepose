@@ -373,6 +373,7 @@ class TripDetailTests(TestCase):
     def test_create_review_in_trip_detail(self):
         """Test post method of trip detail."""
         self.client.force_login(self.user)
+        self.client.get('tripdetail/1/')
         info = {'form': {'post': self.trip, 'name': self.user, 'body': 'test'}}
         response = self.client.post(
             reverse('trip:tripdetail', args=['1']), data=info)

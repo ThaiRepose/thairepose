@@ -52,7 +52,7 @@ class AllTrip(ListView):
 
 
 def trip_detail(request, pk):
-    """Methof for link html to trip detail and add review form.
+    """Method for link html to trip detail and add review form.
 
     Args:
         pk(str): post id

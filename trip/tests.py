@@ -1,8 +1,8 @@
+from django.http import request
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from dotenv import load_dotenv
 import os
-import time
 import unittest
 from threpose.settings import BASE_DIR
 from .views import get_details_context
@@ -13,7 +13,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from .models import Review, TripPlan, CategoryPlan
 from django.db import models
-
+from .views import add_post
 
 class PlaceDetailsViewTest(TestCase):
     """Test for place details page."""
@@ -267,6 +267,7 @@ class TripModelTests(TestCase):
         self.user = User.objects.create(username='tester', password='tester')
         self.trip = TripPlan.objects.create(
             title='test', body='create_trip', author=self.user, duration=1, price=1, category=self.cat)
+        self.re = RequestFactory()
         return super().setUp()
 
     def test_create_post_in_category(self):
@@ -303,8 +304,17 @@ class TripModelTests(TestCase):
         self.assertEqual(TripPlan.objects.filter(id='1')[0].total_like, 1)
 
     def test_cant_delete_category_when_have_post_in_category(self):
+        """Test Protect from category."""
         with self.assertRaises(models.ProtectedError):
             CategoryPlan.objects.filter(name='category1').delete()
+
+    def test_new(self):
+        """Test add_post"""
+        request = self.re.get('/addpost/')
+        request.user = self.user
+        self.assertEqual(add_post(request).status_code, 200)
+        print(TripPlan.objects.all())
+
 
     def tearDown(self):
         """Reset all user, all category and all tripplan"""

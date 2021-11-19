@@ -166,7 +166,8 @@ def delete_post(request, pk):
     post = get_object_or_404(TripPlan, id=pk)
     if request.method == "POST":
         image_path = os.path.join(MEDIA_ROOT, 'pic', str(pk))
-        shutil.rmtree(image_path)
+        if os.path.exists(image_path):
+            shutil.rmtree(image_path)
         post.delete()
         success_url = reverse_lazy('trip:tripplan')
         return redirect(success_url)

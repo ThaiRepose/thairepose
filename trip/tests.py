@@ -385,6 +385,7 @@ class TripDetailTests(TestCase):
         CategoryPlan.objects.all().delete()
         return super().tearDown()
 
+
 class DeletePostlTests(TestCase):
     """Class for test trip detail method."""
 

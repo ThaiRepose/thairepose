@@ -3,7 +3,7 @@ from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 import json
 import os
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 import requests
 from threpose.settings import BASE_DIR
 from src.caching.caching_gmap import APICaching
@@ -16,11 +16,11 @@ from django.contrib.auth.decorators import login_required
 load_dotenv()
 
 
-
 api_caching = APICaching()
 
 
-PLACE_IMG_PATH = os.path.join(BASE_DIR, 'theme', 'static', 'images', 'places_image')
+PLACE_IMG_PATH = os.path.join(
+    BASE_DIR, 'theme', 'static', 'images', 'places_image')
 
 
 # View page
@@ -201,7 +201,8 @@ def place_info(request, place_id: str):
     """
     api_key = os.getenv('API_KEY')
     if api_caching.get(f"{place_id}detailpage"):
-        cache_data = json.loads(api_caching.get(f"{place_id}detailpage"))['cache']
+        cache_data = json.loads(api_caching.get(
+            f"{place_id}detailpage"))['cache']
     else:
         url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={api_key}"
         response = requests.get(url)
@@ -210,7 +211,8 @@ def place_info(request, place_id: str):
             return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
         context = get_details_context(data, api_key)
         cache_data = restruct_detail_context_data(context)
-        api_caching.add(f"{place_id}detailpage", json.dumps({'cache': cache_data}, indent=3).encode())
+        api_caching.add(f"{place_id}detailpage", json.dumps(
+            {'cache': cache_data}, indent=3).encode())
 
     context = resturct_to_place_detail(cache_data)
     context['blank_rating'] = range(round(context['blank_rating']))
@@ -313,7 +315,8 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
 def check_downloaded_image(context):
     """Check that image from static/images/place_image that is ready for frontend to display or not"""
     if os.path.exists(PLACE_IMG_PATH):
-        all_img_file = [f for f in os.listdir(PLACE_IMG_PATH) if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
+        all_img_file = [f for f in os.listdir(
+            PLACE_IMG_PATH) if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
         place_id = context['place_id']
         context['downloaded'] = True
         if len(context['images']) > 1:

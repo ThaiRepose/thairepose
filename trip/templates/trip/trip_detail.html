@@ -55,8 +55,8 @@
                 <div class="carousel js-flickity 2xl:w-8/12 2xl:ml-4 mb-6 js-show-on-scroll bg-black" style="max-height: 30rem;">
                     {% if images %}
                         {% for image in images %}
-                            <div class="carousel-cell" style="height: 100%">
-                                <img src="{{ image.image.url }}" alt="{{ name }}" style="height: 100%"/>
+                            <div class="carousel-cell" style="height: 30rem">
+                                <img src="{{ image.image.url }}" alt="{{ name }}" style="max-height: 100%"/>
                                 {% comment %} <img src="{% static 'test_pic\france-in-pictures-beautiful-places-to-photograph-eiffel-tower.jpg' %}" alt="{{ name }}" /> {% endcomment %}
                             </div>
                         {% endfor %}
@@ -72,11 +72,8 @@
                         <p class="text-xl font-bold">Trip information</p>
                         <P class="font-bold mt-1">Durations: {{ post.duration }}</P>
                         <P class="font-bold">Price: {{ post.price }}</P>
-                        <form action="{% url 'trip:list_trip' post.pk %}" method="POST">
-                            {% csrf_token %}
-                            <button type="submit" name="trip_id" class="font-bold" value="{{ post.id }}">Like</button>
-                            <span class="font-bold">: </span class="font-bold"><span>{{ post.total_like }}</span>
-                        </form>
+                        <button id = "post-like-button">Like</button>
+                        <span class="font-bold">: </span class="font-bold"><span id='post_total_like'>{{ post.total_like }}</span>
                     </div>
                     {% comment %} Writer card {% endcomment %}
                     <hr class="flex my-3 border-gray-400 w-11/12 mx-auto">
@@ -222,7 +219,6 @@ $(document).ready(function(){
     $(document).on('click', '#review-like-button', function (e) {
         e.preventDefault();
         var pk = {{ post.pk|safe }};
-        console.log(pk);
         $.ajax({
             type: 'POST',
             url: '{% url "trip:like_comment" %}',
@@ -241,6 +237,28 @@ $(document).ready(function(){
             }
         });
     });
+
+
+    $(document).on('click', '#post-like-button', function (e) {
+        e.preventDefault();
+        var pk = {{ post.pk|safe }};
+        $.ajax({
+            type: 'POST',
+            url: '{% url "trip:like_trip" %}',
+            dataType: 'json',
+            data: {
+                pk:pk,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post'
+            },
+            success: function (json) {
+                document.getElementById("post_total_like").innerHTML = json['post_result']
+            },
+            error: function (xhr, errmsg, err) {
+
+            }
+        });
+        });
 });
 </script>
 

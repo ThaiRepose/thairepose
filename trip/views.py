@@ -80,8 +80,9 @@ def trip_detail(request, pk):
         'post': post,
         'commend': commend,
         'review_form': form,
-        'images': UploadImage.objects.filter(id=pk),
+        'images': UploadImage.objects.filter(post = post),
     }
+    print(UploadImage.objects.filter(id=pk))
     return render(request, 'trip/trip_detail.html', context)
 
 
@@ -182,16 +183,7 @@ def like_comment_view(request):
 
 
 @login_required
-def dislike_comment_view(request):
-    """Method that store user like in comment model"""
-    if request.method == 'POST':
-        post = get_object_or_404(Review, id=request.POST.get('comment_id'))
-        post.like.remove(request.user)
-        return JsonResponse({'result':post.total_like, 'id':request.POST.get('comment_id')})
-
-
-@login_required
-def like_post(request, pk):
+def like_post(request):
     """Method for store user like of each trip.
 
     Args:
@@ -200,9 +192,15 @@ def like_post(request, pk):
     Return:
         HttpResponse: Redirect to page that link blog located.
     """
-    post = get_object_or_404(TripPlan, id=request.POST.get('trip_id'))
-    post.like.add(request.user)
-    return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
+    if request.method == 'POST':
+        pk = request.POST.get('pk')
+        print(pk)
+        post = get_object_or_404(TripPlan, id=pk)
+        if post.like.filter(id=request.user.id).exists():
+            post.like.remove(request.user)
+        else:
+            post.like.add(request.user)
+        return JsonResponse({'post_result':post.total_like})
 
 
 def place_info(request, place_id: str):

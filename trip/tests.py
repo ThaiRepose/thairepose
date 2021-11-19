@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 import unittest
 from threpose.settings import BASE_DIR
-from .views import get_details_context, trip_detail
+from .views import delete_post, get_details_context, trip_detail
 from .views import check_downloaded_image
 from .views import restruct_detail_context_data
 from .views import resturct_to_place_detail
@@ -310,7 +310,7 @@ class TripModelTests(TestCase):
             CategoryPlan.objects.filter(name='category1').delete()
 
     def test_add_post(self):
-        """Test add_post method"""
+        """Test add_post method."""
         request = self.re.get('/addpost/')
         request.user = self.user
         self.assertEqual(add_post(request).status_code, 200)
@@ -318,12 +318,20 @@ class TripModelTests(TestCase):
         self.assertEqual(add_post(request).status_code, 200)
 
     def test_trip_detail(self):
-        """Test trip detail method"""
+        """Test trip detail method."""
         request = self.re.get('tripdetail/1/')
         request.user = self.user
         self.assertEqual(trip_detail(request, 1).status_code, 200)
         request.POST = Review.objects.create(post=self.trip, name=self.user, body='test')
         self.assertEqual(trip_detail(request, 1).status_code, 200)
+
+    def test_delete_post(self):
+        """Test delete post method."""
+        request = self.re.get('tripdetail/<int:pk>/remove')
+        request.user = self.user
+        self.assertEqual(delete_post(request, 1).status_code, 200)
+        request.POST = self.trip
+        self.assertEqual(delete_post(request, 1).status_code, 200)
 
     def tearDown(self):
         """Reset all user, all category and all tripplan"""

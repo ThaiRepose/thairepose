@@ -3,12 +3,13 @@ from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 import json
 import os
-from django.shortcuts import render, get_object_or_404
+import shutil
+from django.shortcuts import render, get_object_or_404, redirect
 import requests
-from threpose.settings import BASE_DIR
+from threpose.settings import BASE_DIR, MEDIA_ROOT
 from src.caching.caching_gmap import APICaching
 from dotenv import load_dotenv
-from django.views.generic import ListView, UpdateView, DeleteView
+from django.views.generic import ListView, UpdateView
 from requests.api import post
 from .models import TripPlan, Review, CategoryPlan, UploadImage
 from .forms import TripPlanForm, TripPlanImageForm, ReviewForm
@@ -150,13 +151,19 @@ class EditPost(UpdateView):
     context_object_name = 'post'
 
 
-class DeletePost(DeleteView):
-    """Class for link html of delete post."""
-
-    model = TripPlan
-    template_name = "trip/delete_plan.html"
-    context_object_name = 'post'
-    success_url = reverse_lazy('trip:tripplan')
+@login_required
+def delete_post(request, pk):
+    post = get_object_or_404(TripPlan, id=pk)
+    if request.method == "POST":
+        image_path = os.path.join(MEDIA_ROOT, str(pk))
+        shutil.rmtree(image_path)
+        post.delete()
+        success_url = reverse_lazy('trip:tripplan')
+        return redirect(success_url)
+    context = {
+        "post": post
+    }
+    return render(request, "trip/delete_plan.html", context)
 
 
 @login_required

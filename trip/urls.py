@@ -10,7 +10,7 @@ urlpatterns = [
     path('like/<int:pk>/', views.like_view, name="list_commend"),
     path('likepost/<int:pk>/', views.like_post, name="list_trip"),
     path('tripdetail/edit/<int:pk>', views.EditPost.as_view(), name='editpost'),
-    path('tripdetail/<int:pk>/remove', views.DeletePost.as_view(), name='deletepost'),
+    path('tripdetail/<int:pk>/remove', views.delete_post, name='deletepost'),
     path('category/<category>', views.CatsListView.as_view(), name='category'),
     # 127.0.0.1/domnfoironkwe_0394
     path('place/<str:place_id>/', views.place_info, name='place-detail')

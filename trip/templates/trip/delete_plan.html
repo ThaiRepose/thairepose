@@ -7,7 +7,7 @@
 <he>Post that you want to delete: {{ post.title }}</he>
 <form method="POST">
     {% csrf_token %}
-    <button>!!!Delete!!!</button>
+    <button type="submit">!!!Delete!!!</button>
 </form>
     {% else %}
     <script>alert('You are allow to access.')</script>

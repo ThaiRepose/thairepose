@@ -18,10 +18,12 @@ from django.urls import path, include
 from users import views
 from django.conf import settings
 from django.conf.urls.static import static
+
 urlpatterns = [
     path('admin', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', include('trip.urls', namespace="trip")),
     path('search/', include('search.urls', namespace="search")),
-    path('planner/', include('planner.urls', namespace="planner"))
+    path('planner/', include('planner.urls', namespace="planner")),
+    path('ckeditor/', include('ckeditor_uploader.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

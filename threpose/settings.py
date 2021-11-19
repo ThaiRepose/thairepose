@@ -52,8 +52,12 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'search',
     'ckeditor',
+    'ckeditor_uploader',
     'planner.apps.PlannerConfig'
 ]
+
+# Upload folder for ckeditorupload
+CKEDITOR_UPLOAD_PATH = "uploads/"
 
 # Config for Tailwind CSS
 TAILWIND_APP_NAME = 'theme'
@@ -149,10 +153,6 @@ SOCIALACCOUNT_PROVIDERS = {
 # Check travis
 is_travis = 'TRAVIS' in os.environ
 
-# Profile photo directory
-PROFILE_ROOT = '/profile_pic/'
-PROFILE_PIC_LOCATION = os.path.join(BASE_DIR, 'users/static/profile_pic')
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -171,6 +171,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Meida root
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+# Profile picture path
+PROFILE_PIC_LOCATION = os.path.join(MEDIA_ROOT, 'user', 'profile_picture')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

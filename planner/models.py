@@ -3,6 +3,7 @@ import django.contrib.auth.models
 from django.db import models
 
 MAX_DAYS_PER_PLAN = 6
+MAX_PLACES_PER_DAY = 10
 STATUS = (
     (0, 'Private'),
     (1, 'Public')
@@ -42,14 +43,37 @@ class Editor(models.Model):
         return f"{self.plan} - {self.user}"
 
 
+class Day(models.Model):
+    """Day in each plan contains places."""
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+    number = models.IntegerField(default=1,
+                                 validators=[
+                                     MaxValueValidator(MAX_DAYS_PER_PLAN),
+                                     MinValueValidator(1)
+                                 ])
+
+
 class Place(models.Model):
     """Place in a plan that will be displayed in table."""
+    day = models.IntegerField(default=None,
+                              validators=[
+                                  MaxValueValidator(MAX_DAYS_PER_PLAN),
+                                  MinValueValidator(1)
+                              ])
+    sequence = models.IntegerField(default=None,
+                                   validators=[
+                                       MaxValueValidator(MAX_PLACES_PER_DAY),
+                                       MinValueValidator(1)
+                                   ])
     place_id = models.TextField(null=False, blank=False)
     place_name = models.TextField()
     place_vicinity = models.TextField()
-    arrival_time = models.TimeField("Arrival")
+    arrival_time = models.TimeField("Arrival", default=None, null=True, blank=True)
     departure_time = models.TimeField("Departure")
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE, default=None)
+
+    class Meta:
+        ordering = ('day', 'sequence',)
 
     def __str__(self):
         return self.place_name

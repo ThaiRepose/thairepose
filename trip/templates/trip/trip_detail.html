@@ -62,7 +62,6 @@
         <h1>Add Comment</h1>
         <form method="POST">
             {% csrf_token %}
-            parent : {{review_form.parent}}
             body: {{ review_form.body }}
             <button>Add comment</button>
         </form>

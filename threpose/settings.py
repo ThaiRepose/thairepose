@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'search',
     'ckeditor',
-    'planner.apps.PlannerConfig'
+    'planner'
 ]
 
 # Config for Tailwind CSS

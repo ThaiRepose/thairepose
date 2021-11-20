@@ -32,6 +32,24 @@ class Plan(models.Model):
         """Display name for this plan."""
         return self.name
 
+    def is_editable(self, user: django.contrib.auth.models.User) -> bool:
+        """Returns True if user can edit this plan."""
+        if user == self.author:
+            return True
+        if user in self.editor_set.all():
+            return True
+        return False
+
+    def is_viewable(self, user: django.contrib.auth.models.User) -> bool:
+        """Returns True if someone with link can view this plan."""
+        if self.status:
+            return True
+        if user == self.author:
+            return True
+        if user in self.editor_set.all():
+            return True
+        return False
+
 
 class Editor(models.Model):
     """Class for storing editors for each plan."""

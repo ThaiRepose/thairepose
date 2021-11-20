@@ -13,7 +13,6 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from .models import Review, TripPlan, CategoryPlan
 from django.db import models
-from dotenv import load_dotenv
 load_dotenv()
 
 

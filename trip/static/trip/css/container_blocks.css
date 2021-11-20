@@ -195,3 +195,21 @@ Hide scrollbar for IE, Edge and Firefox
     height: 100%;
     overflow: scroll;
 }
+
+.clickable-div {
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    position: absolute;     
+    z-index: 1;
+  }
+
+
+.hover-target {
+    display: none;
+}
+
+.hover-trigger:hover .hover-target {
+    display: block;
+}

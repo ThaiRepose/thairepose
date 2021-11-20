@@ -1,47 +1,102 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% load account %}
+{% load socialaccount %}
+{% load widget_tweaks %}
+{% load static tailwind_tags %}
+
+
+{% block header %}
+  <title>ThaiRepose::{{ name }}</title>
+    <style>
+        body {
+            background: url("{% static '/images/bg-blur.jpg' %}") no-repeat fixed;
+            background-size: cover;
+        }
+
+         p {
+            max-width: 75ch;
+            word-wrap: break-word;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}" />
+    <link rel="stylesheet" href="https://npmcdn.com/flickity@2/dist/flickity.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="https://npmcdn.com/flickity@2/dist/flickity.pkgd.js"></script>
+{% endblock %}
 
 {% block main_content %}
-
-<div class="flex flex-wrap">
-    <div class="w-full sm:w-6/12 md:w-4/12 px-4">
-        <div class="relative inline-flex align-middle w-full">
-            <button
-                class="bg-black text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 "
-                type="button" onclick="openDropdown(event,'dropdown-example-1')"> Category <i class="fas fa-angle-down ml-2"></i>
-            </button>
-            <div class="hidden bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1"
-                style="min-width: 12rem" id="dropdown-example-1">
-                {% for cats in object.category %}
-                <a href="{% url 'trip:category' cats.name %}" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-gray-700 hover:bg-gray-100 ">
-                    {{ cats.name }}
-                </a>
-                {% endfor %}
-                <div class=" h-0 my-2 border border-solid border-t-0 border-blueGray-800 opacity-25"></div>
-                <a href="#" class=" text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-gray-700 hover:bg-gray-100">
-                    not use yet
-                </a>
+<div id="content" class="flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10 mb-20">
+    <div class="justify-center items-center rounded-2xl sm:w-11/12 lg:w-6/12 mx-auto pb-4">
+        {% comment %} <div class="flex flex-wrap">
+            <div class="w-full sm:w-6/12 md:w-4/12 px-4">
+                <div class="relative inline-flex align-middle w-full">
+                    <button
+                        class="bg-black text-white active:bg-purple-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 "
+                        type="button" onclick="openDropdown(event,'dropdown-example-1')"> Category <i class="fas fa-angle-down ml-2"></i>
+                    </button>
+                    <div class="hidden bg-white text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1"
+                        style="min-width: 12rem" id="dropdown-example-1">
+                        {% for cats in object.category %}
+                        <a href="{% url 'trip:category' cats.name %}" class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-gray-700 hover:bg-gray-100 ">
+                            {{ cats.name }}
+                        </a>
+                        {% endfor %}
+                        <div class=" h-0 my-2 border border-solid border-t-0 border-blueGray-800 opacity-25"></div>
+                        <a href="#" class=" text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-gray-700 hover:bg-gray-100">
+                            not use yet
+                        </a>
+                    </div>
+                </div>
             </div>
-        </div>
+        </div> {% endcomment %}
+        <button 
+        class="bg-black text-white font-bold uppercase text-xs px-4 py-2 mb-4 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear" 
+        onclick="window.location.href='{% url 'trip:addpost' %}'"
+        >
+            Add Post 
+        </button>
+        {% for post in object.post %}
+            <div class="relative mb-10 rounded-xl px-4 py-4"  style="background-color: rgba(255,255,255,0.75);">
+                <a href="{% url 'trip:tripdetail' post.pk %}"><span class="clickable-div z-10 hover:bg-black opacity-5 rounded-xl"></span></a>
+                <div class="xl:flex">
+                    <div class="z-30 carousel js-flickity xl:w-7/12 2xl:ml-4 mb-6 js-show-on-scroll bg-black">
+                        {% if post.image %}
+                            {% for image in post.image %}
+                                <div class="carousel-cell" style="height: 15rem">
+                                    <img src="{{ image.image.url }}" alt="{{ name }}" style="height: 100%"/>
+                                    {% comment %} <img src="{% static 'test_pic\france-in-pictures-beautiful-places-to-photograph-eiffel-tower.jpg' %}" alt="{{ name }}" /> {% endcomment %}
+                                </div>
+                            {% endfor %}
+                            {% else %}
+                                <div class="carousel-cell" style="height: 15rem">
+                                    <img src="{% static 'trip/images/img_not_found.jpg' %}" alt="NotFound" />
+                                </div>
+                            {% endif %}
+                    </div>
+                    <div class = "ml-4 xl:w-4/12">
+                        <p class="text-xl font-semibold ml-4">{{ post.title }}</p>
+                        <div class="mt-2 px-4 py-2 rounded-xl" style="background-color:#f7f6f1">
+                            <p class="text-md font-semibold mb-3"> INFORMATION: </p>
+                            <p class="text-md font-semibold ml-3">durations: <span class="font-medium">{{ post.duration }}</span></p>
+                            <p class="text-md font-semibold ml-3">price: <span class="font-medium">{{ post.price }}</span></p>
+                            <p class="text-md font-semibold ml-3">like: <span class="font-medium">{{post.total_like}}</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div id="desciption-{{post.id}}" class="mt-2 mb-4 px-4 py-2 rounded-xl hidden" style="background-color:#f7f6f1" >
+                    <p>{{ post.get_short_description| slice:"300" | safe}}<span>...</span></p>
+                </div> 
+                <div class="flex justify-center items-center z-40">
+                    <button id="desciption-button-{{ post.id }}" onclick="DescriptionBtn({{post.id}})" class="-mb-4 px-2 rounded-t-lg z-40" style="background-color:#E7E4D7">
+                        see more
+                    </button>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 </div>
-<ul>
-    {% for post in object.post %}
-    <li><a href="{% url 'trip:tripdetail' post.pk %}" type="submit">{{ post.title }}</a>
-        <p>author: {{ post.author }}</p>
-        <p>durations: {{ post.duration }}</p>
-        <p>price: {{ post.price }}</p>
-        <p>{{ post.body| slice:":30" | safe}}</p>
-        {% if user.is_authenticated %}
-        {%if user.id == post.author.id%}
-        <a href="{% url 'trip:editpost' post.pk%}">(Edit)</a>
-        <a href="{% url 'trip:deletepost' post.pk%}">(!!!DELETE!!!)</a>
-        {% endif %}
-        {% else %}
-        {% endif %}
-        <p>-----------------------------------------------------</p>
-        {% endfor %}
-</ul>
-<li><a href="{% url 'trip:addpost' %}">---Add post---</a></li>
 <!-- Required popper.js -->
 <script src="https://unpkg.com/@popperjs/core@2.9.1/dist/umd/popper.min.js" charset="utf-8"></script>
 <script>
@@ -59,6 +114,20 @@
         );
         document.getElementById(dropdownID).classList.toggle("hidden");
         document.getElementById(dropdownID).classList.toggle("block");
+    }
+
+
+    function DescriptionBtn(postID) {
+        post_description_btn = document.getElementById("desciption-button-" + postID)
+        post_description = document.getElementById("desciption-" + postID)
+        
+        if (post_description.classList.contains("hidden")) {
+            post_description_btn.innerHTML = 'see less';
+        } else {
+            post_description_btn.innerHTML = 'see more';
+        }
+
+        post_description.classList.toggle('hidden')
     }
 </script>
 {% endblock %}

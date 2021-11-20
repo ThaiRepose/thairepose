@@ -73,6 +73,22 @@ class TripPlan(models.Model):
     def total_like(self):
         """Return number of count."""
         return self.like.count()
+    
+    @property
+    def get_short_description(self):
+        description = ""
+        if self.body != None:
+            body_split = self.body.split("<p>")
+            for body in body_split:
+                if not body.startswith("<img"):
+                    description += body
+        print(description)
+        return description
+    
+    @property
+    def image(self):
+        """Get image of each post"""
+        return UploadImage.objects.filter(post = self)
 
 
 class Review(models.Model):

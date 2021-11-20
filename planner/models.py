@@ -43,16 +43,6 @@ class Editor(models.Model):
         return f"{self.plan} - {self.user}"
 
 
-class Day(models.Model):
-    """Day in each plan contains places."""
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
-    number = models.IntegerField(default=1,
-                                 validators=[
-                                     MaxValueValidator(MAX_DAYS_PER_PLAN),
-                                     MinValueValidator(1)
-                                 ])
-
-
 class Place(models.Model):
     """Place in a plan that will be displayed in table."""
     day = models.IntegerField(default=None,

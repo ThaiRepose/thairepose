@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Editor, Plan, Place, Day
+from .models import Editor, Plan, Place
 
 
 class EditorInline(admin.StackedInline):

@@ -53,10 +53,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'search',
-<<<<<<< HEAD
-=======
-    'ckeditor',
->>>>>>> beta
     'ckeditor_uploader',
     'planner.apps.PlannerConfig'
 ]

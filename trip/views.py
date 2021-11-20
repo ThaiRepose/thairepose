@@ -81,7 +81,7 @@ def trip_detail(request, pk):
         'post': post,
         'commend': commend,
         'review_form': form,
-        'images': UploadImage.objects.filter(post = post),
+        'images': UploadImage.objects.filter(post=post),
     }
     print(UploadImage.objects.filter(id=pk))
     return render(request, 'trip/trip_detail.html', context)
@@ -167,7 +167,7 @@ def delete_post(request, pk):
             if os.path.exists(image_path):
                 shutil.rmtree(image_path)
             post.delete()
-    
+
     return redirect(reverse_lazy('trip:tripplan'))
 
 
@@ -180,7 +180,7 @@ def like_comment_view(request):
             post.like.remove(request.user)
         else:
             post.like.add(request.user)
-        return JsonResponse({'result':post.total_like, 'id':request.POST.get('comment_id')})
+        return JsonResponse({'result': post.total_like, 'id': request.POST.get('comment_id')})
 
 
 @login_required
@@ -201,7 +201,7 @@ def like_post(request):
             post.like.remove(request.user)
         else:
             post.like.add(request.user)
-        return JsonResponse({'post_result':post.total_like})
+        return JsonResponse({'post_result': post.total_like})
 
 
 def place_info(request, place_id: str):

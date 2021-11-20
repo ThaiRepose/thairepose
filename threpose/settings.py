@@ -174,7 +174,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-PROFILE_PIC_LOCATION = os.path.join(MEDIA_ROOT, 'user\profile_picture')
+PROFILE_PIC_LOCATION = os.path.join(MEDIA_ROOT, 'user', 'profile_picture')
 
 # Meida root
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

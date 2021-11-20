@@ -17,6 +17,7 @@ from requests.api import post
 from .models import TripPlan, Review, CategoryPlan, UploadImage
 from .forms import TripPlanForm, TripPlanImageForm, ReviewForm
 from django.contrib.auth.decorators import login_required
+from django.template.defaulttags import register
 load_dotenv()
 
 
@@ -50,7 +51,7 @@ class AllTrip(ListView):
         """
         content = {
             'post': TripPlan.objects.all(),
-            'category': CategoryPlan.objects.all()
+            'category': CategoryPlan.objects.all(),
         }
         return content
 

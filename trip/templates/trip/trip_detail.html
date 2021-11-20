@@ -33,12 +33,13 @@
 {% if not commend.all %}
     No review Yet
     {% if user.is_authenticated %}
-        <h1>Add Comment</h1>
-        <form method="POST">
-            {% csrf_token %}
-            {{ review_form.as_p }}
-            <button>Add comment</button>
-        </form>
+    <h1>Add Comment</h1>
+    <form method="POST">
+        {% csrf_token %}
+        parent : {{review_form.parent}}
+        body: {{ review_form.body }}
+        <button>Add comment</button>
+    </form>
     {% else %}
         <p>Login to write commend.</p>
     {% endif %}
@@ -46,8 +47,9 @@
     <div>
         {% load mptt_tags %}
         {% recursetree commend %}
-            {{node.body}}
+            <div>{{node.body}}</div>
             <div>{{node.level}} </div>
+            <button class='button' onclick="myFunctions({{node.id}})">Reply</button>
         {% if not node.is_leaf_node %}
             <div class="children pl-2 pl-md-5">
                 <div>{{children}}</div>
@@ -55,22 +57,13 @@
         {% endif %}
         {% endrecursetree %}
     </div>
-    <!-- {% for commend in commend %}
-    <strong>{{commend.name}} - {{commend.date_added}} </strong>
-    {{commend.body}} -->
-    <!-- <form action="{% url 'trip:list_commend' post.pk %}" method="POST">
-        {% csrf_token %}
-        <button type="submit" name="commend_id" value="{{ commend.id }}">Like</button>
-        - {{ commend.total_like }}
-    </form>
-    <br> -->
-    <!-- {% endfor %} -->
     <p>---Add commend---</p>
     {% if user.is_authenticated %}
         <h1>Add Comment</h1>
         <form method="POST">
             {% csrf_token %}
-            {{ review_form.as_p }}
+            parent : {{review_form.parent}}
+            body: {{ review_form.body }}
             <button>Add comment</button>
         </form>
     {% else %}

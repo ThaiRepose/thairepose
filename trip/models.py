@@ -88,7 +88,7 @@ class Review(MPTTModel):
 
     post = models.ForeignKey(
         TripPlan, related_name="review", on_delete=models.CASCADE)
-    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='children')
     name = models.ForeignKey(User, on_delete=models.CASCADE)
     body = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)

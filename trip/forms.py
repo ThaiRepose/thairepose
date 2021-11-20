@@ -31,13 +31,11 @@ class ReviewForm(forms.ModelForm):
     """Class for create review form."""
 
     parent = TreeNodeChoiceField(queryset=Review.objects.all())
+    
+    class Meta:
+        model = Review
+        fields = ['parent', 'body']
 
     def __inti__(self, *args, **kwargs):
         super(ReviewForm, self).__init__(*args, **kwargs)
-        
-    class Meta:
-        model = Review
-        fields = ('parent', 'body')
-        widgets = {
-            'parent': forms.Select(attrs={'class': 'form-control'}),
-        }
+        self.fields['parent'].required = False

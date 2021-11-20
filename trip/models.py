@@ -76,6 +76,7 @@ class TripPlan(models.Model):
     
     @property
     def get_short_description(self):
+        """Return short description of post with out image"""
         description = ""
         if self.body != None:
             body_split = self.body.split("<p>")
@@ -87,8 +88,9 @@ class TripPlan(models.Model):
     
     @property
     def image(self):
-        """Get image of each post"""
+        """Return image of this post"""
         return UploadImage.objects.filter(post = self)
+
 
 
 class Review(models.Model):

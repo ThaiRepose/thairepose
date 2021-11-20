@@ -13,21 +13,21 @@ class TripPlanForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'appearance-none block w-full bg-white text-black border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 w-full',
-                'placeholder':'Title'
-                }),
+                'placeholder': 'Title'
+            }),
             'category': forms.Select(attrs={
                 'class': 'block appearance-none w-full bg-white border border-gray-200 text-black py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500',
-                }),
+            }),
             'duration': forms.NumberInput(attrs={
                 'min': '0',
                 'class': "appearance-none block w-full bg-white text-black border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500",
-                'placeholder':'Duration'
-                }),
+                'placeholder': 'Duration'
+            }),
             'price': forms.NumberInput(attrs={
                 'min': '0',
                 'class': "appearance-none block w-full bg-white text-black border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500",
-                'placeholder':'price'
-                })
+                'placeholder': 'price'
+            })
         }
 
 

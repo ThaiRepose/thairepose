@@ -12,85 +12,43 @@
 {% endblock %}
 
 {% block main_content %}
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<body>
-
-    <div id="app" class="max-w-sm bg-white shadow-lg rounded-lg overflow-hidden my-60 mx-auto">
-
-        <github-user-card username="yyx990803"></github-user-card>
-
+<br><br><br><br><br><br>
+<div class="w-screen h-screen flex justify-center items-center">
+    <style>
+    #bo {
+    background-color: #6617cb;
+    background-image: linear-gradient(315deg, #6617cb 0%, #cb218e 74%);
+    box-shadow: 0 0 0 0 #ec008c, 0.2rem 0.2rem 30px #6617cb;
+    }
+    #bo:hover {
+    box-shadow: 0 0 0 0 #ec008c, 0.2rem 0.2rem 60px #6617cb;
+    }
+ </style>
+ <div class="container mx-auto max-w-xs rounded-lg overflow-hidden shadow-lg my-2 bg-white">
+    <div class="relative mb-6">
+       <img class="w-full" src="{{profile.profile_pic.url}}"
+          alt="Profile picture" />
+       <div class="text-center absolute w-full" style="bottom: -30px">
+          <a href="{% url 'editprofile' %}" id='bo' class="p-4 rounded-full transition ease-in duration-200 focus:outline-none">
+            <i class="material-icons">settings</i>
+          </a>
+       </div>
     </div>
-
-    <script type="text/x-template" id="github-user-card-template">
-    <div>
-        <img class="w-full h-55 object-cover object-center" src="{{profile.profile_pic.url}}" alt="avatar">
-        <div class="py-4 px-6 z-50">
-            <h1 class="text-2xl font-semibold text-gray-800 text-center">{{user.first_name}} {{user.last_name}}</h1>
-            <div class="flex items-center mt-4 text-gray-700">
-                <svg class="h-6 w-6 fill-current" viewBox="0 0 20 20">
-                    <path d="M15.573,11.624c0.568-0.478,0.947-1.219,0.947-2.019c0-1.37-1.108-2.569-2.371-2.569s-2.371,1.2-2.371,2.569c0,0.8,0.379,1.542,0.946,2.019c-0.253,0.089-0.496,0.2-0.728,0.332c-0.743-0.898-1.745-1.573-2.891-1.911c0.877-0.61,1.486-1.666,1.486-2.812c0-1.79-1.479-3.359-3.162-3.359S4.269,5.443,4.269,7.233c0,1.146,0.608,2.202,1.486,2.812c-2.454,0.725-4.252,2.998-4.252,5.685c0,0.218,0.178,0.396,0.395,0.396h16.203c0.218,0,0.396-0.178,0.396-0.396C18.497,13.831,17.273,12.216,15.573,11.624 M12.568,9.605c0-0.822,0.689-1.779,1.581-1.779s1.58,0.957,1.58,1.779s-0.688,1.779-1.58,1.779S12.568,10.427,12.568,9.605 M5.06,7.233c0-1.213,1.014-2.569,2.371-2.569c1.358,0,2.371,1.355,2.371,2.569S8.789,9.802,7.431,9.802C6.073,9.802,5.06,8.447,5.06,7.233 M2.309,15.335c0.202-2.649,2.423-4.742,5.122-4.742s4.921,2.093,5.122,4.742H2.309z M13.346,15.335c-0.067-0.997-0.382-1.928-0.882-2.732c0.502-0.271,1.075-0.429,1.686-0.429c1.828,0,3.338,1.385,3.535,3.161H13.346z"></path>                </svg>
-                <h1 class="px-2 text-sm">{{profile.user.username}}</h1>
-            </div>
-            <div class="flex items-center mt-4 text-gray-700">
-                <i class="fa fa-birthday-cake"></i>
-                <h1 class="px-2 text-sm">{{profile.birthday}}</h1>
-            </div>
-            <div class="flex items-center mt-4 text-gray-700">
-                <i class="material-icons">settings</i>
-                <h1 class="px-2 text-sm"><a href="{% url 'editprofile' %}">EDIT</a></h1>
-            </div>
-        </div>
+    <div class="py-10 px-6 text-center tracking-wide grid grid-cols-3 gap-6">
+       <div class="posts">
+          <p class="text-lg">{{profile.user.username}}</p>
+          <p class="text-gray-400 text-sm">Username</p>
+       </div>
+       <div class="followers">
+          <p class="text-lg">{{user.first_name}} {{user.last_name}}</p>
+          <p class="text-gray-400 text-sm">Name</p>
+       </div>
+       <div class="following">
+          <p class="text-lg">{{profile.birthday}}</p>
+          <p class="text-gray-400 text-sm">Birthdays</p>
+       </div>
     </div>
-
-  </script>
-
-    <!-- Import Vue.js and axios -->
-    <script src="https://unpkg.com/vue"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-
-    <!-- Your JavaScript Code :) -->
-    <script>
-        Vue.component('github-user-card', {
-            template: '#github-user-card-template',
-            props: {
-                username: {
-                    type: String,
-                    required: true
-                }
-            },
-            data() {
-                return {
-                    user: {}
-                }
-            },
-            created() {
-                axios.get(`https://api.github.com/users/${this.username}`)
-                    .then(response => {
-                        this.user = response.data
-                    })
-            }
-        })
-        new Vue({
-            el: '#app'
-        })
-    </script>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-</body>
-
+ </div>
+</div>
+<br><br><br><br><br><br><br>
 {% endblock %}

@@ -47,7 +47,7 @@ class AllTrip(ListView):
             content(dict): list of caliable can use in html.
         """
         content = {
-            'post': TripPlan.objects.all(),
+            'post': TripPlan.objects.filter(complete=True),
             'category': CategoryPlan.objects.all()
         }
         return content

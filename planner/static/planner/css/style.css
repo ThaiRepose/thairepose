@@ -1,0 +1,39 @@
+/* table with transparent body */
+.body-transparent-table {
+    border-collapse: separate;
+    border-spacing: 0 11px;
+    min-width: 350px;
+}
+
+/* top-left border-radius */
+.body-transparent-table tr th:first-child,
+.body-transparent-table tr td:first-child {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+
+/* top-right border-radius */
+.body-transparent-table tr th:last-child,
+.body-transparent-table tr td:last-child {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+/* blink for overtime in a day */
+.blink-bg {
+    color: #fff;
+    animation: blinkingBackground 3s infinite;
+}
+
+/* keyframe for blinks */
+@keyframes blinkingBackground {
+    0% {
+        background-color: #f02435;
+    }
+    50% {
+        background-color: transparent;
+    }
+    100% {
+        background-color: #f02435;
+    }
+}

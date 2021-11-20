@@ -13,6 +13,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from .models import Review, TripPlan, CategoryPlan
 from django.db import models
+from dotenv import load_dotenv
+load_dotenv()
 
 
 class PlaceDetailsViewTest(TestCase):
@@ -21,7 +23,7 @@ class PlaceDetailsViewTest(TestCase):
     def setUp(self):
         """Initialize API key from env."""
         load_dotenv()
-        self.frontend_api_key = os.getenv('API_KEY')
+        self.api_key = os.getenv('API_KEY')
 
     def test_invalid_place_id(self):
         """Test viewing place details page with invalid place_id."""
@@ -44,7 +46,7 @@ class PlaceDetailsViewTest(TestCase):
                 'types': ['school']
             }
         }
-        context = get_details_context(mock_data, self.frontend_api_key)
+        context = get_details_context(mock_data, self.api_key)
         self.assertEqual("Tawan Boonma", context['place_name'])
         self.assertEqual("191", context['phone'])
         self.assertEqual("tawanb.dev", context['website'])
@@ -63,7 +65,7 @@ class PlaceDetailsViewTest(TestCase):
                 'geometry': {'location': {'lat': 10, 'lng': 10}}
             }
         }
-        context = get_details_context(mock_data, self.frontend_api_key)
+        context = get_details_context(mock_data, self.api_key)
         self.assertEqual("N/A", context['place_name'])
         self.assertEqual("N/A", context['phone'])
         self.assertEqual("N/A", context['website'])
@@ -75,8 +77,8 @@ class PlaceDetailsViewTest(TestCase):
 
     def test_empty_get_details_function(self):
         """Test for get_details_context() function with empty place_data."""
-        context = get_details_context({}, self.frontend_api_key)
-        self.assertEqual({'api_key': None}, context)
+        context = get_details_context({}, self.api_key)
+        self.assertEqual({'api_key': self.api_key}, context)
 
     @unittest.skip("Skip due to not provided API key.")
     def test_view_one_place(self):

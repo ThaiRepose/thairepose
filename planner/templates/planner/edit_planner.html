@@ -110,15 +110,31 @@
                             Calculate Traveling Time
                             <span class="material-icons material-icons-outlined md-24 ml-2">place</span>
                         </button>
-                        <button class="p-2 px-4 bg-translucent text-lg hover:bg-white shadow rounded-lg ml-5 flex flex-row items-center"
-                                onclick="getLink()">
-                            Get link
-                            <span id="copy" class="material-icons material-icons-outlined md-24 ml-2 transition duration-300 ease-in-out">content_paste</span>
-                        </button>
                     </div>
                 </div>
                 <!-- Right column (settings) -->
-                <div class="w-full md:w-1/2"></div>
+                <div class="w-full md:w-1/2 py-6">
+                    <!-- Toggle public/private -->
+                    <div id="publish" x-data="publishSetting">
+
+                        <div class="flex items-center m-2 cursor-pointer cm-toggle-wrapper"  x-on:click="value =  (value == onValue ? offValue : onValue); editPublish();">
+                            <span class="font-semibold text-md mr-1">
+                                Private
+                            </span>
+                            <div class="rounded-full w-8 h-4 p-0.5 bg-gray-300" :class="{'bg-red-500': value == offValue,'bg-green-500': value == onValue}">
+                                <div class="rounded-full w-3 h-3 bg-white transform mx-auto duration-300 ease-in-out" :class="{'-translate-x-2': value == offValue,'translate-x-2': value == onValue}"></div>
+                            </div>
+                            <span class="font-semibold text-md ml-1">
+                                Public
+                            </span>
+                        </div>
+                    </div>
+                    <button id="copy-btn" class="p-2 px-4 bg-translucent text-lg hover:bg-white shadow rounded-lg ml-2 flex flex-row items-center"
+                            onclick="getLink()">
+                        Get link
+                        <span id="copy" class="material-icons material-icons-outlined md-24 ml-2 transition duration-300 ease-in-out">content_paste</span>
+                    </button>
+                </div>
             </div>
             <!-- Trip day row -->
             <div id="trip-days">
@@ -169,7 +185,27 @@
         });
       }
 
+      /**
+       * Edit publish setting.
+       */
+      function editPublish() {
+        displaySyncing();
+        if (publishSetting.value === 'On') {
+          $("#copy-btn")[0].style.display = "";
+          sendEdit('publish', 1);
+        } else {
+          $("#copy-btn")[0].style.display = "none";
+          sendEdit('publish', 0);
+        }
+      }
+
       var directions;
+      // Planner publish setting
+      let publishSetting = {
+        value: '{{ is_publish }}',
+        offValue: 'Off',
+        onValue: 'On'
+      };
       let days = $('input[name="days-amount"]')[0].value;
       for (let i = 1; i <= days; i++) {
         addNewDay(i);
@@ -179,5 +215,8 @@
         addPlaceToTable({{ place.day }}, '{{ place.place_name }}', '{{ place.place_vicinity }}', '{{ place.place_id }}', '{{ place.arrival_time|date:"H:i" }}', '{{ place.departure_time|date:"H:i" }}');
       {% endfor %}
       checkOverDate();
+      {% if is_publish == "Off" %}
+        $("#copy-btn")[0].style.display = "none";
+      {% endif %}
     </script>
 {% endblock %}

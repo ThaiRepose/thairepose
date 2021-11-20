@@ -32,9 +32,11 @@ def edit_planner(request, planner_id: int):
         (len(plan_detail.editor_set.filter(user=request.user)) > 0)
     if not is_editable:
         return HttpResponseRedirect(reverse('planner:view_plan', args=[planner_id], ))
+    is_publish = 'On' if plan_detail.status else 'Off'
     return render(request, "planner/edit_planner.html", {'api_key': os.getenv('API_KEY'),
                                                          'details': plan_detail,
-                                                         'editable': is_editable})
+                                                         'editable': is_editable,
+                                                         'is_publish': is_publish})
 
 
 def view_planner(request, planner_id: int):
@@ -77,6 +79,8 @@ def edit_planner_backend(request):
         plan.name = request.POST['name']
     if 'days' in request.POST:
         plan.days = request.POST['days']
+    if 'publish' in request.POST:
+        plan.status = request.POST['publish']
     if 'addPlace' in request.POST:
         place_data = json.loads(request.POST['place'])
         add_new_place(place_data, plan)

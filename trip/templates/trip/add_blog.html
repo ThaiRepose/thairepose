@@ -7,13 +7,13 @@
     {% csrf_token %}.
     {{ form.media }}
     {{ form.as_p }}
-    <button>Post</button>
+    <button type="submit" name="blog">Post</button>
 </form>
 
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <input name='image' type='file' multiple>
-    <button type="submit">Upload</button>
+    <button type="submit" name="pic">Upload</button>
 </form>
 
 {% if img_obj %}

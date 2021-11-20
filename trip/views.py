@@ -68,7 +68,7 @@ def trip_detail(request, pk):
         form = ReviewForm(request.POST)
         if form.is_valid():
             review_form = form.save(commit=False)
-            review_form.post = TripPlan.objects.filter(id=pk)[0]
+            review_form.post = TripPlan.objects.get(id=pk)
             review_form.name = request.user
             review_form.save()
             return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))

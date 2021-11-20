@@ -40,19 +40,31 @@
             <button>Add comment</button>
         </form>
     {% else %}
-        <p>Login to rwirte commend.</p>
+        <p>Login to write commend.</p>
     {% endif %}
 {% else %}
-    {% for commend in commend %}
+    <div>
+        {% load mptt_tags %}
+        {% recursetree commend %}
+            {{node.body}}
+            <div>{{node.level}} </div>
+        {% if not node.is_leaf_node %}
+            <div class="children pl-2 pl-md-5">
+                <div>{{children}}</div>
+            </div>
+        {% endif %}
+        {% endrecursetree %}
+    </div>
+    <!-- {% for commend in commend %}
     <strong>{{commend.name}} - {{commend.date_added}} </strong>
-    {{commend.body}}
-    <form action="{% url 'trip:list_commend' post.pk %}" method="POST">
+    {{commend.body}} -->
+    <!-- <form action="{% url 'trip:list_commend' post.pk %}" method="POST">
         {% csrf_token %}
         <button type="submit" name="commend_id" value="{{ commend.id }}">Like</button>
         - {{ commend.total_like }}
     </form>
-    <br>
-    {% endfor %}
+    <br> -->
+    <!-- {% endfor %} -->
     <p>---Add commend---</p>
     {% if user.is_authenticated %}
         <h1>Add Comment</h1>

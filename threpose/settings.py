@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'search',
     'ckeditor',
     'ckeditor_uploader',
-    'planner.apps.PlannerConfig'
+    'planner.apps.PlannerConfig',
+    'mptt'
 ]
 
 # Upload folder for ckeditorupload

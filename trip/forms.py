@@ -1,5 +1,7 @@
 from django import forms
+from django.forms import widgets
 from .models import TripPlan, UploadImage, Review
+from mptt.forms import TreeNodeChoiceField
 
 choice_list = ['Uncategorize']
 
@@ -28,6 +30,14 @@ class TripPlanImageForm(forms.ModelForm):
 class ReviewForm(forms.ModelForm):
     """Class for create review form."""
 
+    parent = TreeNodeChoiceField(queryset=Review.objects.all())
+
+    def __inti__(self, *args, **kwargs):
+        super(ReviewForm, self).__init__(*args, **kwargs)
+        
     class Meta:
         model = Review
-        fields = ['body']
+        fields = ('parent', 'body')
+        widgets = {
+            'parent': forms.Select(attrs={'class': 'form-control'}),
+        }

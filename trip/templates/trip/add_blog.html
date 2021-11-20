@@ -8,12 +8,13 @@
     {{ form.media }}
     {{ form.as_p }}
     <button type="submit" name="blog">Post</button>
+    <button type="submit" name="save_blog">Save</button>
 </form>
 
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <input name='image' type='file' multiple>
-    <button type="submit" name="pic">Upload</button>
+    <button type="submit" name="imgpic">Upload</button>
 </form>
 
 {% if img_obj %}

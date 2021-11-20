@@ -53,6 +53,10 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'search',
+<<<<<<< HEAD
+=======
+    'ckeditor',
+>>>>>>> beta
     'ckeditor_uploader',
     'planner.apps.PlannerConfig'
 ]
@@ -175,6 +179,14 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 PROFILE_PIC_LOCATION = os.path.join(MEDIA_ROOT, 'user', 'profile_picture')
+
+# Meida root
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+# Profile picture path
+PROFILE_PIC_LOCATION = os.path.join(MEDIA_ROOT, 'user', 'profile_picture')
+
 
 # Meida root
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

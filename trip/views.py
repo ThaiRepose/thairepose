@@ -5,9 +5,14 @@ from allauth.account.decorators import verified_email_required
 from django.contrib.auth.decorators import login_required
 import json
 import os
+<<<<<<< HEAD
 from django.http.response import JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
 import shutil
+=======
+import shutil
+from django.shortcuts import render, get_object_or_404, redirect
+>>>>>>> beta
 import requests
 from threpose.settings import BASE_DIR, MEDIA_ROOT
 from src.caching.caching_gmap import APICaching
@@ -17,7 +22,10 @@ from requests.api import post
 from .models import TripPlan, Review, CategoryPlan, UploadImage
 from .forms import TripPlanForm, TripPlanImageForm, ReviewForm
 from django.contrib.auth.decorators import login_required
+<<<<<<< HEAD
 from django.template.defaulttags import register
+=======
+>>>>>>> beta
 load_dotenv()
 
 
@@ -80,10 +88,15 @@ def trip_detail(request, pk):
     context = {
         'post': post,
         'commend': commend,
+<<<<<<< HEAD
         'review_form': form,
         'images': UploadImage.objects.filter(post=post),
     }
     print(UploadImage.objects.filter(id=pk))
+=======
+        'review_form': form
+    }
+>>>>>>> beta
     return render(request, 'trip/trip_detail.html', context)
 
 
@@ -160,6 +173,7 @@ class EditPost(UpdateView):
 
 @login_required
 def delete_post(request, pk):
+<<<<<<< HEAD
     post = get_object_or_404(TripPlan, pk=pk)
     if request.method == 'POST':
         if request.user.id == post.author.id:
@@ -185,6 +199,47 @@ def like_comment_view(request):
 
 @login_required
 def like_post(request):
+=======
+    """Method for delete post and remove images in local.
+
+    Args:
+        pk(str): post id.
+
+    Return:
+        HttpResponse: Redirect to all trip page.
+    """
+    post = get_object_or_404(TripPlan, id=pk)
+    if request.method == "POST":
+        image_path = os.path.join(MEDIA_ROOT, 'pic', str(pk))
+        if os.path.exists(image_path):
+            shutil.rmtree(image_path)
+        post.delete()
+        success_url = reverse_lazy('trip:tripplan')
+        return redirect(success_url)
+    context = {
+        "post": post
+    }
+    return render(request, "trip/delete_plan.html", context)
+
+
+@login_required
+def like_view(request, pk):
+    """Method for store user like of each commend.
+
+    Args:
+        pk(str): review id of link located.
+
+    Return:
+        HttpResponse: Redirect to page that link review located.
+    """
+    post = get_object_or_404(Review, id=request.POST.get('commend_id'))
+    post.like.add(request.user)
+    return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
+
+
+@login_required
+def like_post(request, pk):
+>>>>>>> beta
     """Method for store user like of each trip.
 
     Args:

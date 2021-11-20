@@ -31,7 +31,7 @@ class ReviewForm(forms.ModelForm):
     """Class for create review form."""
 
     parent = TreeNodeChoiceField(queryset=Review.objects.all())
-    
+
     class Meta:
         model = Review
         fields = ['parent', 'body']

@@ -149,7 +149,8 @@ class EditPost(UpdateView):
 
     model = TripPlan
     template_name = "trip/update_plan.html"
-    fields = ['title', 'duration', 'price', 'body']
+    # fields = ['title', 'duration', 'price', 'body']
+    form_class = TripPlanForm
     context_object_name = 'post'
 
 

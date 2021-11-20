@@ -12,6 +12,7 @@
 {% endblock %}
 
 {% block main_content %}
+{% if user.is_authenticated %}
 <br><br><br><br><br><br>
 <div class="w-screen h-screen flex justify-center items-center">
     <style>
@@ -30,7 +31,7 @@
           alt="Profile picture" />
        <div class="text-center absolute w-full" style="bottom: -30px">
           <a href="{% url 'editprofile' %}" id='bo' class="p-4 rounded-full transition ease-in duration-200 focus:outline-none">
-            <i class="material-icons">settings</i>
+            <span><i class="material-icons">settings</i></span>
           </a>
        </div>
     </div>
@@ -51,4 +52,5 @@
  </div>
 </div>
 <br><br><br><br><br><br><br>
+{% endif %}
 {% endblock %}

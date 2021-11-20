@@ -10,6 +10,7 @@
 {% endblock %}
 
 {% block main_content %}
+{% if user.is_authenticated %}
 <div class="h-70 pt-2 font-mono my-16 bg-white shadow-lg rounded-lg overflow-hidden my-4 mx-auto">
     <div class="container mx-auto">
         <div class="inputs w-full max-w-2xl p-6 mx-auto">
@@ -47,4 +48,5 @@
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock %}

@@ -132,7 +132,8 @@ def add_post(request):
                     img_obj = UploadImage.objects.create(post=post_form, image=img)
                     img_obj.save()
                     list_img.append(img_obj)
-                return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': list_img})
+                return render(request, 'trip/add_blog.html', {'form': form,
+                                                              'image_form': image_form, 'img_obj': list_img})
         elif 'blog' in request.POST:
             if form.is_valid():
                 post_form = form.save(commit=False)

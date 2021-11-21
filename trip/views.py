@@ -1,11 +1,13 @@
+from django.contrib.auth.models import User
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from allauth.account.decorators import verified_email_required
 from django.contrib.auth.decorators import login_required
 import json
 import os
+from django.http.response import JsonResponse
+from django.shortcuts import redirect, render, get_object_or_404
 import shutil
-from django.shortcuts import render, get_object_or_404, redirect
 import requests
 from threpose.settings import BASE_DIR, MEDIA_ROOT
 from src.caching.caching_gmap import APICaching
@@ -48,7 +50,7 @@ class AllTrip(ListView):
         """
         content = {
             'post': TripPlan.objects.all(),
-            'category': CategoryPlan.objects.all()
+            'category': CategoryPlan.objects.all(),
         }
         return content
 
@@ -77,8 +79,10 @@ def trip_detail(request, pk):
     context = {
         'post': post,
         'commend': commend,
-        'review_form': form
+        'review_form': form,
+        'images': UploadImage.objects.filter(post=post),
     }
+    print(UploadImage.objects.filter(id=pk))
     return render(request, 'trip/trip_detail.html', context)
 
 
@@ -156,45 +160,31 @@ class EditPost(UpdateView):
 
 @login_required
 def delete_post(request, pk):
-    """Method for delete post and remove images in local.
+    post = get_object_or_404(TripPlan, pk=pk)
+    if request.method == 'POST':
+        if request.user.id == post.author.id:
+            image_path = os.path.join(MEDIA_ROOT, 'pic', str(pk))
+            if os.path.exists(image_path):
+                shutil.rmtree(image_path)
+            post.delete()
 
-    Args:
-        pk(str): post id.
-
-    Return:
-        HttpResponse: Redirect to all trip page.
-    """
-    post = get_object_or_404(TripPlan, id=pk)
-    if request.method == "POST":
-        image_path = os.path.join(MEDIA_ROOT, 'pic', str(pk))
-        if os.path.exists(image_path):
-            shutil.rmtree(image_path)
-        post.delete()
-        success_url = reverse_lazy('trip:tripplan')
-        return redirect(success_url)
-    context = {
-        "post": post
-    }
-    return render(request, "trip/delete_plan.html", context)
+    return redirect(reverse_lazy('trip:tripplan'))
 
 
 @login_required
-def like_view(request, pk):
-    """Method for store user like of each commend.
-
-    Args:
-        pk(str): review id of link located.
-
-    Return:
-        HttpResponse: Redirect to page that link review located.
-    """
-    post = get_object_or_404(Review, id=request.POST.get('commend_id'))
-    post.like.add(request.user)
-    return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
+def like_comment_view(request):
+    """Method that store user like in comment model"""
+    if request.method == 'POST':
+        post = get_object_or_404(Review, id=request.POST.get('comment_id'))
+        if post.like.filter(id=request.user.id).exists():
+            post.like.remove(request.user)
+        else:
+            post.like.add(request.user)
+        return JsonResponse({'result': post.total_like, 'id': request.POST.get('comment_id')})
 
 
 @login_required
-def like_post(request, pk):
+def like_post(request):
     """Method for store user like of each trip.
 
     Args:
@@ -203,9 +193,15 @@ def like_post(request, pk):
     Return:
         HttpResponse: Redirect to page that link blog located.
     """
-    post = get_object_or_404(TripPlan, id=request.POST.get('trip_id'))
-    post.like.add(request.user)
-    return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
+    if request.method == 'POST':
+        pk = request.POST.get('pk')
+        print(pk)
+        post = get_object_or_404(TripPlan, id=pk)
+        if post.like.filter(id=request.user.id).exists():
+            post.like.remove(request.user)
+        else:
+            post.like.add(request.user)
+        return JsonResponse({'post_result': post.total_like})
 
 
 def place_info(request, place_id: str):

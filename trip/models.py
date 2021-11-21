@@ -74,6 +74,22 @@ class TripPlan(models.Model):
         """Return number of count."""
         return self.like.count()
 
+    @property
+    def get_short_description(self):
+        """Return short description of post with out image"""
+        description = ""
+        if self.body is not None:
+            body_split = self.body.split("<p>")
+            for body in body_split:
+                if not body.startswith("<img"):
+                    description += body
+        return description
+
+    @property
+    def image(self):
+        """Return image of this post"""
+        return UploadImage.objects.filter(post=self)
+
 
 class Review(models.Model):
     """Extended user model class that use for Review.

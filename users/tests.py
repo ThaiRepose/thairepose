@@ -79,22 +79,3 @@ class TestEmailVerificationPage(TestCase):
             ProfileAccountAdapter, self.rf, self.user)
         self.assertEqual(response.status_code, 302)
         self.assertTemplateUsed('verification_sent.html')
-
-
-class Test_utils(TestCase):
-    """Class for test ulils."""
-
-    def test_pic_profile_rename_path(self):
-        """Method for test change path of profile of each user."""
-        self.assertEqual(pic_profile_rename_path(
-            1), r'C:/vs/ISP/thairepose/media/user/profile_picture/1/profile_pic.jpg')
-
-    def test_pic_profile_path(self):
-        """Method for test path of image that user upload."""
-        self.assertEqual(pic_profile_path(
-            1), r'C:/vs/ISP/thairepose/media/user/profile_picture/1')
-
-    def test_base_picture(self):
-        """Method for test path of unimage picture profile"""
-        self.assertEqual(get_base_picture(
-            1), r'C:/vs/ISP/thairepose/media/user/profile_picture/1_profile_picture.jpg')

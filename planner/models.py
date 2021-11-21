@@ -111,7 +111,13 @@ def get_default_name(user: User) -> str:
 
 
 @receiver(post_save, sender=Plan)
-def initial_name_validate(**kwargs):
+def initial_plan_validate(**kwargs):
     """Initialize planner name if not specified."""
+    # validate name shouldn't be blank
     if kwargs['instance'].name is None or len(kwargs['instance'].name) == 0:
         kwargs['instance'].name = get_default_name(kwargs['instance'].author)
+    # validate days shouldn't be over the limit
+    if int(kwargs['instance'].days) > MAX_DAYS_PER_PLAN:
+        kwargs['instance'].days = MAX_DAYS_PER_PLAN
+    elif int(kwargs['instance'].days) < 1:
+        kwargs['instance'].days = 1

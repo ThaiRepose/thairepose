@@ -24,7 +24,7 @@
  </style>
  <div class="container mx-auto max-w-xs rounded-lg overflow-hidden shadow-lg my-2 bg-white">
     <div class="relative mb-6">
-       <img class="w-full" src="{{profile.profile_pic.url}}"
+       <img class="w-full" src="{{user.profile.profile_pic.url}}"
           alt="Profile picture" />
        <div class="text-center absolute w-full" style="bottom: -30px">
           <a href="{% url 'editprofile' %}" id='bo' class="p-4 rounded-full transition ease-in duration-200 focus:outline-none">
@@ -37,7 +37,7 @@
           <p class="text-lg">{{profile.user.username}}</p>
           <p class="text-gray-400 text-sm">Username</p>
        </div>
-       <div class="followers">
+       <div class="following">
           <p class="text-lg">{{user.first_name}} {{user.last_name}}</p>
           <p class="text-gray-400 text-sm">Name</p>
        </div>

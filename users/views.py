@@ -1,11 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from PIL import Image
 from .models import Profile
 from .forms import UserUpdateForm, ProfileUpdateForm
-from .utils import pic_profile_path, pic_profile_rename_path
+from .utils import pic_profile_path, pic_profile_rename_path, format_path, get_base_picture, get_user_folder
 import os
 
 
@@ -49,20 +51,30 @@ def edit_profile(request):
     Return:
         HTTPResponse: link of profile and content.
     """
-    profile = get_object_or_404(Profile, user=request.user)
+    profile = Profile.objects.get(user=request.user)
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=request.user)
         profile_form = ProfileUpdateForm(
-            request.POST, request.FILES, instance=request.user.profile)
+            request.POST, request.FILES, instance=profile)
         if profile_form.is_valid():
             user_form.save()
             filename = profile_form.save(commit=False).profile_pic
             profile_form.save()
-            if os.path.isfile(pic_profile_rename_path()):
-                os.remove(pic_profile_rename_path())
-            os.rename(pic_profile_path(filename), pic_profile_rename_path())
-            profile_form.save(
-                commit=False).profile_pic = pic_profile_rename_path()
+            if not os.path.isdir(get_user_folder(request.user.pk)):
+                os.mkdir(get_user_folder(request.user.pk))
+                base_profile = get_base_picture(request.user.pk)
+                os.remove(base_profile)
+                os.rename(pic_profile_path(filename), pic_profile_rename_path(request.user.pk))
+                profile_form.save(commit=False).profile_pic = pic_profile_rename_path(request.user.pk)
+                profile_form.save()
+                messages.success(request, 'Your account has been updated!')
+                return HttpResponseRedirect(reverse('profile'))
+            im1 = Image.open(pic_profile_path(filename))
+            im2 = Image.open(pic_profile_rename_path(request.user.pk))
+            if list(im1.getdata()) != list(im2.getdata()):
+                os.remove(pic_profile_rename_path(request.user.pk))
+            os.rename(pic_profile_path(filename), pic_profile_rename_path(request.user.pk))
+            profile_form.save(commit=False).profile_pic = pic_profile_rename_path(request.user.pk)
             profile_form.save()
             messages.success(request, 'Your account has been updated!')
             return HttpResponseRedirect(reverse('profile'))

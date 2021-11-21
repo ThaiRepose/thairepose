@@ -147,6 +147,7 @@
 {% block script %}
     <script id="script" src="{% static 'planner/js/planner_editor.js' %}" token="{{ csrf_token }}"
             directions_url="{% url 'planner:get_travel_time' %}"></script>
+    <script src="{% static 'planner/js/main.js' %}"></script>
     <script>
       /**
        * get view-only link for each plan.

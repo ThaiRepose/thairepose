@@ -61,49 +61,8 @@
 {% endblock %}
 
 {% block script %}
+    <script src="{% static 'planner/js/main.js' %}"></script>
     <script>
-        function createTime(time_str) {
-            let time = new Date('1970-01-01T' + time_str + ':00Z');
-            time.setTime(time.getTime() + time.getTimezoneOffset() * 60 * 1000);
-            return time;
-        }
-
-        function getTimeFormat(timeObj) {
-            return timeObj.toTimeString().replace(/.*(\d{2}:\d{2}):\d{2}.*/, "$1");
-        }
-
-        function checkOverDate() {
-            $.each($('[id^="table-day-"]'), function (key, table) {
-                let places = $(table).find('[name^="arrival"]');
-                let overDate = false;
-                let first_place = true;
-                let last_time = null;
-                $.each(places, function (index, date) {
-                    if (first_place) {
-                        let new_time = createTime($(date)[0].innerText);
-                        $(date)[0].setAttribute("value", new_time);
-                        first_place = false;
-                    }
-                    let arrival_date = createTime($(date)[0].innerText);
-                    if (overDate) {
-                        date.closest("tr").classList.add("bg-red-400", "blink-bg");
-                    } else if ($(date)[0].innerText === "") {
-                        date.closest("tr").classList.remove("bg-red-400", "blink-bg");
-                        overDate = false;
-                    } else if (arrival_date.getDate() > 1) {
-                        date.closest("tr").classList.add("bg-red-400", "blink-bg");
-                        overDate = true;
-                    } else if (arrival_date < last_time) {
-                        date.closest("tr").classList.add("bg-red-400", "blink-bg");
-                        overDate = true;
-                    } else {
-                        date.closest("tr").classList.remove("bg-red-400", "blink-bg");
-                        overDate = false;
-                    }
-                    last_time = arrival_date;
-                });
-            });
-        }
         checkOverDate();
     </script>
 {% endblock %}

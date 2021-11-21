@@ -121,7 +121,7 @@ class AnonymousViewTest(ViewTest):
         self.new_user_password = "TawanBoonma"
         self.new_user = User.objects.create_user(username=self.new_user_username,
                                                  email=self.email,
-                                 password=self.new_user_password)
+                                                 password=self.new_user_password)
         self.new_user_client = Client()
         self.new_user_client.login(username=self.new_user_username, password=self.new_user_password)
 

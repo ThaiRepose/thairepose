@@ -78,7 +78,7 @@ class BackendPostMethodTest(test_index.ViewTest):
     def test_add_place_to_the_plan(self):
         """Test adding a place to the current plan."""
         new_place_day = 1
-        new_place_sequence = self.plan.place_set.all().count()+1
+        new_place_sequence = self.plan.place_set.all().count() + 1
         new_place = {"day": new_place_day,
                      "sequence": new_place_sequence,
                      "place_id": "5678",

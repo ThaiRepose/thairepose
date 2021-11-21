@@ -50,7 +50,7 @@ def format_path(path):
     Args:
         path(str): string of path.
     Return:
-        path(str): path thai replace // with \.
+        path(str): path .
     """
     path = path.replace('\\', '/')
     if path[0] == '/':
@@ -65,7 +65,7 @@ def pic_profile_rename_path(pk):
         pk(int): user id.
 
     Returns:
-        path(str): path that replace // with \.
+        path(str): path.
     """
     new_path = os.path.join(settings.PROFILE_PIC_LOCATION,
                             str(pk), 'profile_pic.jpg')
@@ -82,7 +82,7 @@ def pic_profile_path(path):
         pk(int): user id.
 
     Returns:
-        path(str): path that replace // with \.
+        path(str): path.
     """
     new_path = os.path.join(settings.PROFILE_PIC_LOCATION, str(path))
     path = new_path.replace('\\', '/')
@@ -98,7 +98,7 @@ def get_base_picture(pk):
         pk(int): user id.
 
     Returns:
-        path(str): path that replace // with \.
+        path(str): path.
     """
     path = format_path(os.path.join(
         settings.PROFILE_PIC_LOCATION, f'{str(pk)}_profile_picture.jpg'))

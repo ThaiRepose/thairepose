@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.test import TestCase, RequestFactory
 from .models import Profile
-from .utils import *
 from .adapter import ProfileAccountAdapter
 
 import os

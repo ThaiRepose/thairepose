@@ -14,10 +14,11 @@ class PlannerModelTest(TestCase):
         self.username = "ThaiRepose"
         self.password = "TawanBoonma"
         self.email = "thairepose@mail.com"
+        self.planned_days = 2
         self.user = User.objects.create_user(username=self.username,
                                              email=self.email,
                                              password=self.password)
-        self.plan = Plan.objects.create(name="Test", days=2, author=self.user)
+        self.plan = Plan.objects.create(days=self.planned_days, author=self.user)
 
 
 class PlanModelTest(PlannerModelTest):
@@ -29,7 +30,9 @@ class PlanModelTest(PlannerModelTest):
 
     def test_model_name(self):
         """Test that object can display name correctly."""
-        self.assertEqual(self.plan.__str__(), "Test")
+        plan_name = "Test"
+        plan = Plan.objects.create(name=plan_name, days=self.planned_days, author=self.user)
+        self.assertEqual(plan.__str__(), plan_name)
 
     def test_is_editable(self):
         """Test is_editable() method in Plan."""
@@ -56,6 +59,18 @@ class PlanModelTest(PlannerModelTest):
         self.assertTrue(self.plan.is_viewable(other_user))  # Editor user can view plan too.
         self.plan.status = 1
         self.assertTrue(self.plan.is_viewable(None))  # Now everyone should be able to view this plan.
+
+    def test_initial_name(self):
+        """Test planner initial name for user who does/doesn't provide first_name."""
+        self.assertEqual(self.plan.__str__(), f"{self.username}'s Plan")
+        new_user_firstname = "Tawan"
+        # create new planner which user has first_name
+        new_user = User.objects.create_user(username="ThaiRepose2",
+                                            first_name=new_user_firstname,
+                                            email=self.email,
+                                            password="TawanBoonma2")
+        new_plan = Plan.objects.create(author=new_user)
+        self.assertEqual(new_plan.__str__(), f"{new_user_firstname}'s Plan")
 
 
 class EditorModelTest(PlannerModelTest):

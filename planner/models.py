@@ -1,6 +1,7 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 import django.contrib.auth.models
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 
 MAX_DAYS_PER_PLAN = 6
 MAX_PLACES_PER_DAY = 10
@@ -36,9 +37,11 @@ class Plan(models.Model):
         """Returns True if user can edit this plan."""
         if user == self.author:
             return True
-        if user in self.editor_set.all():
+        try:
+            Editor.objects.get(plan=self, user=user, role=1)
             return True
-        return False
+        except ObjectDoesNotExist:
+            return False
 
     def is_viewable(self, user: django.contrib.auth.models.User) -> bool:
         """Returns True if someone with link can view this plan."""
@@ -46,9 +49,11 @@ class Plan(models.Model):
             return True
         if user == self.author:
             return True
-        if user in self.editor_set.all():
+        try:
+            Editor.objects.get(plan=self, user=user)
             return True
-        return False
+        except ObjectDoesNotExist:
+            return False
 
 
 class Editor(models.Model):

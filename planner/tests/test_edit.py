@@ -139,7 +139,7 @@ class AnonymousEditViewTest(EditViewTest):
 
 class ViewOnlyTest(EditViewTest):
     """Testing viewing view-only planner."""
-    
+
     def setUp(self):
         """Initialize place."""
         super().setUp()

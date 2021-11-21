@@ -146,6 +146,7 @@ expireTable.json
 # User profile
 media/user/profile_picture/*
 !media/user/profile_picture/blank-profile-picture.png
+*/uploads
 
 #trip picture
 media/pic/*

@@ -30,7 +30,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = json.loads(os.getenv('DEBUG').lower())
 
 ALLOWED_HOSTS = os.getenv('HOSTS').split(",")
-
+CKEDITOR_RESTRICT_BY_USER = True
 
 # Application definition
 
@@ -56,9 +56,6 @@ INSTALLED_APPS = [
     'ckeditor_uploader',
     'planner.apps.PlannerConfig'
 ]
-
-# Upload folder for ckeditorupload
-CKEDITOR_UPLOAD_PATH = "uploads/"
 
 # Config for Tailwind CSS
 TAILWIND_APP_NAME = 'theme'
@@ -95,7 +92,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'threpose.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -170,23 +166,16 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-
 STATIC_URL = '/static/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
-PROFILE_PIC_LOCATION = os.path.join(MEDIA_ROOT, 'user', 'profile_picture')
 
 # Meida root
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-# Profile picture path
-PROFILE_PIC_LOCATION = os.path.join(MEDIA_ROOT, 'user', 'profile_picture')
+STATIC_ROOT = 'static/'
+# Upload folder for ckeditorupload
+CKEDITOR_UPLOAD_PATH = 'uploads/'
 
-
-# Meida root
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
 
 # Profile picture path
 PROFILE_PIC_LOCATION = os.path.join(MEDIA_ROOT, 'user', 'profile_picture')

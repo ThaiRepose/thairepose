@@ -1,22 +1,64 @@
 {% extends 'base.html' %}
-
+{% load static %}
+{% block header %}
+    <title>ThaiRepose: edit post</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+    
+    .bg-page {
+            background-image: url("{% static 'images/bg-blur.jpg' %}");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
+        }
+    </style>
+{% endblock %}
 {% block main_content %}
-{{user}}
-{{post.author.id}}
-{% if user.is_authenticated %}
-    {% if user.id == post.author.id%}
-    <h1>Update post</h1>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.media }}
-        {{ form.as_p }}
-        <button>Edit</button>
-    </form>
-    {% else %}
-    <script>alert('You are allow to access.')</script>
-    <META HTTP-EQUIV="Refresh" CONTENT="0 ; URL={% url 'trip:tripplan' %}">
-    {% endif %}
-{% else %}
-<a href="{% url 'account_login' %}">You need to login</a>
-{% endif %}
+<div class="bg-page flex-grow">
+  <!-- Tailwind CSS -->
+  <link href="https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css" rel="stylesheet">
+
+  <div id="big_box" class="flex-grow rounded-3xl justify-center max-w-6xl mx-auto p-8 m-10 bg-green-600 bg-fixed" style="background-color: rgba(209, 213, 219, 0.3);
+box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
+  {% if user.is_authenticated %}
+      {% if user.id == post.author.id%}
+      <h1 class="justify-center flex text-2xl mb-3 ">Edit Post</h1>
+      <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+      <div class="flex flex-row my-3">
+        <img  width="50" height="50" src="{{ user.profile.profile_pic.url }}" style="border-radius: 50%;">
+        <p class="pl-3 pt-1">{{ user.username }}</p>
+      </div>
+      <form method="POST">
+          {% csrf_token %}
+          {{ form.media }}
+          <div class="flex flex-wrap -mx-3 mb-6">
+            <div class="w-full px-3">
+              {{ form.title }}
+            </div>
+            <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+              {{ form.duration }}
+            </div>
+            <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+              {{ form.price }}
+            </div>
+            <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+              {{ form.category }}
+            </div>
+          </div>
+          {{ form.body }}
+          <div>
+            <button class="w-full mt-4 px-4 py-2 font-bold text-white bg-black rounded-full hover:bg-black focus:outline-none focus:shadow-outline">Edit</button>
+          </div>
+          
+      </form>
+      {% else %}
+      <script>alert('You are allow to access.')</script>
+      <META HTTP-EQUIV="Refresh" CONTENT="0 ; URL={% url 'trip:tripplan' %}">
+      {% endif %}
+  {% else %}
+  <a href="{% url 'account_login' %}">You need to login</a>
+  {% endif %}
+  </div>
+</div>
+
 {% endblock %}

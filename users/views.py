@@ -1,8 +1,12 @@
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Profile
 from .forms import UserUpdateForm, ProfileUpdateForm
+from .utils import pic_profile_path, pic_profile_rename_path
+import os
 
 
 def home(request):
@@ -50,11 +54,22 @@ def edit_profile(request):
         user_form = UserUpdateForm(request.POST, instance=request.user)
         profile_form = ProfileUpdateForm(
             request.POST, request.FILES, instance=request.user.profile)
-        if user_form.is_valid() and profile_form.is_valid():
+        if profile_form.is_valid():
             user_form.save()
+            filename = profile_form.save(commit=False).profile_pic
+            profile_form.save()
+            if os.path.isfile(pic_profile_rename_path()):
+                os.remove(pic_profile_rename_path())
+            os.rename(pic_profile_path(filename), pic_profile_rename_path())
+            profile_form.save(
+                commit=False).profile_pic = pic_profile_rename_path()
             profile_form.save()
             messages.success(request, 'Your account has been updated!')
-            return redirect('profile')
+            return HttpResponseRedirect(reverse('profile'))
+        elif user_form.is_valid():
+            user_form.save()
+            messages.success(request, 'Your account has been updated!')
+            return HttpResponseRedirect(reverse('profile'))
     else:
         user_form = UserUpdateForm(instance=request.user)
         profile_form = ProfileUpdateForm(instance=request.user.profile)

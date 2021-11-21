@@ -1,24 +1,30 @@
+from django.contrib.auth.models import User
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from allauth.account.decorators import verified_email_required
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404
-
 import json
 import os
+from django.http.response import JsonResponse
+from django.shortcuts import redirect, render, get_object_or_404
+import shutil
 import requests
-from threpose.settings import BASE_DIR
+from threpose.settings import BASE_DIR, MEDIA_ROOT
 from src.caching.caching_gmap import APICaching
 from dotenv import load_dotenv
-from .forms import TripPlanForm
-from .models import TripPlan, Review, CategoryPlan
+from django.views.generic import ListView, UpdateView
+from requests.api import post
+from .models import TripPlan, Review, CategoryPlan, UploadImage
+from .forms import TripPlanForm, TripPlanImageForm, ReviewForm
+from django.contrib.auth.decorators import login_required
 load_dotenv()
 
 
 api_caching = APICaching()
 
 
-PLACE_IMG_PATH = os.path.join(BASE_DIR, 'theme', 'static', 'images', 'places_image')
+PLACE_IMG_PATH = os.path.join(
+    BASE_DIR, 'theme', 'static', 'images', 'places_image')
 
 
 # View page
@@ -44,30 +50,40 @@ class AllTrip(ListView):
         """
         content = {
             'post': TripPlan.objects.all(),
-            'category': CategoryPlan.objects.all()
+            'category': CategoryPlan.objects.all(),
         }
         return content
 
 
-class TripDetail(DetailView):
-    """Class for link html of detail of each trip."""
+def trip_detail(request, pk):
+    """Method for link html to trip detail and add review form.
 
-    model = TripPlan
-    template_name = 'trip/trip_detail.html'
-    queryset = TripPlan.objects.all()
-    context_object_name = 'post'
+    Args:
+        pk(str): post id
 
-    def get_context_data(self, *args, **kwargs):
-        """Get variable to use in html.
-
-        Return:
-            content(dict): list of caliable can use in html.
-        """
-        context = super(TripDetail, self).get_context_data(*args, **kwargs)
-        all_like = get_object_or_404(TripPlan, id=self.kwargs['pk'])
-        total_like = all_like.total_like()
-        context['total_like'] = total_like
-        return context
+    Return:
+        Httpresponse(Http):redirect to trip detail page.
+    """
+    post = get_object_or_404(TripPlan, id=pk)
+    commend = Review.objects.filter(post=post)
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review_form = form.save(commit=False)
+            review_form.post = TripPlan.objects.filter(id=pk)[0]
+            review_form.name = request.user
+            review_form.save()
+            return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
+    else:
+        form = ReviewForm()
+    context = {
+        'post': post,
+        'commend': commend,
+        'review_form': form,
+        'images': UploadImage.objects.filter(post=post),
+    }
+    print(UploadImage.objects.filter(id=pk))
+    return render(request, 'trip/trip_detail.html', context)
 
 
 class CatsListView(ListView):
@@ -90,46 +106,46 @@ class CatsListView(ListView):
         return content
 
 
-class AddPost(CreateView):
-    """Class for link html of add trip page."""
+@verified_email_required
+def add_post(request):
+    """Method for link html of add post page.
 
-    model = TripPlan
-    template_name = "trip/add_blog.html"
-    form_class = TripPlanForm
-
-    def form_valid(self, form):
-        """Auto choose current post for add comment.
-
-        Args:
-            form(form): form of user input in field.
-
-        Returns:
-            Complete form with put username in author.
-        """
-
-        form.instance.author = self.request.user
-        return super().form_valid(form)
-
-
-class AddReview(CreateView):
-    """Class for link html of add review."""
-
-    model = Review
-    template_name = "trip/add_review.html"
-    fields = ('body',)
-
-    def form_valid(self, form):
-        """Auto choose current post for add comment.
-
-        Args:
-            form(form): form of user input in field.
-
-        Return:
-            form with trip plan post id and name of user who write review.
-        """
-        form.instance.post_id = self.kwargs['pk']
-        form.instance.name = self.request.user
-        return super().form_valid(form)
+    Return:
+        if post return to trip detail else return to add blog page.
+    """
+    if len(TripPlan.objects.filter(author=request.user, complete=False)) == 0:
+        TripPlan.objects.create(author=request.user)
+        image_form = TripPlanImageForm()
+        post = get_object_or_404(TripPlan, author=request.user, complete=False)
+        form = TripPlanForm(instance=post)
+        image_form = TripPlanImageForm()
+        return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form})
+    if request.method == 'POST':
+        post = get_object_or_404(TripPlan, author=request.user, complete=False)
+        form = TripPlanForm(request.POST, instance=post)
+        image_form = TripPlanImageForm(request.POST, request.FILES)
+        if image_form.is_valid():
+            post_form = form.save(commit=False)
+            post_form.author = request.user
+            post_form.save()
+            form = TripPlanForm()
+            image = request.FILES.getlist('image')
+            list_img = []
+            for img in image:
+                img_obj = UploadImage.objects.create(post=post_form, image=img)
+                img_obj.save()
+                list_img.append(img_obj)
+            return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': list_img})
+        if form.is_valid():
+            post_form = form.save(commit=False)
+            post_form.author = request.user
+            post_form.complete = True
+            post_form.save()
+            return HttpResponseRedirect(reverse('trip:tripdetail', args=[post_form.pk]))
+    post = get_object_or_404(TripPlan, author=request.user, complete=False)
+    form = TripPlanForm(instance=post)
+    image_form = TripPlanImageForm()
+    return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form})
 
 
 class EditPost(UpdateView):
@@ -137,37 +153,39 @@ class EditPost(UpdateView):
 
     model = TripPlan
     template_name = "trip/update_plan.html"
-    fields = ['title', 'duration', 'price', 'body']
+    # fields = ['title', 'duration', 'price', 'body']
+    form_class = TripPlanForm
     context_object_name = 'post'
 
 
-class DeletePost(DeleteView):
-    """Class for link html of delete post."""
+@login_required
+def delete_post(request, pk):
+    post = get_object_or_404(TripPlan, pk=pk)
+    if request.method == 'POST':
+        if request.user.id == post.author.id:
+            image_path = os.path.join(MEDIA_ROOT, 'pic', str(pk))
+            if os.path.exists(image_path):
+                shutil.rmtree(image_path)
+            post.delete()
 
-    model = TripPlan
-    template_name = "trip/delete_plan.html"
-    context_object_name = 'post'
-    success_url = reverse_lazy('trip:tripplan')
+    return redirect(reverse_lazy('trip:tripplan'))
 
 
 @login_required
-def like_view(request, pk):
-    """Methid for store user like of each commend.
-
-    Args:
-        pk(str): review id of link located.
-
-    Return:
-        HttpResponse: Redirect to page that link review located.
-    """
-    post = get_object_or_404(Review, id=request.POST.get('commend_id'))
-    post.like.add(request.user)
-    return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
+def like_comment_view(request):
+    """Method that store user like in comment model"""
+    if request.method == 'POST':
+        post = get_object_or_404(Review, id=request.POST.get('comment_id'))
+        if post.like.filter(id=request.user.id).exists():
+            post.like.remove(request.user)
+        else:
+            post.like.add(request.user)
+        return JsonResponse({'result': post.total_like, 'id': request.POST.get('comment_id')})
 
 
 @login_required
-def like_post(request, pk):
-    """Methid for store user like of each trip.
+def like_post(request):
+    """Method for store user like of each trip.
 
     Args:
         pk(str): blog id of link located.
@@ -175,9 +193,15 @@ def like_post(request, pk):
     Return:
         HttpResponse: Redirect to page that link blog located.
     """
-    post = get_object_or_404(TripPlan, id=request.POST.get('trip_id'))
-    post.like.add(request.user)
-    return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
+    if request.method == 'POST':
+        pk = request.POST.get('pk')
+        print(pk)
+        post = get_object_or_404(TripPlan, id=pk)
+        if post.like.filter(id=request.user.id).exists():
+            post.like.remove(request.user)
+        else:
+            post.like.add(request.user)
+        return JsonResponse({'post_result': post.total_like})
 
 
 def place_info(request, place_id: str):
@@ -192,7 +216,8 @@ def place_info(request, place_id: str):
     """
     api_key = os.getenv('API_KEY')
     if api_caching.get(f"{place_id}detailpage"):
-        cache_data = json.loads(api_caching.get(f"{place_id}detailpage"))['cache']
+        cache_data = json.loads(api_caching.get(
+            f"{place_id}detailpage"))['cache']
     else:
         url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={api_key}"
         response = requests.get(url)
@@ -201,7 +226,8 @@ def place_info(request, place_id: str):
             return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
         context = get_details_context(data, api_key)
         cache_data = restruct_detail_context_data(context)
-        api_caching.add(f"{place_id}detailpage", json.dumps({'cache': cache_data}, indent=3).encode())
+        api_caching.add(f"{place_id}detailpage", json.dumps(
+            {'cache': cache_data}, indent=3).encode())
 
     context = resturct_to_place_detail(cache_data)
     context['blank_rating'] = range(round(context['blank_rating']))
@@ -304,7 +330,8 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
 def check_downloaded_image(context):
     """Check that image from static/images/place_image that is ready for frontend to display or not"""
     if os.path.exists(PLACE_IMG_PATH):
-        all_img_file = [f for f in os.listdir(PLACE_IMG_PATH) if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
+        all_img_file = [f for f in os.listdir(
+            PLACE_IMG_PATH) if os.path.isfile(os.path.join(PLACE_IMG_PATH, f))]
         place_id = context['place_id']
         context['downloaded'] = True
         if len(context['images']) > 1:

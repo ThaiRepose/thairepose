@@ -10,4 +10,4 @@ omit =
     */caching_gmap.py
     */adapter.py
     */manage.py
-    */tests*
+    */tests* 

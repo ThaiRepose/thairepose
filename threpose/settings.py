@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+
 from pathlib import Path
 import os
 import json
@@ -29,7 +30,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = json.loads(os.getenv('DEBUG').lower())
 
 ALLOWED_HOSTS = os.getenv('HOSTS').split(",")
-
+CKEDITOR_RESTRICT_BY_USER = True
 
 # Application definition
 
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'users',
+    'ckeditor',
     'trip',
     'tailwind',
     'theme',
@@ -51,7 +53,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'search',
-    'ckeditor',
+    'ckeditor_uploader',
     'planner'
 ]
 
@@ -90,7 +92,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'threpose.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -149,9 +150,6 @@ SOCIALACCOUNT_PROVIDERS = {
 # Check travis
 is_travis = 'TRAVIS' in os.environ
 
-# Profile photo directory
-PROFILE_PIC_LOCATION = os.path.join(BASE_DIR, 'users/static/profile_pic')
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -168,8 +166,20 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
-
 STATIC_URL = '/static/'
+
+# Meida root
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+STATIC_ROOT = 'static/'
+# Upload folder for ckeditorupload
+CKEDITOR_UPLOAD_PATH = 'uploads/'
+
+
+# Profile picture path
+PROFILE_PIC_LOCATION = os.path.join(MEDIA_ROOT, 'user', 'profile_picture')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

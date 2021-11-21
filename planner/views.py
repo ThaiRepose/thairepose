@@ -118,7 +118,7 @@ def edit_planner_backend(request):
     if 'publish' in request.POST:
         plan.status = request.POST['publish']
     if 'addPlace' in request.POST:
-        place_data = json.loads(request.POST['place'])
+        place_data = json.loads(request.POST['addPlace'])
         add_new_place(place_data, plan)
     if 'delPlace' in request.POST:
         item = json.loads(request.POST['delplace'])

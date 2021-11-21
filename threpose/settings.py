@@ -31,7 +31,6 @@ DEBUG = json.loads(os.getenv('DEBUG').lower())
 
 ALLOWED_HOSTS = os.getenv('HOSTS').split(",")
 
-NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 
 # Application definition
 

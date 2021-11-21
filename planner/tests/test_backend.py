@@ -12,7 +12,7 @@ class BackendPostMethodTest(test_index.ViewTest):
     """Tests for ajax calling POST method to server."""
 
     def setUp(self):
-        """Initialize planner and user and places in a place."""
+        """Initialize planner, user and places in a plan."""
         super().setUp()
         self.place_details1 = {
             'day': 1,

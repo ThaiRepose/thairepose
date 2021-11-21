@@ -40,12 +40,14 @@
           <p class="text-lg">{{profile.user.username}}</p>
           <p class="text-gray-400 text-sm">Username</p>
        </div>
-       <div class="following">
-          <p class="text-lg">{{user.first_name}}</p>
-          <p class="text-lg"> {{user.last_name| slice:":1"}}</p>
-          <p class="text-gray-400 text-sm">Name</p>
+       <div class="following ml-1">
+         <div class="flex justify-between text-lg">
+            <p>{{user.first_name}}</p>
+            <p class="-ml-2">{{user.last_name| slice:":1"}}.</p>
+         </div>
+         <p class="text-gray-400 text-sm ml-2">Name</p>
        </div>
-       <div class="following">
+       <div class="following ml-2">
           <p class="text-lg">{{profile.birthday}}</p>
           <p class="text-gray-400 text-sm">Birthdays</p>
        </div>

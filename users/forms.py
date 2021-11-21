@@ -15,11 +15,14 @@ class UserUpdateForm(forms.ModelForm):
         model = User
         fields = ['first_name', 'last_name']
         widgets = {
-            'first_name' : forms.TextInput(attrs={ 'maxlength': 10,}),
+            'first_name': forms.TextInput(attrs={'maxlength': 10, }),
         }
+
 
 class ProfileUpdateForm(forms.ModelForm):
     """Class for set field of profile form."""
+
+    profile_pic = forms.ImageField()
 
     class Meta:
         model = Profile

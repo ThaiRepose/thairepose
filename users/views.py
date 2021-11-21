@@ -66,8 +66,7 @@ def edit_profile(request):
                 os.remove(pic_profile_rename_path(request.user.pk))
             os.rename(pic_profile_path(filename),
                       pic_profile_rename_path(request.user.pk))
-            profile_form.save(commit=False).profile_pic = pic_profile_rename_path(
-                request.user.pk)
+            profile_form.save(commit=False).profile_pic = pic_profile_rename_path(request.user.pk)
             profile_form.save()
             messages.success(request, 'Your account has been updated!')
             return HttpResponseRedirect(reverse('profile'))

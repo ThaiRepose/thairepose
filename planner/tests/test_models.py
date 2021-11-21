@@ -80,18 +80,20 @@ class PlaceModelTest(PlannerModelTest):
     def setUp(self):
         """Initialize user and a plan."""
         super().setUp()
+        self.first_place_name = "SIAM"
         self.first_place = Place.objects.create(day=1,
                                                 sequence=1,
                                                 place_id="PLACE_ID",
-                                                place_name="SIAM",
+                                                place_name=self.first_place_name,
                                                 place_vicinity="Bangkok",
                                                 arrival_time=None,
                                                 departure_time=datetime.time(0, 0, 0),
                                                 plan=self.plan)
+        self.second_place_name = "CENTRAL"
         self.second_place = Place.objects.create(day=1,
                                                  sequence=2,
                                                  place_id="PLACE_ID2",
-                                                 place_name="SIAM2",
+                                                 place_name=self.second_place_name,
                                                  place_vicinity="Bangkok2",
                                                  arrival_time=None,
                                                  departure_time=datetime.time(0, 0, 0),
@@ -106,4 +108,4 @@ class PlaceModelTest(PlannerModelTest):
 
     def test_place_spelling(self):
         """Test that object can display place object correctly in string format."""
-        self.assertEqual(self.first_place.__str__(), "SIAM")
+        self.assertEqual(self.first_place.__str__(), self.first_place_name)

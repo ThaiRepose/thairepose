@@ -2,6 +2,7 @@ from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from allauth.account.decorators import verified_email_required
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
 import os
 import shutil
@@ -64,6 +65,16 @@ def trip_detail(request, pk):
     """
     post = get_object_or_404(TripPlan, id=pk)
     commend = Review.objects.filter(post=post)
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(commend, 8)
+    try:
+        comments = paginator.page(page)
+    except PageNotAnInteger:
+        comments = paginator.page(1)
+    except EmptyPage:
+        comments = paginator.page(paginator.num_pages)
+
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
@@ -77,7 +88,8 @@ def trip_detail(request, pk):
     context = {
         'post': post,
         'commend': commend,
-        'review_form': form
+        'review_form': form,
+        'comments': comments
     }
     return render(request, 'trip/trip_detail.html', context)
 

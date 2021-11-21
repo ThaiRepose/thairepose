@@ -30,7 +30,8 @@ class TripPlanImageForm(forms.ModelForm):
 class ReviewForm(forms.ModelForm):
     """Class for create review form."""
 
-    parent = TreeNodeChoiceField(queryset=Review.objects.all(), required=False, widget=forms.Select(attrs={'class': 'invisible'}))
+    parent = TreeNodeChoiceField(queryset=Review.objects.all(), required=False,
+                                 widget=forms.Select(attrs={'class': 'invisible'}))
 
     def __inti__(self, *args, **kwargs):
         super(ReviewForm, self).__init__(*args, **kwargs)

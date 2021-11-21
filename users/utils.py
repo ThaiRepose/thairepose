@@ -52,7 +52,6 @@ def format_path(path):
     Return:
         path(str): path .
     """
-    path = path.replace('\\', '/')
     if path[0] == '/':
         return path[1:]
     return path

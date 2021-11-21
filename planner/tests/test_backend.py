@@ -94,6 +94,30 @@ class BackendPostMethodTest(test_index.ViewTest):
         self.assertEqual(new_place_status.place_id, new_place['place_id'])
         self.assertEqual(new_place_status.place_name, new_place['place_name'])
 
+    def test_add_invalid_place(self):
+        """Test add place to the database without specify day."""
+        new_place_sequence = 10
+        new_place = {"sequence": new_place_sequence,
+                     "place_id": "5678",
+                     "place_name": "Central Ladprao",
+                     "place_vicinity": "Bangkok",
+                     "arrival_time": "",
+                     "departure_time": "00:00"}
+        response = self.client.post(reverse("planner:post_edit"),
+                                    {'planner_id': self.plan.id, 'addPlace': json.dumps(new_place)})
+        self.assertEqual(json.loads(response.content)['status'], "Day not provided.")
+
+    def test_add_place_with_missing_info(self):
+        """Test adding place into a plan with missing some not important data."""
+        new_place_day = 1
+        new_place_sequence = self.plan.place_set.all().count() + 1
+        new_place = {"day": new_place_day,
+                     "sequence": new_place_sequence,
+                     "place_id": "5678"}
+        response = self.client.post(reverse("planner:post_edit"),
+                                    {'planner_id': self.plan.id, 'addPlace': json.dumps(new_place)})
+        self.assertEqual(json.loads(response.content)['status'], "OK")
+
     def test_add_place_with_arrival(self):
         """Test adding a place to the plan with specified arrival time."""
         new_place_day = 1

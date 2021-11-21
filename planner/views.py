@@ -119,7 +119,9 @@ def edit_planner_backend(request):
         plan.status = request.POST['publish']
     if 'addPlace' in request.POST:
         place_data = json.loads(request.POST['addPlace'])
-        add_new_place(place_data, plan)
+        response = add_new_place(place_data, plan)
+        if response['status'] != "OK":
+            return JsonResponse(response)
     if 'delPlace' in request.POST:
         item = json.loads(request.POST['delPlace'])
         response = delete_place(plan, item)
@@ -261,12 +263,23 @@ def add_new_place(place_data: dict, plan: Plan):
         place_data: place information to add a new one.
         plan: plan that the place will be added to.
     """
+    if 'day' not in place_data:
+        return {"status": "Day not provided."}
     sequence = plan.place_set.filter(day=place_data['day']).count() + 1
-    if place_data['arrival_time'] == "":
+    # validate dict keys
+    if 'arrival_time' not in place_data or place_data['arrival_time'] == "":
         arrival_time = None
     else:
         arrival_time = datetime.time(datetime.strptime(place_data['arrival_time'], '%H:%M'))
-    departure_time = datetime.time(datetime.strptime(place_data['departure_time'], '%H:%M'))
+    if 'departure_time' not in place_data:
+        departure_time = datetime.time(datetime.strptime("00:00", '%H:%M'))
+    else:
+        departure_time = datetime.time(datetime.strptime(place_data['departure_time'], '%H:%M'))
+    if 'place_name' not in place_data:
+        place_data['place_name'] = ""
+    if 'place_vicinity' not in place_data:
+        place_data['place_vicinity'] = ""
+
     place = Place(day=place_data['day'],
                   sequence=sequence,
                   place_id=place_data['place_id'],
@@ -276,6 +289,7 @@ def add_new_place(place_data: dict, plan: Plan):
                   departure_time=departure_time,
                   plan=plan)
     place.save()
+    return {"status": "OK"}
 
 
 def get_direction(places: list) -> dict:

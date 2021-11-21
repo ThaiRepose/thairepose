@@ -3,7 +3,7 @@
 {% if user.is_authenticated %}
 <h1>Add post</h1>
 {{test}}
-<form method="POST">
+<form method="POST" id="myblog">
     {% csrf_token %}.
     {{ form.media }}
     {{ form.as_p }}
@@ -11,12 +11,12 @@
     <button type="submit" name="save_blog">Save</button>
 </form>
 
-<form method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data" id="image_blog">
     {% csrf_token %}
     <input name='image' type='file' multiple>
     <button type="submit" name="imgpic">Upload</button>
 </form>
-
+<button onclick="myFunction()">test</button>
 {% if img_obj %}
 {% for image in img_obj %}
 {{image.image.url}}
@@ -28,4 +28,10 @@
 <script>alert('You need to login.')</script>
 <META HTTP-EQUIV="Refresh" CONTENT="0 ; URL={% url 'account_login' %}">
 {% endif %}
+<script>
+    function myFunction() {
+        document.getElementById("myblog").submit();
+        document.getElementById("image_blog").submit();
+    }
+    </script>
 {% endblock %}

@@ -110,7 +110,6 @@ def add_post(request):
         if post return to trip detail else return to add blog page.
     """
     if len(TripPlan.objects.filter(author=request.user, complete=False)) == 0:
-        print(11111)
         TripPlan.objects.create(author=request.user)
         image_form = TripPlanImageForm()
         post = get_object_or_404(TripPlan, author=request.user, complete=False)
@@ -118,25 +117,22 @@ def add_post(request):
         image_form = TripPlanImageForm()
         return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form})
     if request.method == 'POST':
-        post = get_object_or_404(TripPlan, author=request.user, complete=False)
-        form = TripPlanForm(request.POST, instance=post)
-        image_form = TripPlanImageForm(request.POST, request.FILES)
         if 'imgpic' in request.POST:
+            image_form = TripPlanImageForm(request.POST, request.FILES)
+            post = get_object_or_404(TripPlan, author=request.user, complete=False)
+            form = TripPlanForm(instance=post)
             if image_form.is_valid():
-                if form.is_valid():
-                    post_form = form.save(commit=False)
-                    post_form.author = request.user
-                    post_form.save()
                 image = request.FILES.getlist('image')
                 list_img = []
                 for img in image:
-                    img_obj = UploadImage.objects.create(post=post_form, image=img)
+                    img_obj = UploadImage.objects.create(post=post, image=img)
                     img_obj.save()
                     list_img.append(img_obj)
-                post = get_object_or_404(TripPlan, author=request.user, complete=False)
-                form = TripPlanForm(instance=post)
+                image_form = TripPlanImageForm()
                 return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': list_img})
-        elif 'blog' in request.POST:
+        post = get_object_or_404(TripPlan, author=request.user, complete=False)
+        form = TripPlanForm(request.POST, instance=post)
+        if 'blog' in request.POST:
             if form.is_valid():
                 post_form = form.save(commit=False)
                 post_form.author = request.user
@@ -151,7 +147,6 @@ def add_post(request):
                 image_form = TripPlanImageForm()
                 return render(request, 'trip/add_blog.html', {'form': form,
                                                               'image_form': image_form})
-    print(333333)
     post = get_object_or_404(TripPlan, author=request.user, complete=False)
     form = TripPlanForm(instance=post)
     image_form = TripPlanImageForm()

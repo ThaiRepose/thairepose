@@ -32,11 +32,7 @@ def planner_list(request):
 def create_planner(request):
     """Create a new planner and redirect to new planner page."""
     user = request.user
-    if user.first_name == "":
-        plan_name = f"{user.username}'s Plan"
-    else:
-        plan_name = f"{user.first_name}'s Plan"
-    plan = Plan.objects.create(name=plan_name, author=user)
+    plan = Plan.objects.create(author=user)
     plan.save()
     return HttpResponseRedirect(reverse('planner:edit_plan', args=[plan.id], ))
 

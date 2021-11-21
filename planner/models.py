@@ -1,6 +1,8 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
-import django.contrib.auth.models
+from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
 
 MAX_DAYS_PER_PLAN = 6
@@ -15,16 +17,15 @@ ROLES = (
 )
 
 
-# Create your models here.
 class Plan(models.Model):
     """Class for plan organized."""
-    name = models.CharField(max_length=250)
+    name = models.CharField(max_length=250, default=None, null=True)
     days = models.IntegerField(default=1,
                                validators=[
                                    MaxValueValidator(MAX_DAYS_PER_PLAN),
                                    MinValueValidator(1)
                                ])
-    author = models.ForeignKey(django.contrib.auth.models.User, on_delete=models.CASCADE, null=False, blank=False)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
     status = models.IntegerField(choices=STATUS, default=0)
     date_created = models.DateTimeField("Date Created", auto_now_add=True, null=False, blank=False)
     last_modified = models.DateTimeField("Last Modified", auto_now=True, null=False, blank=False)
@@ -33,7 +34,7 @@ class Plan(models.Model):
         """Display name for this plan."""
         return self.name
 
-    def is_editable(self, user: django.contrib.auth.models.User) -> bool:
+    def is_editable(self, user: User) -> bool:
         """Returns True if user can edit this plan."""
         if user == self.author:
             return True
@@ -43,7 +44,7 @@ class Plan(models.Model):
         except ObjectDoesNotExist:
             return False
 
-    def is_viewable(self, user: django.contrib.auth.models.User) -> bool:
+    def is_viewable(self, user: User) -> bool:
         """Returns True if someone with link can view this plan."""
         if self.status:
             return True
@@ -58,7 +59,7 @@ class Plan(models.Model):
 
 class Editor(models.Model):
     """Class for storing editors for each plan."""
-    user = models.ForeignKey(django.contrib.auth.models.User, on_delete=models.CASCADE, null=False, blank=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE, null=False, blank=False)
     role = models.IntegerField(choices=ROLES, default=0, null=False, blank=False)
 
@@ -90,3 +91,13 @@ class Place(models.Model):
 
     def __str__(self):
         return self.place_name
+
+
+@receiver(post_save, sender=Plan)
+def my_handler(**kwargs):
+    """Initialize planner name if not specified."""
+    if kwargs['instance'].name is None or len(kwargs['instance'].name) == 0:
+        if kwargs['instance'].author.first_name == "":
+            kwargs['instance'].name = kwargs['instance'].author.username + "'s Plan"
+        else:
+            kwargs['instance'].name = kwargs['instance'].author.first_name + "'s Plan"

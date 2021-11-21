@@ -121,7 +121,7 @@ def edit_planner_backend(request):
         place_data = json.loads(request.POST['addPlace'])
         add_new_place(place_data, plan)
     if 'delPlace' in request.POST:
-        item = json.loads(request.POST['delplace'])
+        item = json.loads(request.POST['delPlace'])
         response = delete_place(plan, item)
         if response['status'] != "OK":
             return JsonResponse(response)

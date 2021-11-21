@@ -93,11 +93,25 @@ class Place(models.Model):
         return self.place_name
 
 
+def get_default_name(user: User) -> str:
+    """Setting planner name to default name pattern.
+    if created user has first_name: will be `{user.first_name}'s Plan`
+    otherwise: will be `{user.username}'s Plan`
+
+    Args:
+        user: django user model object about author.
+
+    Returns:
+        default name as described above.
+    """
+    if user.first_name == "":
+        return user.username + "'s Plan"
+    else:
+        return user.first_name + "'s Plan"
+
+
 @receiver(post_save, sender=Plan)
-def my_handler(**kwargs):
+def initial_name_validate(**kwargs):
     """Initialize planner name if not specified."""
     if kwargs['instance'].name is None or len(kwargs['instance'].name) == 0:
-        if kwargs['instance'].author.first_name == "":
-            kwargs['instance'].name = kwargs['instance'].author.username + "'s Plan"
-        else:
-            kwargs['instance'].name = kwargs['instance'].author.first_name + "'s Plan"
+        kwargs['instance'].name = get_default_name(kwargs['instance'].author)

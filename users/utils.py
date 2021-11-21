@@ -67,7 +67,7 @@ def pic_profile_rename_path(pk):
         path(str): path.
     """
     new_path = os.path.join(settings.PROFILE_PIC_LOCATION,
-                            str(pk), 'profile_pic.jpg')
+                            f'{str(pk)}_profile_picture.jpg')
     path = new_path.replace('\\', '/')
     if path[0] == '/':
         return path[1:]
@@ -87,18 +87,4 @@ def pic_profile_path(path):
     path = new_path.replace('\\', '/')
     if path[0] == '/':
         return path[1:]
-    return path
-
-
-def get_base_picture(pk):
-    """Method for get path of unimage picture profile.
-
-    Args:
-        pk(int): user id.
-
-    Returns:
-        path(str): path.
-    """
-    path = format_path(os.path.join(
-        settings.PROFILE_PIC_LOCATION, f'{str(pk)}_profile_picture.jpg'))
     return path

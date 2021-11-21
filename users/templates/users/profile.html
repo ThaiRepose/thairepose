@@ -2,6 +2,9 @@
 {% load static %}
 {% block header %}
 <style>
+      p::first-letter {
+      text-transform: uppercase;
+      }
     body {
         background: url("{% static '/images/bg-blur.jpg' %}") no-repeat fixed;
         background-size: cover;
@@ -38,7 +41,8 @@
           <p class="text-gray-400 text-sm">Username</p>
        </div>
        <div class="following">
-          <p class="text-lg">{{user.first_name}} {{user.last_name}}</p>
+          <p class="text-lg">{{user.first_name}}</p>
+          <p class="text-lg"> {{user.last_name| slice:":1"}}</p>
           <p class="text-gray-400 text-sm">Name</p>
        </div>
        <div class="following">

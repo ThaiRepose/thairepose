@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block header %}
+{% load widget_tweaks %}
 <style>
     body {
         background: url("{% static '/images/bg-blur.jpg' %}") no-repeat fixed;
@@ -23,16 +24,18 @@
                         <div class="flex items-center justify-between mt-4">
                             <div class='w-full md:w-1/2 px-3 mb-6'>
                                 <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >first name</label>
-                                {{ u_form.first_name}}
+                                <div>
+                                    {% render_field u_form.first_name class="input rounded-md" style="width:100%;"%}
+                                </div>  
                             </div>
-                            <div class='w-full md:w-1/2 px-3 mb-6'>
+                            <div class='w-full md:w-1/2 px-3 mb-6'> 
                                 <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >last name</label>
-                                {{ u_form.last_name}}
+                                {% render_field u_form.last_name class="input rounded-md" style="width:100%;"%}
                             </div>
                         </div>
                         <div class='w-full md:w-full px-3 mb-6'>
                             <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2'>Birthday</label>
-                            {{ p_form.birthday }}
+                            {% render_field p_form.birthday class="input rounded-md" style="width:100%;"%}
                         </div>
                         <div class='w-full md:w-full px-3 mb-6'>
                             <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >Profile Picture</label>

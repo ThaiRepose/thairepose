@@ -7,7 +7,7 @@ from django.contrib import messages
 from PIL import Image
 from .models import Profile
 from .forms import UserUpdateForm, ProfileUpdateForm
-from .utils import pic_profile_path, pic_profile_rename_path, format_path, get_base_picture, get_user_folder
+from .utils import pic_profile_path, pic_profile_rename_path, get_base_picture
 import os
 
 
@@ -60,8 +60,8 @@ def edit_profile(request):
             user_form.save()
             filename = profile_form.save(commit=False).profile_pic
             profile_form.save()
-            if not os.path.isdir(get_user_folder(request.user.pk)):
-                os.mkdir(get_user_folder(request.user.pk))
+            if not os.path.isdir(pic_profile_path(request.user.pk)):
+                os.mkdir(pic_profile_path(request.user.pk))
                 base_profile = get_base_picture(request.user.pk)
                 os.remove(base_profile)
                 os.rename(pic_profile_path(filename), pic_profile_rename_path(request.user.pk))

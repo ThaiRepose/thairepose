@@ -266,12 +266,7 @@ def add_new_place(place_data: dict, plan: Plan):
         arrival_time = None
     else:
         arrival_time = datetime.time(datetime.strptime(place_data['arrival_time'], '%H:%M'))
-    if place_data['departure_time'] == "":
-        departure_time = None
-    else:
-        departure_time = datetime.time(
-            datetime.strptime(
-                place_data['departure_time'], '%H:%M'))
+    departure_time = datetime.time(datetime.strptime(place_data['departure_time'], '%H:%M'))
     place = Place(day=place_data['day'],
                   sequence=sequence,
                   place_id=place_data['place_id'],

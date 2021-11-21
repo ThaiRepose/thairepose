@@ -3,7 +3,7 @@ import datetime
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from ..models import Place, Plan, Editor
+from ..models import Place, Plan, Editor, MAX_DAYS_PER_PLAN
 
 
 class PlannerModelTest(TestCase):
@@ -72,6 +72,19 @@ class PlanModelTest(PlannerModelTest):
         new_plan = Plan.objects.create(author=new_user)
         self.assertEqual(new_plan.__str__(), f"{new_user_firstname}'s Plan")
 
+    def test_create_days_over_limit(self):
+        """Test creating planner with days over limited.
+        Should be replaced with the maximum days per plan.
+        """
+        new_plan = Plan.objects.create(days=100, author=self.user)
+        new_plan.save()
+        new_plan_status = Plan.objects.get(pk=new_plan.id)
+        self.assertEqual(new_plan_status.days, MAX_DAYS_PER_PLAN)
+        new_plan = Plan.objects.create(days=-100, author=self.user)
+        new_plan.save()
+        new_plan_status = Plan.objects.get(pk=new_plan.id)
+        self.assertEqual(new_plan_status.days, 1)
+
 
 class EditorModelTest(PlannerModelTest):
     """Test for Editor model using."""
@@ -87,6 +100,14 @@ class EditorModelTest(PlannerModelTest):
     def test_name_spelling(self):
         """Test that object __str__() output correctly."""
         self.assertEqual(self.editor.__str__(), f"{self.plan} - {self.other_user}")
+
+    def test_add_editor(self):
+        """Test add editor to the plan and check editor_set in the plan."""
+        editor_user = User.objects.create_user(username="ThaiRepose2",
+                                               email=self.email,
+                                               password="TawanBoonma")
+        editor = Editor.objects.create(plan=self.plan, user=editor_user)
+        self.assertIn(editor, self.plan.editor_set.all())
 
 
 class PlaceModelTest(PlannerModelTest):

@@ -126,14 +126,10 @@
                     <h1>Add Comment</h1>
                         <form method="POST">
                             {% csrf_token %}
-                            {{ review_form.as_p }}
+                            {{ review_form.body }}
                             <button>Add comment</button>
                         </form> 
                 {% endif %}
-            </div>
-            <hr class="flex my-6 border-gray-400 w-11/12 mx-auto">
-            <div>
-                <a href="{% url 'trip:tripplan' %}">(ALL TRIP)</a>
             </div>
         </div>
     </div>

@@ -2,7 +2,8 @@ from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from ..models import Plan, Editor
+from ..models import Plan, Editor, Place
+import datetime
 
 
 class EditViewTest(TestCase):
@@ -134,3 +135,31 @@ class AnonymousEditViewTest(EditViewTest):
         self.plan.save()
         response = self.client.get(reverse('planner:view_plan', args=[self.plan.id]))
         self.assertEqual(response.status_code, 200)
+
+
+class ViewOnlyTest(EditViewTest):
+    """Testing viewing view-only planner."""
+    
+    def setUp(self):
+        """Initialize place."""
+        super().setUp()
+        self.place_details1 = {
+            'day': 1,
+            'sequence': 1,
+            'place_id': "5678",
+            'place_name': "Kasetsart",
+            'place_vicinity': "Bangkok"
+        }
+        self.place1 = Place.objects.create(day=self.place_details1['day'],
+                                           sequence=self.place_details1['sequence'],
+                                           place_id=self.place_details1['place_id'],
+                                           place_name=self.place_details1['place_name'],
+                                           place_vicinity=self.place_details1['place_vicinity'],
+                                           departure_time=datetime.time(0, 0),
+                                           plan=self.plan)
+        self.place1.save()
+
+    def test_view_only_page(self):
+        """Test that view-only page show places in the plan."""
+        response = self.client.get(reverse('planner:view_plan', args=[self.plan.id]))
+        self.assertContains(response, self.place1)

@@ -196,6 +196,14 @@ class BackendPostMethodTest(test_index.ViewTest):
         new_plan_status.place_set.get(place_name=self.place_details2['place_name'],
                                       day=self.place_details2['day_destination'])
 
+    def test_invalid_place_move_up(self):
+        """Test move up invalid place. Should do nothing and return Place not found."""
+        self.place_details2['day_moved'] = False
+        self.place_details2['sequence'] = 3
+        response = self.client.post(reverse("planner:post_edit"),
+                                    {'planner_id': self.plan.id, 'moveUp': json.dumps(self.place_details2)})
+        self.assertEqual(json.loads(response.content)['status'], "Place not found.")
+
     def test_change_times(self):
         """Test changing arrival and departure time for each place."""
         self.place_details1['arrival'] = "10:00"

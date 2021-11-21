@@ -18,6 +18,51 @@ from .models import Plan, Place, MAX_PLACES_PER_DAY
 load_dotenv()
 
 
+@login_required(login_url='/accounts/login/')
+def planner_list(request):
+    """Render a page showing plan organized before created by this user."""
+    user = request.user
+    author_plans = Plan.objects.filter(author=user).order_by('-last_modified')
+    editor_plans = Plan.objects.filter(editor__user=user).order_by('-last_modified')
+    plans = author_plans | editor_plans
+    return render(request, "planner/trip_planner_list.html", {"plans": plans})
+
+
+@login_required(login_url='/accounts/login/')
+def create_planner(request):
+    """Create a new planner and redirect to new planner page."""
+    user = request.user
+    if user.first_name == "":
+        plan_name = f"{user.username}'s Plan"
+    else:
+        plan_name = f"{user.first_name}'s Plan"
+    plan = Plan.objects.create(name=plan_name, author=user)
+    plan.save()
+    return HttpResponseRedirect(reverse('planner:edit_plan', args=[plan.id], ))
+
+
+@login_required
+def delete_planner(request, planner_id: int):
+    """Delete the planner and redirect to planner list page.
+
+    Args:
+        request: Request headers from browser.
+        planner_id: Primary key of selected planner.
+    """
+    user = request.user
+    try:
+        plan = Plan.objects.get(pk=planner_id)
+    except ObjectDoesNotExist:
+        return HttpResponseRedirect(reverse('planner:index'))
+    edit_role = plan.editor_set.filter(user=user)
+    is_editor = len(edit_role) > 0
+    if plan.author == user:
+        plan.delete()
+    elif is_editor:
+        edit_role.delete()
+    return HttpResponseRedirect(reverse('planner:index'))
+
+
 def edit_planner(request, planner_id: int):
     """Render trip planner page as editor.
 
@@ -28,14 +73,12 @@ def edit_planner(request, planner_id: int):
     plan_detail = get_object_or_404(Plan, pk=planner_id)
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse('planner:view_plan', args=[planner_id], ))
-    is_editable = plan_detail.author == request.user or \
-        (len(plan_detail.editor_set.filter(user=request.user)) > 0)
-    if not is_editable:
+    user = request.user
+    if not plan_detail.is_editable(user):
         return HttpResponseRedirect(reverse('planner:view_plan', args=[planner_id], ))
     is_publish = 'On' if plan_detail.status else 'Off'
     return render(request, "planner/edit_planner.html", {'api_key': os.getenv('API_KEY'),
                                                          'details': plan_detail,
-                                                         'editable': is_editable,
                                                          'is_publish': is_publish})
 
 
@@ -49,15 +92,12 @@ def view_planner(request, planner_id: int):
     plan_detail = get_object_or_404(Plan, pk=planner_id)
     places = defaultdict(list)
     # Check permission
-    if not plan_detail.status:
-        if request.user.is_authenticated:
-            pass
-        elif request.user == plan_detail.author:
-            pass
-        elif request.user in plan_detail.editor_set.all():
-            pass
-        else:
-            return HttpResponseNotFound("You need permission.")
+    if request.user.is_authenticated:
+        user = request.user
+    else:
+        user = None
+    if not plan_detail.is_viewable(user):
+        return HttpResponseNotFound("You need permission.")
     for place in plan_detail.place_set.all():
         places[place.day].append({
             "place_name": place.place_name,
@@ -287,48 +327,3 @@ def get_travel_time(request) -> JsonResponse:
         return JsonResponse({"status": "NOT ENOUGH PLACE"})
     data = get_direction(places)
     return JsonResponse(data)
-
-
-@login_required(login_url='/accounts/login/')
-def planner_list(request):
-    """Render a page showing plan organized before created by this user."""
-    user = request.user
-    author_plans = Plan.objects.filter(author=user).order_by('-last_modified')
-    editor_plans = Plan.objects.filter(editor__user=user).order_by('-last_modified')
-    plans = author_plans | editor_plans
-    return render(request, "planner/trip_planner_list.html", {"plans": plans})
-
-
-@login_required(login_url='/accounts/login/')
-def create_planner(request):
-    """Create a new planner and redirect to new planner page."""
-    user = request.user
-    if user.first_name == "":
-        plan_name = f"{user.username}'s Plan"
-    else:
-        plan_name = f"{user.first_name}'s Plan"
-    plan = Plan.objects.create(name=plan_name, author=user)
-    plan.save()
-    return HttpResponseRedirect(reverse('planner:edit_plan', args=[plan.id], ))
-
-
-@login_required
-def delete_planner(request, planner_id: int):
-    """Delete the planner and redirect to planner list page.
-
-    Args:
-        request: Request headers from browser.
-        planner_id: Primary key of selected planner.
-    """
-    user = request.user
-    try:
-        plan = Plan.objects.get(pk=planner_id)
-    except ObjectDoesNotExist:
-        return HttpResponseRedirect(reverse('planner:index'))
-    edit_role = plan.editor_set.filter(user=user)
-    is_editor = len(edit_role) > 0
-    if plan.author == user:
-        plan.delete()
-    elif is_editor:
-        edit_role.delete()
-    return HttpResponseRedirect(reverse('planner:index'))

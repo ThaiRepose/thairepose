@@ -42,27 +42,29 @@
             </div>
             <!-- Navigation links -->
             <nav :class="{'flex': open, 'hidden': !open}" class="flex-col flex-grow pb-4 md:pb-0 hidden md:flex md:justify-end md:flex-row">
-                {% if request.resolver_match.app_name == "trip"%}
-                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-extrabold text-gray-900 bg-gray-300 rounded-lg dark-mode:bg-gray-700 dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
+                {% if request.resolver_match.app_name == "trip" %}
+                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-extrabold text-gray-900 bg-gray-300 rounded-lg hover:rounded-lg dark-mode:bg-gray-700 dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
                         href="/">TRIP</a>
                 {% else %}
-                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-medium dark-mode:bg-gray-700 dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
+                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-medium bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
                         href="/">TRIP</a>
                 {% endif %}
                 {% if request.resolver_match.app_name == "planner" %}
-                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-extrabold text-gray-900 bg-gray-300 rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
+                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-extrabold text-gray-900 bg-gray-300 rounded-lg hover:rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
                         href="{% url 'planner:index' %}">Planner</a>
                 {% else %}
-                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-medium dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
+                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-medium bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
                         href="{% url 'planner:index' %}">Planner</a>
                 {% endif %}
+                <!-- Remove?
                 {% if request.resolver_match.app_name == "search" %}
                     <a class="px-4 py-2 mt-2 text-sm md:text-md font-extrabold text-gray-900 bg-gray-300 rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
                         href="/">Search</a>
                 {% else %}
-                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-medium dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
+                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-medium bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
                         href="/">Search</a>
                 {% endif %}
+                -->
                 {% if user.is_authenticated %}
                     <div @click.away="open = false" class="relative" x-data="{ open: false }">
                         <button @click="open = !open"
@@ -85,7 +87,7 @@
                               class="absolute right-0 w-full mt-2 origin-top-right rounded-md shadow-lg md:w-48">
                              <div class="px-2 py-2 bg-white rounded-md shadow dark-mode:bg-gray-800">
                                  <a class="block px-4 py-2 mt-2 text-sm font-semibold rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
-                                    href="#" style="z-index: 100;">My profile</a>
+                                    href="{% url 'profile' %}" style="z-index: 100;">My profile</a>
                                  <a class="block px-4 py-2 mt-2 text-sm font-semibold rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
                                     href="{% url 'account_change_password' %}" style="z-index:999999 !important;">Change password</a>
                              </div>
@@ -100,10 +102,13 @@
                     <button class="STYLE_ME" type="submit">Logout</button>
                     </form></a>
                 {% else %}
-                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-medium bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
-                       href="{% url 'account_login' %}">Login</a>
-                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-medium bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
-                       href="{% url 'account_signup' %}">Signup</a>
+                    {% if request.resolver_match.url_name == "account_login" %}
+                        <a class="px-4 py-2 ml-2 mt-2 text-sm md:text-md font-extrabold text-gray-900 bg-gray-300 rounded-lg hover:rounded-lg dark-mode:bg-gray-700 dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
+                            href="{% url 'account_login' %}">Login</a>
+                    {% else %}
+                        <a class="px-4 py-2 ml-2 mt-2 text-sm md:text-md font-medium bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
+                            href="{% url 'account_login' %}">Login</a>
+                    {% endif %}
                 {% endif %}
             </nav>
         </div>
@@ -121,7 +126,6 @@
             <span class="inline-flex sm:ml-auto sm:mt-0 mt-2 justify-center sm:justify-start">
                 <a class="text-white hover:text-gray-700 px-2 text-sm" href="{% url 'about-us' %}">About us</a>
                 <a class="text-white hover:text-gray-700 px-2 text-sm" href="{% url 'feedback' %}">Feedback</a>
-                <a class="text-white hover:text-gray-700 px-2 text-sm" href="">Buy us coffee</a>
                 <p class="px-0 md:px-2"></p>
                 <a class="ml-3 text-black" href="https://github.com/ThaiRepose/thairepose" target="_blank">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">

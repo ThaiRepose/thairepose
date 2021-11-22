@@ -30,7 +30,7 @@ PLACE_IMG_PATH = os.path.join(
 # View page
 def index(request):
     """Render Index page."""
-    api_key = os.getenv('API_KEY')
+    api_key = os.getenv('FRONTEND_API_KEY')
     return render(request, "trip/index.html", {'api_key': api_key})
 
 
@@ -229,17 +229,20 @@ def place_info(request, place_id: str):
     Returns:
         HttpRequest: Return 200 if place_id is correct, and return 404 if invalid.
     """
-    api_key = os.getenv('API_KEY')
+    load_dotenv()
+    backend_api_key = os.getenv('BACKEND_API_KEY')
+    frontend_api_key = os.getenv('FRONTEND_API_KEY')
     if api_caching.get(f"{place_id}detailpage"):
         cache_data = json.loads(api_caching.get(
             f"{place_id}detailpage"))['cache']
     else:
-        url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={api_key}"
+        url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={backend_api_key}"
         response = requests.get(url)
         data = json.loads(response.content)
+        print(data)
         if data['status'] != "OK":
             return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
-        context = get_details_context(data, api_key)
+        context = get_details_context(data, backend_api_key, frontend_api_key)
         cache_data = restruct_detail_context_data(context)
         api_caching.add(f"{place_id}detailpage", json.dumps(
             {'cache': cache_data}, indent=3).encode())
@@ -247,17 +250,18 @@ def place_info(request, place_id: str):
     context = resturct_to_place_detail(cache_data)
     context['blank_rating'] = range(round(context['blank_rating']))
     context['rating'] = range(round(context['rating']))
-    context['api_key'] = api_key
+    context['api_key'] = frontend_api_key
     context = check_downloaded_image(context)
     return render(request, "trip/place_details.html", context)
 
 
 # Helper function
-def get_details_context(place_data: dict, api_key: str) -> dict:
+def get_details_context(place_data: dict, backend_api_key: str, frontend_api_key: str) -> dict:
     """Get context for place details page.
     Args:
         place_data: The data received from Google Cloud Platform.
-        api_key: Exposed API key used to display images in website, restriction in GCP needed.
+        backend_api_key:
+        frontend_api_key: Exposed API key used to display images in website, restriction in GCP needed.
     Returns:
         context data needed for place details page.
     """
@@ -320,9 +324,8 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
         if lat is not None and lng is not None:
             suggestions = []
             url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/" \
-                f"json?location={lat}%2C{lng}&radius=2000&key={api_key}"
+                f"json?location={lat}%2C{lng}&radius=2000&key={backend_api_key}"
             response = requests.get(url)
-            print("Called API")
             place_data = json.loads(response.content)
             for place in place_data['results'][1:]:
                 if place['name'] == context['place_name']:
@@ -336,7 +339,7 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
                     'place_id': place['place_id']
                 })
             context['suggestions'] = suggestions
-    context['api_key'] = api_key
+    context['api_key'] = frontend_api_key
     return context
 
 

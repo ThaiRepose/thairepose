@@ -17,6 +17,9 @@ from .models import Review, TripPlan, CategoryPlan
 from django.db import models
 from .forms import TripPlanImageForm, TripPlanForm, ReviewForm
 from .views import add_post
+from django.test import LiveServerTestCase
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 
 
 class PlaceDetailsViewTest(TestCase):
@@ -391,3 +394,16 @@ class TripDetailTests(TestCase):
         TripPlan.objects.all().delete()
         CategoryPlan.objects.all().delete()
         return super().tearDown()
+
+# @unittest.skip
+class SeleniumTripPlan(LiveServerTestCase):
+    """Classs for test selenium"""
+
+    def setUp(self) -> None:
+        self.user = User.objects.create(username='tester', password='tester')
+
+    def test_login(self):
+        selenium = webdriver.Chrome('selenium\chromedriver.exe')
+        selenium.get('http://127.0.0.1/')
+
+    

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block header %}
+{% load widget_tweaks %}
+<style>
+    body {
+        background: url("{% static '/images/bg-blur.jpg' %}") no-repeat fixed;
+        background-size: cover;
+    }
+</style>
+{% endblock %}
+
+{% block main_content %}
+{% if user.is_authenticated %}
+<div class="h-screen pt-2 font-mono my-16 bg-white shadow-lg rounded-lg mx-auto">
+    <div class="container mx-auto">
+        <div class="inputs w-full max-w-2xl p-6 mx-auto">
+            <h2 class="text-2xl text-gray-900">Personal info:</h2>
+            <form method="POST" enctype="multipart/form-data" class="mt-6 border-t border-gray-400 pt-4">
+                {% csrf_token %}
+                <div class='flex flex-wrap -mx-3 mb-6'>
+                    <div class="personal w-full border-t border-gray-400 pt-4">
+                        <h2 class="text-2xl text-gray-900"></h2>
+                        <div class="flex items-center justify-between mt-4">
+                            <div class='w-full md:w-1/2 px-3 mb-6'>
+                                <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >first name</label>
+                                <div>
+                                    {% render_field u_form.first_name class="input rounded-md" style="width:100%;"%}
+                                </div>  
+                            </div>
+                            <div class='w-full md:w-1/2 px-3 mb-6'> 
+                                <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >last name</label>
+                                {% render_field u_form.last_name class="input rounded-md" style="width:100%;"%}
+                            </div>
+                        </div>
+                        <div class='w-full md:w-full px-3 mb-6'>
+                            <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2'>Birthday</label>
+                            {% render_field p_form.birthday class="input rounded-md" style="width:100%;"%}
+                        </div>
+                        <div class='w-full md:w-full px-3 mb-6'>
+                            <label class='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >Profile Picture</label>
+                            <img src="{{ profile.profile_pic.url }}" width='200' height='200'>
+                            <!-- {{p_form.profile_pic}} -->
+                            <input type="file" name="profile_pic" accept="image/*" id="id_profile_pic">
+                        </div>
+                        <div class="flex justify-end">
+                            <button class="appearance-none bg-gray-200 text-gray-900 px-2 py-1 shadow-sm border border-gray-400 rounded-md mr-3" type="submit">save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

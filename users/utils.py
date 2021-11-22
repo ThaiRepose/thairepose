@@ -43,3 +43,48 @@ def pic_profile_relative_path():
     if path[0] == '/':
         return path[1:]
     return path
+
+
+def format_path(path):
+    """Change from absolute path to relative path.
+    Args:
+        path(str): string of path.
+    Return:
+        path(str): path .
+    """
+    if path[0] == '/':
+        return path[1:]
+    return path
+
+
+def pic_profile_rename_path(pk):
+    """Method for get path of profile of each user.
+
+    Args:
+        pk(int): user id.
+
+    Returns:
+        path(str): path.
+    """
+    new_path = os.path.join(settings.PROFILE_PIC_LOCATION,
+                            f'{str(pk)}_profile_picture.jpg')
+    path = new_path.replace('\\', '/')
+    if path[0] == '/':
+        return path[1:]
+    return path
+
+
+def pic_profile_path(path):
+    """Method for get path of image that user upload.
+
+    Args:
+        pk(int): user id.
+
+    Returns:
+        path(str): path.
+    """
+    new_path = os.path.join(settings.PROFILE_PIC_LOCATION, str(path))
+    path = new_path.replace('\\', '/')
+    if path[0] == '/':
+        return path[1:]
+    return path

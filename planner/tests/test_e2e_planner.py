@@ -5,6 +5,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.urls import reverse
+from planner.models import Plan, MAX_DAYS_PER_PLAN
 
 
 def login(browser: webdriver, url: str, username: str, password: str) -> webdriver:
@@ -47,10 +48,9 @@ class E2ETestPlanner(StaticLiveServerTestCase):
             executable_path="/Users/tawaneiei/Desktop/KU/ISP/selenium-exercise/geckodriver", options=options)
         self.browser = login(self.browser, self.url+reverse("account_login"),
                              self.user_detail['username'], self.user_detail['password'])
-        self.browser.implicitly_wait(1)  # seconds
+        self.browser.implicitly_wait(2)  # seconds
 
     def tearDown(self):
-        input("Press any key to exit.")
         self.browser.quit()
         super(E2ETestPlanner, self).tearDown()
 
@@ -63,4 +63,44 @@ class E2ETestPlanner(StaticLiveServerTestCase):
 
     def test_increase_day(self):
         """Test increasing day in trip planner."""
-        pass
+        plan = Plan.objects.create(author=self.user)
+        plan.save()
+        self.browser.get(self.url + reverse("planner:edit_plan", args=[plan.id]))
+        # find increase day button
+        increase_btn = self.browser.find_element_by_xpath('/html/body/div[1]/div[1]/div/div[1]/div[1]/div[2]/div/button[2]')
+        increase_btn.click()
+        # from instance of 1 is default, after clicked 1 time should display 2
+        displayed_days = self.browser.find_element_by_xpath('//*[@id="days-selector"]').get_attribute("value")
+        self.assertEqual(int(displayed_days), 2)
+
+        # test that increase days is limited to MAX_DAYS_PER_PLAN
+        for i in range(10):
+            increase_btn.click()
+        # get planned day again, the day should not more than MAX_DAYS_PER_PLAN. If so, it should be MAX_DAYS_PER_PLAN
+        displayed_days = self.browser.find_element_by_xpath('//*[@id="days-selector"]').get_attribute("value")
+        self.assertEqual(int(displayed_days), MAX_DAYS_PER_PLAN)
+
+    def test_decrease_day(self):
+        """Test decreasing days in trip planner."""
+        plan = Plan.objects.create(author=self.user)
+        plan.save()
+        self.browser.get(self.url + reverse("planner:edit_plan", args=[plan.id]))
+        # increase the day first before decreasing
+        increase_btn = self.browser.find_element_by_xpath(
+            '/html/body/div[1]/div[1]/div/div[1]/div[1]/div[2]/div/button[2]')
+        for i in range(3):
+            increase_btn.click()
+        # get number of days after increased
+        initial_days = self.browser.find_element_by_xpath('//*[@id="days-selector"]').get_attribute("value")
+
+        # decrease the day
+        decrease_btn = self.browser.find_element_by_xpath('/html/body/div[1]/div[1]/div/div[1]/div[1]/div[2]/div/button[1]')
+        decrease_btn.click()
+        displayed_days = self.browser.find_element_by_xpath('//*[@id="days-selector"]').get_attribute("value")
+        self.assertEqual(int(initial_days)-1, int(displayed_days))
+
+        # test that number of days is in range of positive integer and should be 1.
+        for i in range(int(displayed_days) + 4):
+            decrease_btn.click()
+        displayed_days = self.browser.find_element_by_xpath('//*[@id="days-selector"]').get_attribute("value")
+        self.assertEqual(int(displayed_days), 1)

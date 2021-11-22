@@ -45,6 +45,10 @@ def privacy_policy(request):
     return render(request, "policy/privacy_policy.html")
 
 
+def term_of_service(request):
+    return render(request, "policy/term_of_service.html")
+
+
 @login_required
 def edit_profile(request):
     """Config fiel of user form and profile form.

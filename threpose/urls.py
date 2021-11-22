@@ -32,6 +32,7 @@ urlpatterns = [
     path('', include('trip.urls', namespace="trip")),
     path('search/', include('search.urls', namespace="search")),
     path('planner/', include('planner.urls', namespace="planner")),
+    path('service/', views.term_of_service, name="service"),
     path('policy/', views.privacy_policy, name="policy"),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('profile', views.profile, name='profile'),

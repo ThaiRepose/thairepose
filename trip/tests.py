@@ -100,7 +100,7 @@ class PlaceDetailsViewTest(TestCase):
 
     def test_check_downloaded_image(self):
         PLACE_IMG_PATH = os.path.join(
-            BASE_DIR, 'theme', 'static', 'images', 'places_image')
+            BASE_DIR, 'media', 'places_image')
         if not os.path.exists(PLACE_IMG_PATH):
             os.mkdir(PLACE_IMG_PATH)
         mockup_data = {

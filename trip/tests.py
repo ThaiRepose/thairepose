@@ -18,7 +18,7 @@ from .forms import TripPlanImageForm, TripPlanForm, ReviewForm
 from .views import add_post
 from django.test import LiveServerTestCase
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 
 
 class PlaceDetailsViewTest(TestCase):
@@ -406,6 +406,7 @@ class DeletePostlTests(TestCase):
         self.client = Client()
         self.cat = CategoryPlan.objects.create(name='category1')
         self.user = User.objects.create(username='tester', password='tester')
+        self.user.active = True
         self.trip = TripPlan.objects.create()
         self.re = RequestFactory()
         return super().setUp()
@@ -423,13 +424,37 @@ class DeletePostlTests(TestCase):
         CategoryPlan.objects.all().delete()
         return super().tearDown()
 
+
 @unittest.skip
 class SeleniumTripPlan(LiveServerTestCase):
     """Classs for test selenium"""
 
     def setUp(self) -> None:
+        """Set up user."""
         self.user = User.objects.create(username='tester', password='tester')
+        self.user.active = True
 
-    def test_login(self):
-        selenium = webdriver.Chrome('selenium\chromedriver.exe')
-        selenium.get('http://127.0.0.1/')
+    def test_create_trip(self):
+        """Test user create trip."""
+        browser = webdriver.Chrome('selenium/chromedriver.exe')
+        browser.get("http://127.0.0.1:80/accounts/login")
+        input = browser.find_elements_by_tag_name("input")
+        username = input[1]
+        password = input[2]
+        username.send_keys('demo')
+        password.send_keys('pass12345')
+        login = browser.find_elements_by_tag_name("button")[1]
+        login.click()
+        browser.get("http://127.0.0.1:80/addpost/")
+        browser.find_element(By.NAME, "title").send_keys("test")
+        browser.find_element(By.NAME, "duration").send_keys(1)
+        browser.find_element(By.NAME, "price").send_keys(1)
+        button = browser.find_elements_by_tag_name("button")[3]
+        button.click()
+        assert 'test' in browser.page_source
+        assert '1' in browser.page_source
+
+    def tearDown(self) -> None:
+        """Reset all user."""
+        User.objects.all().delete()
+        return super().tearDown()

@@ -73,7 +73,7 @@ def edit_planner(request, planner_id: int):
     if not plan_detail.is_editable(user):
         return HttpResponseRedirect(reverse('planner:view_plan', args=[planner_id], ))
     is_publish = 'On' if plan_detail.status else 'Off'
-    return render(request, "planner/edit_planner.html", {'api_key': os.getenv('API_KEY'),
+    return render(request, "planner/edit_planner.html", {'api_key': os.getenv('FRONTEND_API_KEY'),
                                                          'details': plan_detail,
                                                          'is_publish': is_publish})
 
@@ -301,7 +301,7 @@ def get_direction(places: list) -> dict:
     Returns:
         Details including places and route in each place to next place.
     """
-    api_key = os.getenv("API_KEY")
+    api_key = os.getenv("BACKEND_API_KEY")
     waypoints = ""
     if len(places) > 2:
         waypoints = "&waypoints=place_id:"

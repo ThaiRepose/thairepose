@@ -48,10 +48,11 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
         </div>
       </div>
       {{ form.body }}
-      <div>
-        <button type="submit" class="w-full mt-4 px-4 py-2 font-bold text-white bg-black rounded-full hover:bg-black focus:outline-none focus:shadow-outline" name="blog">Post</button>
-        <button type="submit" class="w-full mt-4 px-4 py-2 font-bold text-white bg-black rounded-full hover:bg-black focus:outline-none focus:shadow-outline" name="save_blog">Save</button>
+      <div class="flex">
+        <button type="submit" class="w-20 mt-4 px-4 py-2 font-bold text-white bg-black rounded-full hover:bg-black focus:outline-none focus:shadow-outline" name="blog">Post</button>
+        <button type="submit" class="w-20 ml-3 mt-4 px-4 py-2 font-bold text-white bg-yellow-700 rounded-full hover:bg-black focus:outline-none focus:shadow-outline" name="save_blog">Save</button>
       </div>
+      <br>
       <input name='image' type='file' multiple>
       <button type="submit" name="imgpic">Upload</button>
     </form>

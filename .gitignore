@@ -151,3 +151,4 @@ media/user/profile_picture/*
 media/pic/*
 !media/pic/.gitkeep
 */uploads
+media/places_image/*

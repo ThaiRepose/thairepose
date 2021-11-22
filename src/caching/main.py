@@ -39,7 +39,7 @@ api_caching = APICaching()
 
 BASE_DIR = Path(__file__).resolve().parent
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
-PLACE_IMG_PATH = os.path.join(ROOT_DIR, 'theme', 'static', 'images', 'places_image')
+PLACE_IMG_PATH = os.path.join(ROOT_DIR, 'media', 'places_image')
 
 
 def write_img_from_gmap_api(key: str, photo_ref: str):

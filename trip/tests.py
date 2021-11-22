@@ -25,7 +25,8 @@ class PlaceDetailsViewTest(TestCase):
     def setUp(self):
         """Initialize API key from env."""
         load_dotenv()
-        self.frontend_api_key = os.getenv('API_KEY')
+        self.frontend_api_key = os.getenv('FRONTEND_API_KEY')
+        self.backend_api_key = os.getenv('BACKEND_API_KEY')
 
     def test_invalid_place_id(self):
         """Test viewing place details page with invalid place_id."""
@@ -48,7 +49,7 @@ class PlaceDetailsViewTest(TestCase):
                 'types': ['school']
             }
         }
-        context = get_details_context(mock_data, self.frontend_api_key)
+        context = get_details_context(mock_data, self.backend_api_key, self.frontend_api_key)
         self.assertEqual("Tawan Boonma", context['place_name'])
         self.assertEqual("191", context['phone'])
         self.assertEqual("tawanb.dev", context['website'])
@@ -67,7 +68,7 @@ class PlaceDetailsViewTest(TestCase):
                 'geometry': {'location': {'lat': 10, 'lng': 10}}
             }
         }
-        context = get_details_context(mock_data, self.frontend_api_key)
+        context = get_details_context(mock_data, self.backend_api_key, self.frontend_api_key)
         self.assertEqual("N/A", context['place_name'])
         self.assertEqual("N/A", context['phone'])
         self.assertEqual("N/A", context['website'])
@@ -79,7 +80,7 @@ class PlaceDetailsViewTest(TestCase):
 
     def test_empty_get_details_function(self):
         """Test for get_details_context() function with empty place_data."""
-        context = get_details_context({}, self.frontend_api_key)
+        context = get_details_context({}, self.backend_api_key, self.frontend_api_key)
         self.assertEqual({'api_key': None}, context)
 
     @unittest.skip("Skip due to not provided API key.")
@@ -100,7 +101,7 @@ class PlaceDetailsViewTest(TestCase):
 
     def test_check_downloaded_image(self):
         PLACE_IMG_PATH = os.path.join(
-            BASE_DIR, 'theme', 'static', 'images', 'places_image')
+            BASE_DIR, 'media', 'places_image')
         if not os.path.exists(PLACE_IMG_PATH):
             os.mkdir(PLACE_IMG_PATH)
         mockup_data = {

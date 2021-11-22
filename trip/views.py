@@ -130,7 +130,8 @@ def add_post(request):
                     img_obj.save()
                     list_img.append(img_obj)
                 image_form = TripPlanImageForm()
-                return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': list_img})
+                return render(request, 'trip/add_blog.html', {'form': form,
+                                                              'image_form': image_form, 'img_obj': list_img})
         post = get_object_or_404(TripPlan, author=request.user, complete=False)
         form = TripPlanForm(request.POST, instance=post)
         if 'blog' in request.POST:

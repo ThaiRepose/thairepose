@@ -3,9 +3,6 @@ from django.urls import reverse
 from django.utils import timezone
 from dotenv import load_dotenv
 import os
-from django.test import LiveServerTestCase
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 import unittest
 from threpose.settings import BASE_DIR
 from .views import delete_post, get_details_context, trip_detail

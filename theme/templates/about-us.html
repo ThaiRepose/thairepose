@@ -2,7 +2,7 @@
 {% load static tailwind_tags %}
 
 {% block header %}
-    <title>{{ place_name }} | ThaiRepose</title>
+    <title>About us | ThaiRepose</title>
     <style>
         body {
             background: url("{% static 'images/bg-blur.jpg' %}") no-repeat fixed;
@@ -10,60 +10,66 @@
         }
     </style>
     <link href="https://unpkg.com/tailwindcss@2.2.4/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 {% endblock %}
 
 {% block main_content %}
 <div class="flex flex-grow items-center justify-center">
     <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-4 py-12">
     <div class="text-center pb-12">
-        <h2 class="text-base font-bold text-indigo-600">
-            ThaiRepose
-        </h2>
-        <h1 class="font-bold text-3xl md:text-4xl lg:text-5xl font-heading text-gray-900">
+        <div class="animate__animated animate__tada font-bold text-3xl md:text-4xl lg:text-5xl font-heading text-gray-900">
             Check our awesome team members
-        </h1>
+        </div>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12">
-        <div class="w-full bg-white rounded-lg sahdow-lg overflow-hidden flex flex-col justify-center items-center">
-            <div>
-                <img class="object-cover h-auto w-full" src="https://avatars.githubusercontent.com/u/63687258?v=4" alt="photo">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+        <a href="https://github.com/tboonma" target="_blank">
+            <div class="animate__animated animate__bounceIn w-full bg-white rounded-lg shadow-lg overflow-hidden flex flex-col justify-center items-center transition ease-in-out duration-500 hover:scale-110">
+                <div class="object-cover">
+                    <img class="object-cover h-auto w-full" src="https://avatars.githubusercontent.com/u/63687258?v=4" alt="photo">
+                </div>
+                <div class="text-center py-8 sm:py-6">
+                    <p class="text-xl text-gray-700 font-bold mb-2">Tawan Boonma</p>
+                    <p class="text-sm text-gray-400 font-normal">Software and Knowledge Engineering</p>
+                    <p class="text-sm text-gray-400 font-normal">Kasetsart University</p>
+                </div>
             </div>
-            <div class="text-center py-8 sm:py-6">
-                <p class="text-xl text-gray-700 font-bold mb-2">Tawan Boonma</p>
-                <p class="text-base text-gray-400 font-normal">Software and Knowledge Engineering</p>
-                <p class="text-base text-gray-400 font-normal">Kasetsart University</p>
+        </a>
+        <a href="https://github.com/vitvara" target="_blank">
+            <div class="animate__animated animate__bounceIn w-full bg-white rounded-lg shadow-lg overflow-hidden flex flex-col justify-center items-center transition ease-in-out duration-500 hover:scale-110">
+                <div>
+                    <img class="object-cover h-auto w-full" src="https://avatars.githubusercontent.com/u/69972884?v=4" alt="photo">
+                </div>
+                <div class="text-center py-8 sm:py-6">
+                    <p class="text-xl text-gray-700 font-bold mb-2">Vitvara Varavithya</p>
+                    <p class="text-sm text-gray-400 font-normal">Software and Knowledge Engineering</p>
+                    <p class="text-sm text-gray-400 font-normal">Kasetsart University</p>
+                </div>
             </div>
-        </div>
-        <div class="w-full bg-white rounded-lg shadow-lg overflow-hidden flex flex-col justify-center items-center">
-            <div>
-                <img class="object-cover h-auto w-full" src="https://avatars.githubusercontent.com/u/69972884?v=4" alt="photo">
+        </a>
+        <a href="https://github.com/nabhan-au" target="_blank">
+            <div class="animate__animated animate__bounceIn w-full bg-white rounded-lg shadow-lg overflow-hidden flex flex-col justify-center items-center transition ease-in-out duration-500 hover:scale-110">
+                <div>
+                    <img class="object-center object-cover h-auto w-full" src="https://avatars.githubusercontent.com/u/70481664?v=4" alt="photo">
+                </div>
+                <div class="text-center py-8 sm:py-6">
+                    <p class="text-xl text-gray-700 font-bold mb-2">Nabhan Suwanachote</p>
+                    <p class="text-sm text-gray-400 font-normal">Software and Knowledge Engineering</p>
+                    <p class="text-sm text-gray-400 font-normal">Kasetsart University</p>
+                </div>
             </div>
-            <div class="text-center py-8 sm:py-6">
-                <p class="text-xl text-gray-700 font-bold mb-2">Vitvara Varavithya</p>
-                <p class="text-base text-gray-400 font-normal">Software and Knowledge Engineering</p>
-                <p class="text-base text-gray-400 font-normal">Kasetsart University</p>
+        </a>
+        <a href="https://github.com/TaninDean" target="_blank">
+            <div class="animate__animated animate__bounceIn w-full bg-white rounded-lg shadow-lg overflow-hidden flex flex-col justify-center items-center transition ease-in-out duration-500 hover:scale-110">
+                <div>
+                    <img class="object-center object-cover h-auto w-full" src="https://avatars.githubusercontent.com/u/70503441?v=4" alt="photo">
+                </div>
+                <div class="text-center py-8 sm:py-6">
+                    <p class="text-xl text-gray-700 font-bold mb-2">Tanin Pewluangsawat</p>
+                    <p class="text-sm text-gray-400 font-normal">Software and Knowledge Engineering</p>
+                    <p class="text-sm text-gray-400 font-normal">Kasetsart University</p>
+                </div>
             </div>
-        </div>
-        <div class="w-full bg-white rounded-lg shadow-lg overflow-hidden flex flex-col justify-center items-center">
-            <div>
-                <img class="object-center object-cover h-auto w-full" src="https://avatars.githubusercontent.com/u/70481664?v=4" alt="photo">
-            </div>
-            <div class="text-center py-8 sm:py-6">
-                <p class="text-xl text-gray-700 font-bold mb-2">Nabhan Suwanachote</p>
-                <p class="text-base text-gray-400 font-normal">Software and Knowledge Engineering</p>
-                <p class="text-base text-gray-400 font-normal">Kasetsart University</p>
-            </div>
-        </div>
-        <div class="w-full bg-white rounded-lg shadow-lg overflow-hidden flex flex-col justify-center items-center">
-            <div>
-                <img class="object-center object-cover h-auto w-full" src="https://avatars.githubusercontent.com/u/70503441?v=4" alt="photo">
-            </div>
-            <div class="text-center py-8 sm:py-6">
-                <p class="text-xl text-gray-700 font-bold mb-2">Tanin Pewluangsawat</p>
-                <p class="text-base text-gray-400 font-normal">Software and Knowledge Engineering</p>
-                <p class="text-base text-gray-400 font-normal">Kasetsart University</p>
-            </div>
-        </div>
+        </a>
     </div>
 </section>
 </div>

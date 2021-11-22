@@ -23,6 +23,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from ckeditor_uploader import views as ckeditor_views
 from django.views.static import serve
+from theme import views as homepage
 
 urlpatterns = [
     url(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
@@ -37,4 +38,5 @@ urlpatterns = [
     path('editprofile/', views.edit_profile, name='editprofile'),
     path('ckeditor/upload/', login_required(ckeditor_views.upload), name='ckeditor_upload'),
     path('ckeditor/browse/', never_cache(login_required(ckeditor_views.browse)), name='ckeditor_browse'),
+    path('about-us/', homepage.about_us),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

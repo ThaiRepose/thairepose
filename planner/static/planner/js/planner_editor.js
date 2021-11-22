@@ -139,6 +139,11 @@ function displayTime(directions) {
     const nextDeparture = document.getElementsByName('departure-' + stop)[0];
     nextDeparture.min = getTimeFormat(time);
     if (createTime(departure.value) < time) {
+      let departureDay = $(departure).parents("div[name='day-table']").index();
+      let nextDepartureDay = $(nextDeparture).parents("div[name='day-table']").index();
+      if (nextDepartureDay > departureDay) {
+        continue;  // Continue if day isn't the same.
+      }
       nextDeparture.value = getTimeFormat(time);
     }
   }

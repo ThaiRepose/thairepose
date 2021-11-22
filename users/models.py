@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.conf import settings
 from .utils import pic_profile_relative_path
 
 
@@ -24,4 +23,4 @@ class Profile(models.Model):
         Returns:
             str: username of model
         """
-        return str(self.user)
+        return str(self.user.username)

@@ -147,5 +147,8 @@ expireTable.json
 media/user/profile_picture/*
 !media/user/profile_picture/blank-profile-picture.png
 
-# Trip image
+# Trip picture
 media/pic/*
+!media/pic/.gitkeep
+*/uploads
+media/places_image/*

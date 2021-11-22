@@ -66,13 +66,15 @@ class TestEmailVerificationPage(TestCase):
 
     def test_template(self):
         """Test template and response code of response email verification page."""
-        response = ProfileAccountAdapter.respond_email_verification_sent(ProfileAccountAdapter, self.rf, self.user)
+        response = ProfileAccountAdapter.respond_email_verification_sent(
+            ProfileAccountAdapter, self.rf, self.user)
         self.assertEqual(response.status_code, 302)
         self.assertTemplateUsed('verification_sent.html')
 
     def test_email_already_in_session(self):
         """Test template and response code of response email verification page with user_email aready in session."""
         self.rf.session = {'user_email': 'test@email.com'}
-        response = ProfileAccountAdapter.respond_email_verification_sent(ProfileAccountAdapter, self.rf, self.user)
+        response = ProfileAccountAdapter.respond_email_verification_sent(
+            ProfileAccountAdapter, self.rf, self.user)
         self.assertEqual(response.status_code, 302)
         self.assertTemplateUsed('verification_sent.html')

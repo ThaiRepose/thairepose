@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+
 from pathlib import Path
 import os
 import json
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'users',
+    'ckeditor',
     'trip',
     'tailwind',
     'theme',
@@ -51,7 +53,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'search',
-    'ckeditor',
     'ckeditor_uploader',
     'planner.apps.PlannerConfig'
 ]
@@ -175,6 +176,12 @@ STATIC_URL = '/static/'
 # Meida root
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+
+STATIC_ROOT = 'static/'
+# Upload folder for ckeditorupload
+CKEDITOR_UPLOAD_PATH = 'uploads/'
+
 
 # Profile picture path
 PROFILE_PIC_LOCATION = os.path.join(MEDIA_ROOT, 'user', 'profile_picture')

@@ -40,7 +40,9 @@ def profile(request):
                }
     return render(request, "users/profile.html", context)
 
-
+def privacy_policy(request):
+    return render(request, "policy/privacy_policy.html")
+    
 @login_required
 def edit_profile(request):
     """Config fiel of user form and profile form.

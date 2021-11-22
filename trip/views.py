@@ -30,7 +30,7 @@ PLACE_IMG_PATH = os.path.join(
 # View page
 def index(request):
     """Render Index page."""
-    api_key = os.getenv('API_KEY')
+    api_key = os.getenv('API_KEY_FRONTEND')
     return render(request, "trip/index.html", {'api_key': api_key})
 
 
@@ -214,7 +214,7 @@ def place_info(request, place_id: str):
     Returns:
         HttpRequest: Return 200 if place_id is correct, and return 404 if invalid.
     """
-    api_key = os.getenv('API_KEY')
+    api_key = os.getenv('API_KEY_BACKEND')
     if api_caching.get(f"{place_id}detailpage"):
         cache_data = json.loads(api_caching.get(
             f"{place_id}detailpage"))['cache']

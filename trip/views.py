@@ -119,7 +119,8 @@ def add_post(request):
     if request.method == 'POST':
         if 'imgpic' in request.POST:
             image_form = TripPlanImageForm(request.POST, request.FILES)
-            post = get_object_or_404(TripPlan, author=request.user, complete=False)
+            post = get_object_or_404(
+                TripPlan, author=request.user, complete=False)
             form = TripPlanForm(instance=post)
             if image_form.is_valid():
                 image = request.FILES.getlist('image')

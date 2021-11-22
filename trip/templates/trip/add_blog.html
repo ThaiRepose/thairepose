@@ -15,6 +15,7 @@
 {% endblock %}
 {% block main_content %}
 {% if user.is_authenticated %}
+
 <div class="bg-page flex-grow">
   <!-- Tailwind CSS -->
   <link href="https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css" rel="stylesheet">
@@ -29,7 +30,7 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
     </div>
     
     
-    <form method="POST" class="w-full">
+    <form method="POST" enctype="multipart/form-data"  class="w-full">
       {% csrf_token %}
       {{ form.media }}
       <div class="flex flex-wrap -mx-3 mb-6">
@@ -47,16 +48,13 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
         </div>
       </div>
       {{ form.body }}
-      <div>
-        <button class="w-full mt-4 px-4 py-2 font-bold text-white bg-black rounded-full hover:bg-black focus:outline-none focus:shadow-outline">Post</button>
+      <div class="flex">
+        <button type="submit" class="w-20 mt-4 px-4 py-2 font-bold text-white bg-black rounded-full hover:bg-black focus:outline-none focus:shadow-outline" name="blog">Post</button>
+        <button type="submit" class="w-20 ml-3 mt-4 px-4 py-2 font-bold text-white bg-yellow-700 rounded-full hover:bg-black focus:outline-none focus:shadow-outline" name="save_blog">Save</button>
       </div>
-      
-    </form>
-
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
+      <br>
       <input name='image' type='file' multiple>
-      <button type="submit">Upload</button>
+      <button type="submit" name="imgpic">Upload</button>
     </form>
   </div>
 </div>
@@ -73,4 +71,10 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
 <script>alert('You need to login.')</script>
 <META HTTP-EQUIV="Refresh" CONTENT="0 ; URL={% url 'account_login' %}">
 {% endif %}
+<script>
+    function myFunction() {
+        document.getElementById("myblog").submit();
+        document.getElementById("image_blog").submit();
+    }
+    </script>
 {% endblock %}

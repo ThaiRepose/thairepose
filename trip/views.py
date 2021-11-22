@@ -30,7 +30,7 @@ PLACE_IMG_PATH = os.path.join(
 # View page
 def index(request):
     """Render Index page."""
-    api_key = os.getenv('API_KEY')
+    api_key = os.getenv('FRONTEND_API_KEY')
     return render(request, "trip/index.html", {'api_key': api_key})
 
 
@@ -44,23 +44,20 @@ class AllTrip(ListView):
 
     def get_queryset(self):
         """Get variable to use in html.
-
         Return:
             content(dict): list of caliable can use in html.
         """
         content = {
-            'post': TripPlan.objects.all(),
-            'category': CategoryPlan.objects.all(),
+            'post': TripPlan.objects.filter(complete=True),
+            'category': CategoryPlan.objects.all()
         }
         return content
 
 
 def trip_detail(request, pk):
     """Method for link html to trip detail and add review form.
-
     Args:
         pk(str): post id
-
     Return:
         Httpresponse(Http):redirect to trip detail page.
     """
@@ -79,10 +76,8 @@ def trip_detail(request, pk):
     context = {
         'post': post,
         'commend': commend,
-        'review_form': form,
-        'images': UploadImage.objects.filter(post=post),
+        'review_form': form
     }
-    print(UploadImage.objects.filter(id=pk))
     return render(request, 'trip/trip_detail.html', context)
 
 
@@ -94,7 +89,6 @@ class CatsListView(ListView):
 
     def get_queryset(self):
         """Get variable to use in html.
-
         Return:
             content(dict): list of caliable can use in html.
         """
@@ -109,7 +103,6 @@ class CatsListView(ListView):
 @verified_email_required
 def add_post(request):
     """Method for link html of add post page.
-
     Return:
         if post return to trip detail else return to add blog page.
     """
@@ -123,25 +116,43 @@ def add_post(request):
     if request.method == 'POST':
         post = get_object_or_404(TripPlan, author=request.user, complete=False)
         form = TripPlanForm(request.POST, instance=post)
-        image_form = TripPlanImageForm(request.POST, request.FILES)
-        if image_form.is_valid():
+        if 'imgpic' in request.POST:
+            image_form = TripPlanImageForm(request.POST, request.FILES)
+            form = TripPlanForm(instance=post)
             post_form = form.save(commit=False)
             post_form.author = request.user
             post_form.save()
-            form = TripPlanForm()
-            image = request.FILES.getlist('image')
-            list_img = []
-            for img in image:
-                img_obj = UploadImage.objects.create(post=post_form, image=img)
-                img_obj.save()
-                list_img.append(img_obj)
-            return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': list_img})
-        if form.is_valid():
-            post_form = form.save(commit=False)
-            post_form.author = request.user
-            post_form.complete = True
-            post_form.save()
-            return HttpResponseRedirect(reverse('trip:tripdetail', args=[post_form.pk]))
+            if image_form.is_valid():
+                image = request.FILES.getlist('image')
+                list_img = []
+                for img in image:
+                    img_obj = UploadImage.objects.create(post=post, image=img)
+                    img_obj.save()
+                    list_img.append(img_obj)
+                image_form = TripPlanImageForm()
+                form = TripPlanForm(request.POST, instance=post)
+                return render(request, 'trip/add_blog.html', {'form': form,
+                                                              'image_form': image_form, 'img_obj': list_img})
+            form = TripPlanForm(request.POST, instance=post)
+            image_form = TripPlanImageForm()
+            return render(request, 'trip/add_blog.html', {'form': form,
+                                                          'image_form': image_form})
+        elif 'blog' in request.POST:
+            if form.is_valid():
+                post_form = form.save(commit=False)
+                post_form.author = request.user
+                post_form.complete = True
+                post_form.save()
+                return HttpResponseRedirect(reverse('trip:tripdetail', args=[post_form.pk]))
+        elif 'save_blog' in request.POST:
+            if form.is_valid():
+                post_form = form.save(commit=False)
+                post_form.author = request.user
+                post_form.save()
+                image_form = TripPlanImageForm()
+                form = TripPlanForm(request.POST, instance=post)
+                return render(request, 'trip/add_blog.html', {'form': form,
+                                                              'image_form': image_form})
     post = get_object_or_404(TripPlan, author=request.user, complete=False)
     form = TripPlanForm(instance=post)
     image_form = TripPlanImageForm()
@@ -153,22 +164,30 @@ class EditPost(UpdateView):
 
     model = TripPlan
     template_name = "trip/update_plan.html"
-    # fields = ['title', 'duration', 'price', 'body']
-    form_class = TripPlanForm
+    fields = ['title', 'duration', 'price', 'body']
     context_object_name = 'post'
 
 
 @login_required
 def delete_post(request, pk):
-    post = get_object_or_404(TripPlan, pk=pk)
-    if request.method == 'POST':
-        if request.user.id == post.author.id:
-            image_path = os.path.join(MEDIA_ROOT, 'pic', str(pk))
-            if os.path.exists(image_path):
-                shutil.rmtree(image_path)
-            post.delete()
-
-    return redirect(reverse_lazy('trip:tripplan'))
+    """Method for delete post and remove images in local.
+    Args:
+        pk(str): post id.
+    Return:
+        HttpResponse: Redirect to all trip page.
+    """
+    post = get_object_or_404(TripPlan, id=pk)
+    if request.method == "POST":
+        image_path = os.path.join(MEDIA_ROOT, 'pic', str(pk))
+        if os.path.exists(image_path):
+            shutil.rmtree(image_path)
+        post.delete()
+        success_url = reverse_lazy('trip:tripplan')
+        return redirect(success_url)
+    context = {
+        "post": post
+    }
+    return render(request, "trip/delete_plan.html", context)
 
 
 @login_required
@@ -186,10 +205,8 @@ def like_comment_view(request):
 @login_required
 def like_post(request):
     """Method for store user like of each trip.
-
     Args:
         pk(str): blog id of link located.
-
     Return:
         HttpResponse: Redirect to page that link blog located.
     """
@@ -206,25 +223,26 @@ def like_post(request):
 
 def place_info(request, place_id: str):
     """Render Place information page.
-
     Args:
         request: auto-generated by django.
         place_id: place identity defined by Google
-
     Returns:
         HttpRequest: Return 200 if place_id is correct, and return 404 if invalid.
     """
-    api_key = os.getenv('API_KEY')
+    load_dotenv()
+    backend_api_key = os.getenv('BACKEND_API_KEY')
+    frontend_api_key = os.getenv('FRONTEND_API_KEY')
     if api_caching.get(f"{place_id}detailpage"):
         cache_data = json.loads(api_caching.get(
             f"{place_id}detailpage"))['cache']
     else:
-        url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={api_key}"
+        url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={backend_api_key}"
         response = requests.get(url)
         data = json.loads(response.content)
+        print(data)
         if data['status'] != "OK":
             return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
-        context = get_details_context(data, api_key)
+        context = get_details_context(data, backend_api_key, frontend_api_key)
         cache_data = restruct_detail_context_data(context)
         api_caching.add(f"{place_id}detailpage", json.dumps(
             {'cache': cache_data}, indent=3).encode())
@@ -232,19 +250,18 @@ def place_info(request, place_id: str):
     context = resturct_to_place_detail(cache_data)
     context['blank_rating'] = range(round(context['blank_rating']))
     context['rating'] = range(round(context['rating']))
-    context['api_key'] = api_key
+    context['api_key'] = frontend_api_key
     context = check_downloaded_image(context)
     return render(request, "trip/place_details.html", context)
 
 
 # Helper function
-def get_details_context(place_data: dict, api_key: str) -> dict:
+def get_details_context(place_data: dict, backend_api_key: str, frontend_api_key: str) -> dict:
     """Get context for place details page.
-
     Args:
         place_data: The data received from Google Cloud Platform.
-        api_key: Exposed API key used to display images in website, restriction in GCP needed.
-
+        backend_api_key:
+        frontend_api_key: Exposed API key used to display images in website, restriction in GCP needed.
     Returns:
         context data needed for place details page.
     """
@@ -307,9 +324,8 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
         if lat is not None and lng is not None:
             suggestions = []
             url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/" \
-                f"json?location={lat}%2C{lng}&radius=2000&key={api_key}"
+                f"json?location={lat}%2C{lng}&radius=2000&key={backend_api_key}"
             response = requests.get(url)
-            print("Called API")
             place_data = json.loads(response.content)
             for place in place_data['results'][1:]:
                 if place['name'] == context['place_name']:
@@ -323,7 +339,7 @@ def get_details_context(place_data: dict, api_key: str) -> dict:
                     'place_id': place['place_id']
                 })
             context['suggestions'] = suggestions
-    context['api_key'] = api_key
+    context['api_key'] = frontend_api_key
     return context
 
 
@@ -354,13 +370,10 @@ def check_downloaded_image(context):
 
 def restruct_detail_context_data(context):
     """Process data for frontend
-
     Args:
         places: A place nearby data from google map api.
-
     Returns:
         context: A place data that place-list page needed.
-
     Data struct:
     [   # main place data
         {

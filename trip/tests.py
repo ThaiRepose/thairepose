@@ -3,7 +3,6 @@ from django.urls import reverse
 from django.utils import timezone
 from dotenv import load_dotenv
 import os
-import json
 import unittest
 from threpose.settings import BASE_DIR
 from .views import delete_post, get_details_context, trip_detail
@@ -28,7 +27,8 @@ class PlaceDetailsViewTest(TestCase):
     def setUp(self):
         """Initialize API key from env."""
         load_dotenv()
-        self.frontend_api_key = os.getenv('API_KEY')
+        self.frontend_api_key = os.getenv('FRONTEND_API_KEY')
+        self.backend_api_key = os.getenv('BACKEND_API_KEY')
 
     def test_invalid_place_id(self):
         """Test viewing place details page with invalid place_id."""
@@ -51,7 +51,8 @@ class PlaceDetailsViewTest(TestCase):
                 'types': ['school']
             }
         }
-        context = get_details_context(mock_data, self.frontend_api_key)
+        context = get_details_context(
+            mock_data, self.backend_api_key, self.frontend_api_key)
         self.assertEqual("Tawan Boonma", context['place_name'])
         self.assertEqual("191", context['phone'])
         self.assertEqual("tawanb.dev", context['website'])
@@ -70,7 +71,8 @@ class PlaceDetailsViewTest(TestCase):
                 'geometry': {'location': {'lat': 10, 'lng': 10}}
             }
         }
-        context = get_details_context(mock_data, self.frontend_api_key)
+        context = get_details_context(
+            mock_data, self.backend_api_key, self.frontend_api_key)
         self.assertEqual("N/A", context['place_name'])
         self.assertEqual("N/A", context['phone'])
         self.assertEqual("N/A", context['website'])
@@ -82,7 +84,8 @@ class PlaceDetailsViewTest(TestCase):
 
     def test_empty_get_details_function(self):
         """Test for get_details_context() function with empty place_data."""
-        context = get_details_context({}, self.frontend_api_key)
+        context = get_details_context(
+            {}, self.backend_api_key, self.frontend_api_key)
         self.assertEqual({'api_key': None}, context)
 
     @unittest.skip("Skip due to not provided API key.")
@@ -103,7 +106,7 @@ class PlaceDetailsViewTest(TestCase):
 
     def test_check_downloaded_image(self):
         PLACE_IMG_PATH = os.path.join(
-            BASE_DIR, 'theme', 'static', 'images', 'places_image')
+            BASE_DIR, 'media', 'places_image')
         if not os.path.exists(PLACE_IMG_PATH):
             os.mkdir(PLACE_IMG_PATH)
         mockup_data = {
@@ -358,7 +361,6 @@ class AddPostTests(TestCase):
         return super().tearDown()
 
 
-@unittest.skip("Skip due we changed the way to remove post")
 class TripDetailTests(TestCase):
     """Class for test trip detail method."""
 
@@ -395,7 +397,33 @@ class TripDetailTests(TestCase):
         CategoryPlan.objects.all().delete()
         return super().tearDown()
 
-# @unittest.skip
+
+class DeletePostlTests(TestCase):
+    """Class for test trip detail method."""
+
+    def setUp(self):
+        """Set up trip, user and category."""
+        self.client = Client()
+        self.cat = CategoryPlan.objects.create(name='category1')
+        self.user = User.objects.create(username='tester', password='tester')
+        self.trip = TripPlan.objects.create()
+        self.re = RequestFactory()
+        return super().setUp()
+
+    def test_access_delete_post(self):
+        """Test delete post method."""
+        request = self.re.get('tripdetail/1/remove')
+        request.user = self.user
+        self.assertEqual(delete_post(request, 1).status_code, 200)
+
+    def tearDown(self):
+        """Reset all user, all category and all tripplan."""
+        User.objects.all().delete()
+        TripPlan.objects.all().delete()
+        CategoryPlan.objects.all().delete()
+        return super().tearDown()
+
+@unittest.skip
 class SeleniumTripPlan(LiveServerTestCase):
     """Classs for test selenium"""
 
@@ -405,5 +433,3 @@ class SeleniumTripPlan(LiveServerTestCase):
     def test_login(self):
         selenium = webdriver.Chrome('selenium\chromedriver.exe')
         selenium.get('http://127.0.0.1/')
-
-    

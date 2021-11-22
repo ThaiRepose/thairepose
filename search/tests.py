@@ -92,7 +92,7 @@ class PlaceListTest(TestCase):
         self.assertEqual(context, new1 + new2)
 
     def test_check_downloaded_image(self):
-        PLACE_IMG_PATH = os.path.join(BASE_DIR, 'media', 'images', 'places_image')
+        PLACE_IMG_PATH = os.path.join(BASE_DIR, 'media', 'places_image')
         context = [{
             'name': 'test1',
             'place_id': '11223344',

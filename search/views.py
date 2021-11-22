@@ -14,7 +14,7 @@ load_dotenv()
 gapi = GoogleAPI()
 api_caching = APICaching()
 
-PLACE_IMG_PATH = os.path.join(BASE_DIR, 'theme', 'static', 'images', 'places_image')
+PLACE_IMG_PATH = os.path.join(BASE_DIR, 'media', 'places_image')
 
 
 # Place List page

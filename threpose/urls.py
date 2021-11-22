@@ -26,13 +26,15 @@ from django.views.static import serve
 from theme import views as homepage
 
 urlpatterns = [
-    url(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
-    url(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
+    url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    url(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
     path('admin', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', include('trip.urls', namespace="trip")),
     path('search/', include('search.urls', namespace="search")),
     path('planner/', include('planner.urls', namespace="planner")),
+    path('service/', views.term_of_service, name="service"),
+    path('policy/', views.privacy_policy, name="policy"),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('profile', views.profile, name='profile'),
     path('editprofile/', views.edit_profile, name='editprofile'),

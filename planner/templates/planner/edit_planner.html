@@ -1,0 +1,689 @@
+{% extends 'base.html' %}
+{% load static tailwind_tags %}
+
+{% block header %}
+    <title>{{ details.name }} | ThaiRepose</title>
+    <style>
+        body {
+            background: url("{% static 'images/bg-blur.jpg' %}") no-repeat fixed;
+            background-size: cover;
+        }
+    </style>
+    <style>
+        input[type='number']::-webkit-inner-spin-button,
+        input[type='number']::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .custom-number-input input:focus {
+            outline: none !important;
+        }
+
+        .custom-number-input button:focus {
+            outline: none !important;
+        }
+    </style>
+    <style>
+        .table {
+            border-spacing: 0 11px;
+        }
+
+        i {
+            font-size: 1rem !important;
+        }
+
+        .blink-bg {
+            color: #fff;
+            animation: blinkingBackground 3s infinite;
+        }
+
+        @keyframes blinkingBackground {
+            0% {
+                background-color: #f02435;
+            }
+            50% {
+                background-color: transparent;
+            }
+            100% {
+                background-color: #f02435;
+            }
+        }
+    </style>
+    <style>
+        .material-icons.md-18 {
+            font-size: 18px;
+        }
+
+        .material-icons.md-24 {
+            font-size: 24px;
+        }
+
+        .material-icons.md-36 {
+            font-size: 36px;
+        }
+
+        .material-icons.md-48 {
+            font-size: 48px;
+        }
+
+        #place-search:disabled {
+            background-color: rgba(156, 163, 175, 0.7);
+        }
+
+        .pac-container {
+            box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+            border-radius: 0.375rem;
+            --tw-bg-opacity: 1;
+            background-color: rgba(255, 255, 255, var(--tw-bg-opacity));
+            width: 12rem;
+            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
+            transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+            transition-duration: 150ms;
+        }
+
+        .pac-item {
+            height: 30px;
+            padding-right: 10px;
+            padding-left: 10px;
+        }
+
+        .pac-item:hover {
+            font-family: 'sf_thonburiregular', 'Prompt', sans-serif;
+            background-color: rgba(245, 189, 140, 0.5);
+            cursor: pointer;
+        }
+
+        .pac-icon {
+            display: none;
+        }
+
+        .limit-text {
+            display: block;
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+            padding: 0px
+        }
+    </style>
+    <style>
+        .top-100 {
+            top: 100%
+        }
+
+        .bottom-100 {
+            bottom: 100%
+        }
+
+        .max-h-select {
+            max-height: 300px;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}"/>
+    <link href="https://cdn.jsdelivr.net/npm/@tailwindcss/custom-forms@0.2.1/dist/custom-forms.css" rel="stylesheet"/>
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places"></script>
+    <script>
+        function initialize() {
+            let input = document.getElementById('place-search');
+            let options = {
+                componentRestrictions: {country: "th"}
+            };
+            let autocomplete = new google.maps.places.Autocomplete(input, options);
+            google.maps.event.addListener(autocomplete, 'place_changed', function () {
+                let place = {};
+                place.vicinity = undefined;
+                place.place_id = undefined;
+                place = autocomplete.getPlace();
+                let photo_url = place.photos[0].getUrl();
+                console.log(place);
+                console.log(place.name);
+                console.log(place.place_id);
+                console.log("Lat:");
+                console.log("Lng:");
+                let input_day = document.getElementsByName("add-place_day-selector")[0].value;
+                console.log(input_day);
+                addPlaceToTable(input_day, place.name, place.vicinity, photo_url, place.place_id);
+            });
+        }
+
+        google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+{% endblock %}
+
+{% block main_content %}
+    <div class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10 w-screen">
+        <div class="h-full w-full rounded-3xl container-lg flex flex-col pb-8">
+            <div class="flex flex-col md:flex-row">
+                <!-- Left column (details) -->
+                <div class="w-full md:w-1/2">
+                    <!-- Page title -->
+                    <div class="mx-8 my-6 flex flex-row">
+                        <h1 id="place_name" class="px-3 text-3xl font-bold hover:outline-black"
+                            style="line-height: 1.6;" contenteditable="true">{{ details.name }}</h1>
+                        {% if details.author == user %}
+                            <span id="cloud-connect"
+                                  class="ml-3 material-icons material-icons-outlined md-24 mt-4 opacity-50">cloud_done</span>
+                        {% endif %}
+                    </div>
+                    <!-- Days button -->
+                    <div class="flex flex-row items-center custom-number-input h-10 mx-8">
+                        <label for="days-amount" class="w-36 mr-4 text-gray-700 text-sm font-semibold">Day(s) for this
+                            trip (maximum 6)</label>
+                        <div class="flex flex-row h-10 w-36 rounded-lg relative bg-transparent mt-1">
+                            <button data-action="decrement"
+                                    class=" bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-l cursor-pointer outline-none">
+                                <span class="m-auto text-2xl font-thin">−</span>
+                            </button>
+                            <input readonly type="number"
+                                   id="days-selector"
+                                   class="outline-none border-none focus:outline-none text-center w-full bg-gray-300 font-semibold text-md hover:text-black focus:text-black md:text-basecursor-default flex items-center text-gray-700"
+                                   name="days-amount" value="{{ details.days|default:1 }}">
+                            <button data-action="increment"
+                                    class="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-full w-20 rounded-r cursor-pointer">
+                                <span class="m-auto text-2xl font-thin">+</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Add place section -->
+                    <div class="mx-8 w-full md:w-3/5 my-3 flex flex-row items-center">
+                        <div class="text-lg mr-3">Add:</div>
+                        <div class="mr-3 pb-1">
+                            <label class="block text-left shadow-lg rounded-lg border-none" style="max-width: 400px">
+                                <select class="form-select block w-24 mt-1" name="add-place_day-selector"></select>
+                            </label>
+                        </div>
+                        <div class="text-lg mr-3">Place:</div>
+                        <div class="w-48">
+                            <div class="relative text-gray-600">
+                                <input type="search" id="place-search" name="search" placeholder="Search"
+                                       class="bg-white h-10 w-48 px-5 pr-10 rounded-lg border-none shadow-lg text-sm focus:outline-none">
+                                <button type="submit" class="absolute right-0 top-0 mt-3 mr-4">
+                                    <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg"
+                                         xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px"
+                                         y="0px"
+                                         viewBox="0 0 56.966 56.966" style="enable-background:new 0 0 56.966 56.966;"
+                                         xml:space="preserve" width="512px" height="512px">
+                                      <path d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Calculate time button -->
+                    <div class="px-8 pb-4 md:pb-0">
+                        <button class="p-2 px-8 bg-transparent border-2 border-green-500 text-green-500 text-lg rounded-lg hover:bg-green-500 hover:text-gray-100"
+                                onclick="getTravelTime()">Calculate Traveling Time
+                        </button>
+                    </div>
+                </div>
+                <!-- Right column (map) -->
+                <div class="w-full md:w-1/2 px-8 md:px-0 md:pt-8 md:pr-8 h-48 md:h-full">
+                    <div class="w-full h-full text-center flex justify-center items-center text-2xl rounded-xl">
+                    </div>
+                </div>
+            </div>
+            <!-- Trip day row -->
+            <div id="trip-days">
+                <!-- Table created by JS -->
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <!-- Script for editing details -->
+    <script>
+        function send_edit(key, value) {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'planner:post_edit' %}",
+                data: {
+                    planner_id: {{ details.id }},
+                    [key]: value,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                }
+            });
+            LATEST_NAME = name;
+            document.title = name + " | ThaiRepose";
+            document.getElementById('cloud-connect').innerText = "cloud_done";
+        }
+
+        var NAME_CHANGE_QUEUE = [];
+        var LATEST_NAME = document.getElementById('place_name').innerText;
+        document.getElementById('place_name').addEventListener('input', function (event) {
+            document.getElementById('cloud-connect').innerText = "cloud_sync";
+            NAME_CHANGE_QUEUE.push();
+            setTimeout(function () {
+                NAME_CHANGE_QUEUE.pop();
+                let name = document.getElementById('place_name').innerText;
+                if (NAME_CHANGE_QUEUE.length === 0 && LATEST_NAME !== name) {
+                    send_edit('name', name);
+                }
+            }, 3000);
+        });
+    </script>
+    <!-- Script for days button -->
+    <script>
+        function decrement(e) {
+            const btn = e.target.parentNode.parentElement.querySelector(
+                'button[data-action="decrement"]'
+            );
+            const target = btn.nextElementSibling;
+            let value = Number(target.value);
+            if (value > 1) {
+                removeDay(value);
+                value--;
+            }
+            target.value = value;
+        }
+
+        function increment(e) {
+            const btn = e.target.parentNode.parentElement.querySelector(
+                'button[data-action="decrement"]'
+            );
+            const target = btn.nextElementSibling;
+            let value = Number(target.value);
+            if (value < 6) {
+                value++;
+                addNewDay(value);
+            }
+            target.value = value;
+
+        }
+
+        const decrementButtons = document.querySelectorAll(
+            `button[data-action="decrement"]`
+        );
+
+        const incrementButtons = document.querySelectorAll(
+            `button[data-action="increment"]`
+        );
+
+        decrementButtons.forEach(btn => {
+            btn.addEventListener("click", decrement);
+        });
+
+        incrementButtons.forEach(btn => {
+            btn.addEventListener("click", increment);
+        });
+
+        document.getElementById('days-selector').addEventListener('change', function () {
+            if (this.value < 1)
+                this.value = 1;
+            else if (this.value > 6)
+                this.value = 6;
+        });
+    </script>
+    <!-- Script for table -->
+    <script>
+        const MAXIMUM_PLACES_PER_DAY = 10;
+
+        function amountPlacesinDay(day_number) {
+            let table_id = "table-day-" + day_number;
+            let table = document.getElementById(table_id);
+            return table.tBodies[0].rows.length;
+        }
+
+        function tableCreate(day_number) {
+            let body = document.getElementById('trip-days'),
+                title_div = document.createElement('div'),
+                title_text = document.createElement('h1');
+
+            title_div.id = "day-title";
+            title_div.classList.add("mt-10", "mx-8");
+            title_text.classList.add("text-2xl");
+            title_text.innerHTML = "Day " + day_number;
+            body.appendChild(title_div);
+            title_div.appendChild(title_text);
+
+            let table_div = document.createElement('div'),
+                tbl = document.createElement('table');
+            table_div.id = day_number;
+            table_div.setAttribute("name", "day-table");
+            table_div.classList.add("w-full", "px-8");
+            tbl.classList.add("w-full", "md:w-3/5", "text-gray-400", "text-sm");
+            tbl.id = "table-day-" + day_number;
+            const thead = tbl.createTHead();
+            const tbody = tbl.createTBody();
+            const tr = thead.insertRow();
+            thead.classList.add("bg-translucent", "text-gray-700", "shadow-lg");
+            tbody.classList.add("text-gray-700");
+            tr.insertCell().outerHTML = "<th class='py-3 text-center'>Arrival</th>";
+            tr.insertCell().outerHTML = "<th class='py-3 text-center'>Place</th>";
+            tr.insertCell().outerHTML = "<th class='py-3 text-center'>Departure</th>";
+            tr.insertCell().outerHTML = "<th class='py-3 text-center'>Action</th>";
+            body.appendChild(table_div);
+            table_div.appendChild(tbl);
+        }
+
+        function addPlaceToTable(day_number, place_name, place_vicinity, photo_url, place_id) {
+            let table_id = "table-day-" + day_number;
+            let table = document.getElementById(table_id);
+            if (amountPlacesinDay(day_number) >= MAXIMUM_PLACES_PER_DAY) {
+                alert("You've reached maximum places for Day " + day_number + ". Please add to another day or delete some place in Day " + day_number + ".");
+                return;
+            }
+            let div = document.createElement('div'),
+                child_div = document.createElement('div'),
+                name_div = document.createElement('div'),
+                desc_div = document.createElement('div');
+            let row = table.getElementsByTagName('tbody')[0].insertRow();
+            row.setAttribute("name", "place");
+            row.id = place_id;
+            let cell1 = row.insertCell(0);
+            let cell2 = row.insertCell(1);
+            let cell3 = row.insertCell(2);
+            let cell4 = row.insertCell(3);
+            cell1.setAttribute("name", "arrival-" + (place_id));
+            cell1.id = "time";
+            cell1.classList.add("p-3", "text-center", "text-xl");
+
+            div.classList.add("flex", "align-items-center");
+            child_div.classList.add("ml-3");
+            name_div.classList.add("w-52");
+            name_div.innerHTML = `<a href="/place/${place_id}/" target="_blank"><span class="limit-text">${place_name}</span></a>`;
+            div.innerHTML = `<img class="rounded-full h-12 w-12 object-cover" src="${photo_url}" alt="${place_name}">`;
+            child_div.appendChild(name_div);
+            desc_div.classList.add("text-gray-500", "w-52");
+            desc_div.innerHTML = `<span class="limit-text">${place_vicinity}</span>`;
+            child_div.appendChild(desc_div);
+            div.appendChild(child_div);
+            cell2.appendChild(div);
+            cell2.classList.add("p-3");
+
+            cell3.classList.add("p-3", "text-center");
+            cell3.innerHTML = `<input class="rounded-lg bg-translucent rounded-lg shadow-xl border-gray-200" type="time" id="time" name="departure-${place_id}" value="00:00" required="">`;
+
+            cell4.classList.add("p-3", "text-center");
+            cell4.innerHTML = `<button class="text-gray-700 hover:text-black lg:mx-1 focus:outline-none hover:scale-150" onclick="moveUp(this)">
+                                   <span class="material-icons material-icons-outlined md-18">north</span>
+                               </button>
+                               <button class="text-gray-700 hover:text-black lg:mx-1 focus:outline-none hover:scale-150" onclick="moveDown(this)">
+                                   <span class="material-icons material-icons-outlined md-18">south</span>
+                               </button>
+                               <button class="text-gray-700 hover:text-red-600 lg:mx-1 focus:outline-none hover:scale-150" onclick="delPlace(this)">
+                                   <span class="material-icons material-icons-outlined md-18">delete_outline</span>
+                               </button>`;
+            cell3.children[0].addEventListener("change", time_changed);
+        }
+
+        function delPlace(obj) {
+            var currRow = $(obj).parent().parent();
+            currRow.remove();
+            change_directions_time();
+        }
+
+        async function moveUp(obj) {
+            await moveItemUp(obj);
+            change_directions_time();
+        }
+
+        function moveItemUp(obj) {
+            let row = $(obj).parents("tr");
+            if (row.index() === 0) {
+                let prev_table = $(obj).parents("table").parents("div").prev().prev();
+                let prev_table_places = prev_table.children().children().closest("tbody").children();
+                // Check that previous table does not reach limit
+                while (prev_table_places.length >= MAXIMUM_PLACES_PER_DAY) {
+                    if (prev_table[0].id === "1") {
+                        alert("All above days have reached maximum places. Please move to another day or delete some place in any above table.");
+                        return;
+                    }
+                    prev_table = prev_table.prev().prev();
+                    prev_table_places = prev_table.children().children().closest("tbody").children();
+                    if (prev_table_places.length < MAXIMUM_PLACES_PER_DAY) {
+                        alert("Some days have reached maximum places. This place will be moved to Day " + prev_table[0].id);
+                    }
+                }
+                if (prev_table_places.length === 0) {
+                    // insert place into above table as a first place
+                    let prev_body = prev_table.children().children().closest("tbody");
+                    prev_body.prepend(row);
+                } else
+                    row.insertAfter(prev_table_places.last());
+                return;
+            }
+            row.insertBefore(row.prev());
+        }
+
+        async function moveDown(obj) {
+            await moveItemDown(obj);
+            change_directions_time();
+        }
+
+        function moveItemDown(obj) {
+            let row = $(obj).parents("tr");
+            let this_body = $(obj).closest("tbody");
+            let totalPlace = this_body.children().length;
+            if (row.index() === totalPlace - 1) {
+                // Move to below table
+                let next_table = $(obj).parents("table").parents("div").next().next();
+                let next_table_places = next_table.children().children().closest("tbody").children();
+                let totalDays = $('#days-selector')[0].value;
+                // Check that next table does not reach limit
+                while (next_table_places.length >= MAXIMUM_PLACES_PER_DAY) {
+                    if (next_table[0].id === totalDays) {
+                        alert("All below days have reached maximum places. Please move to another day or delete some place in any below table.");
+                        return;
+                    }
+                    next_table = next_table.next().next();
+                    next_table_places = next_table.children().children().closest("tbody").children();
+                    if (next_table_places.length < MAXIMUM_PLACES_PER_DAY) {
+                        alert("Some days have reached maximum places. This place will be moved to Day " + next_table[0].id);
+                    }
+                }
+                if (next_table_places.length === 0) {
+                    // insert into next day as a first place
+                    let next_body = next_table.children().children().closest("tbody");
+                    next_body.prepend(row);
+                } else {
+                    row.insertBefore(next_table_places[0]);
+                }
+                return;
+            }
+            row.insertAfter(row.next());
+        }
+
+        const MAXIMUM_DAYS = 6;
+        const addNewDay = function (day_number) {
+            for (let i = 1; i <= day_number && i <= MAXIMUM_DAYS; i++) {
+                let table_exist = $("#table-day-" + i).length > 0;
+                if (table_exist)
+                    continue;
+                // Create new table
+                tableCreate(i);
+                // Add option in add place
+                addDayPlaceOption(i);
+            }
+        }
+
+        const removeDay = function (day_number) {
+            for (let i = MAXIMUM_DAYS; i >= day_number; i--) {
+                // Remove table and day title
+                let obj = $(`div[name="day-table"][id=${i}]`);
+                let obj_title = obj.prev();
+                obj.remove();
+                obj_title.remove();
+                // Remove option in add place
+                removeDayPlaceOption(i);
+            }
+        }
+
+        function addDayPlaceOption(day_number) {
+            let option = $('[name="add-place_day-selector"]');
+            option.append($('<option>', {
+                value: day_number,
+                text: "Day " + day_number
+            }));
+        }
+
+        function removeDayPlaceOption(day_number) {
+            $(`[name="add-place_day-selector"] option[value="${day_number}"]`).remove();
+        }
+
+        function initialize() {
+            var input = document.getElementById('place-search');
+            new google.maps.places.Autocomplete(input);
+        }
+
+        function time_changed(event) {
+            setTimeout(function () {
+                let arrival = $(event.target).parent().prev().prev();
+                let departure = event.target;
+                let departure_time = createTime(departure.value);
+                let arrival_time = createTime(arrival.text());
+                if (arrival_time > departure_time)
+                    departure.value = getTimeFormat(arrival_time);
+                change_directions_time();
+            }, 3000);
+        }
+
+        function change_directions_time() {
+            $.each($('[name^="arrival-"]'), function (index, obj) {
+                obj.innerText = "";
+            })
+            for (let i in direction) {
+                displayTravelTime(direction[i]);
+            }
+        }
+    </script>
+    <script>
+        var direction;
+        let days = $('input[name="days-amount"]')[0].value;
+        for (let i = 1; i <= days; i++) {
+            addNewDay(i);
+        }
+
+        function getDirectionTime(places_list) {
+            let response = $.ajax({
+                type: "POST",
+                url: "{% url 'planner:get_travel_time' %}",
+                async: false,
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    places: JSON.stringify(places_list)
+                }
+            });
+            return response.responseJSON;
+        }
+
+        function createTime(timestr) {
+            let time = new Date('1970-01-01T' + timestr + ':00Z');
+            time.setTime(time.getTime() + time.getTimezoneOffset() * 60 * 1000);
+            return time;
+        }
+
+        function getTimeFormat(timeObj) {
+            return timeObj.toTimeString().replace(/.*(\d{2}:\d{2}):\d{2}.*/, "$1");
+        }
+
+        const MAX_PLACES_PER_LIST = 25;
+
+        function getTravelTime() {
+            //let places = $('table[id^="table-day-"]');
+            let places = $('tr[name="place"]').toArray();
+            let places_id_list = {};
+            for (let idx = 0; idx < places.length; idx++) {
+                let request_round = Math.floor(idx / MAX_PLACES_PER_LIST);
+                if (idx % MAX_PLACES_PER_LIST === 0)
+                    places_id_list[request_round] = [places[idx].id];
+                else
+                    places_id_list[request_round].push(places[idx].id);
+            }
+            if (places_id_list.length <= 1)
+                return;
+            for (let request_round in places_id_list) {
+                let requested_directions = getDirectionTime(places_id_list[request_round]);
+                direction = Object.assign({[request_round]: requested_directions});
+                displayTravelTime(requested_directions);
+            }
+            /*
+            $.each(places, function (index, obj) {
+                let places_in_day = $(obj).find('tr[name="place"]');
+                let table_id = $(obj).children()[0].id;
+                let places_list = [];
+                if (places_in_day.length <= 1)
+                    return;
+                $.each(places_in_day, function (index, obj) {
+                    places_list.push(obj.id);
+                });
+                if (places_list.length !== 0) {
+                    let directions = getDirectionTime(places_list);
+                    direction = Object.assign({[table_id]: directions});
+                    displayTravelTime(directions);
+                }
+            });
+            */
+        }
+
+        function displayTime(directions) {
+            console.log("Directions: ", directions);
+            for (let i = 1; i < directions.geocoded_waypoints.length; i++) {
+                let start = directions.geocoded_waypoints[i - 1].place_id;
+                let stop = directions.geocoded_waypoints[i].place_id;
+                let direction_time = Math.ceil((directions.routes[0].legs[i - 1].duration.value) / 60) * 60;
+                let departure = document.getElementsByName("departure-" + start)[0];
+                let next_place = $(departure).parent().parent().next().children()[0];
+                let arrival = document.getElementsByName("arrival-" + stop)[0];
+                if (next_place !== arrival)
+                    continue;
+                let time = createTime(departure.value);
+                time.setTime(time.getTime() + (direction_time * 1000));
+                arrival.setAttribute("value", time);
+                arrival.innerText = getTimeFormat(time);
+                let next_departure = document.getElementsByName("departure-" + stop)[0];
+                next_departure.min = getTimeFormat(time);
+                if (createTime(next_departure.value) < time) {
+                    next_departure.value = getTimeFormat(time);
+                }
+            }
+        }
+
+        async function displayTravelTime(directions) {
+            await displayTime(directions);
+            checkOverDate();
+        }
+
+        function checkOverDate() {
+            $.each($('[id^="table-day-"]'), function (key, table) {
+                let places = $(table).find('[name^="arrival"]');
+                let overDate = false;
+                let first_place = true;
+                $.each(places, function (index, date) {
+                    if (first_place) {
+                        let new_time = createTime($(date)[0].innerText);
+                        $(date)[0].setAttribute("value", new_time);
+                        first_place = false;
+                    }
+                    let arrival_date = new Date($(date)[0].getAttribute("value"));
+                    if (overDate) {
+                        date.closest("tr").classList.add("bg-red-400", "blink-bg");
+                    } else if ($(date)[0].innerText === "") {
+                        date.closest("tr").classList.remove("bg-red-400", "blink-bg");
+                        overDate = false;
+                    } else if (arrival_date.getDate() > 1) {
+                        date.closest("tr").classList.add("bg-red-400", "blink-bg");
+                        overDate = true;
+                    } else {
+                        date.closest("tr").classList.remove("bg-red-400", "blink-bg");
+                        overDate = false;
+                    }
+                });
+            });
+        }
+
+        /*
+        addPlaceToTable(1, "THE iKON APARTMENT - ดิไอคอน อพาร์ทเม้นต์", "19/12 Saraburi - Lom Sak Road, Tambon Chong Sarika, Amphoe Phatthana Nikhom", "/static/images/logo.png", "ChIJj27KtGwKHjERmnWXrAslAH8");
+        addPlaceToTable(1, "Kasetsart University", "50 Thanon Ngam Wong Wan, Khwaeng Lat Yao, Khet Chatuchak", "/static/images/logo.png", "ChIJVysBBt6c4jARcDELPbMAAQ8");
+        addPlaceToTable(1, "Vibhavadi Hospital", "51, 3 Thanon Ngam Wong Wan, Khwaeng Lat Yao, Khet Chatuchak", "/static/images/logo.png", "ChIJzeXAwuec4jARr_cLIFqTNvk");
+        */
+    </script>
+{% endblock %}

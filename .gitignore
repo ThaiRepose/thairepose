@@ -144,6 +144,11 @@ expireTable.json
 **/._.DS_Store
 
 # User profile
-users/static/profile_pic/*
-!users/static/profile_pic/blank-profile-picture.png
+media/user/profile_picture/*
+!media/user/profile_picture/blank-profile-picture.png
 
+# Trip picture
+media/pic/*
+!media/pic/.gitkeep
+*/uploads
+media/places_image/*

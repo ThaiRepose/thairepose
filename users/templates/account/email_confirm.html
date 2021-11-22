@@ -1,31 +1,38 @@
-{% extends "account/base.html" %}
-
+{% extends "base.html" %}
+{% load static %}
 {% load i18n %}
 {% load account %}
+{% load static tailwind_tags %}
 
-{% block head_title %}{% trans "Confirm E-mail Address" %}{% endblock %}
+{% block header %}
+    <title>ThaiRepose::{{ name }}</title>
+    <style>
+        body {
+            background: url("{% static '/images/bg-blur.jpg' %}") no-repeat fixed;
+            background-size: cover;
+        }
+    </style>
+    <link rel="stylesheet" href="https://npmcdn.com/flickity@2/dist/flickity.css" />
+{% endblock %}
 
-
-{% block content %}
-<h1>{% trans "Confirm E-mail Address" %}</h1>
-
-{% if confirmation %}
-
-{% user_display confirmation.email_address.user as user_display %}
-
-<p>{% blocktrans with confirmation.email_address.email as email %}Please confirm that <a href="mailto:{{ email }}">{{ email }}</a> is an e-mail address for user {{ user_display }}.{% endblocktrans %}</p>
-
-<form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
-{% csrf_token %}
-    <button type="submit">{% trans 'Confirm' %}</button>
-</form>
-
-{% else %}
-
-{% url 'account_email' as email_url %}
-
-<p>{% blocktrans %}This e-mail confirmation link expired or is invalid. Please <a href="{{ email_url }}">issue a new e-mail confirmation request</a>.{% endblocktrans %}</p>
-
-{% endif %}
-
+{% block main_content %}
+<div id="content" class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10">
+		<div class="items-center justify-center w-full p-8 flex flex-col">
+			<div class="bg-white items-center justify-center md:w-1/2 w-full shadow-md p-5 h-auto rounded-lg blur-3 bg-opacity-50 flex flex-col col-span-12">
+            <img class="w-20 md:w-24 mb-4" src="{% static "/template-picture/email-13750.png" %}">
+            <p class="text-2xl mb-4">{% trans "Confirm E-mail Address" %}</p>
+                {% if confirmation %}
+                    {% user_display confirmation.email_address.user as user_display %}
+                    <p >{% blocktrans with confirmation.email_address.email as email %}Please confirm that <a class="text-blue-700" href="mailto:{{ email }}">{{ email }}</a> is an e-mail address for user {{ user_display }}.{% endblocktrans %}</p>
+                    <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+                    {% csrf_token %}
+                        <button type="submit" class="px-2 py-1 rounded-md mt-4 font-semibold" style="background-color:#E7E4D7">{% trans 'Confirm' %}</button>
+                    </form>
+                {% else %}
+                    {% url 'account_email' as email_url %}
+                    <p>{% blocktrans %}This e-mail confirmation link expired or is invalid. Please <a href="{{ email_url }}">issue a new e-mail confirmation request</a>.{% endblocktrans %}</p>
+                {% endif %}
+            </div>
+        </div>
+</div>
 {% endblock %}

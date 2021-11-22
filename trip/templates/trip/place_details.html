@@ -2,7 +2,7 @@
 {% load static tailwind_tags %}
 
 {% block header %}
-    <title>ThaiRepose::{{ name }}</title>
+    <title>{{ place_name }} | ThaiRepose</title>
     <style>
         body {
             background: url("{% static 'images/bg-blur.jpg' %}") no-repeat fixed;
@@ -27,7 +27,7 @@
                             {% for image in images %}
                                 <div class="carousel-cell" style="height: 100%">
                                     {% if downloaded == True %}
-                                    <img src="{% static 'images/places_image/' %}{{ place_id }}_{{ image }}photo.jpeg">
+                                    <img src="{% get_media_prefix %}places_image/{{ place_id }}_{{ image }}photo.jpeg">
                                     {% else %}
                                     <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={{ image }}&key={{ api_key }}" alt="{{ name }}">
                                     {% endif %}
@@ -100,7 +100,7 @@
                                 <a class="rounded-2xl h-52 w-44 bg-translucent px-2 py-2 flex flex-col bg-gray-900" href="{% url 'trip:place-detail' place.place_id %}">
                                     <div class="rounded-2xl bg-gray-300 w-40 h-40">
                                         {% if place.downloaded == True %}
-                                        <img class="object-cover h-full w-full rounded-xl" src="{% static 'images/places_image/' %}{{ place.place_id }}photo.jpeg">
+                                        <img class="object-cover h-full w-full rounded-xl" src="{% get_media_prefix %}places_image/{{ place.place_id }}photo.jpeg">
                                         {% else %}
                                         <img class="object-cover h-full w-full rounded-xl" src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={{ place.photo_ref }}&key={{ api_key }}" alt="{{ name }}">
                                         {% endif %}

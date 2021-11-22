@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class SearchConfig(AppConfig):
+class PlannerConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'search'
+    name = 'planner'

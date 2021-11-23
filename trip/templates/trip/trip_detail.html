@@ -117,7 +117,8 @@
                                 <div class="flex flex-grow">
                                     <p id="total-like-{{commend.id}}"class="flex justify-center pt-3 pb-20 pr-2 text-2xl font-semibold -mb-2">{{ commend.total_like }}</p>
                                         <div class="pt-1 hover:scale-110">
-                                            <button id="review-like-button" value="{{ commend.id }}">                                                    <span class="text-5xl text-gray-600">&#8679;</span>
+                                            <button id="review-like-button" value="{{ commend.id }}">                                                   
+                                            <span class="text-5xl text-gray-600">&#8679;</span>
                                             </button>
                                         </div>
                                     </div>
@@ -131,7 +132,7 @@
             </div>
             <hr class="flex my-6 border-gray-400 w-11/12 mx-auto">
             <div class="mx-8">
-                <textarea id="comment-body" cols="40" rows="5" class="w-full bg-while rounded border border-gray-400 leading-normal resize-none h-20 py-2 px-3 font-medium placeholder-gray-700 focus:outline-none focus:bg-white" placeholder='Type Your Comment' required></textarea>
+                <textarea id="comment-body" oninput="auto_grow(this)" class="w-full bg-while rounded border border-gray-400 leading-normal resize-none py-2 px-3 font-medium placeholder-gray-700 focus:outline-none focus:bg-white" placeholder='Type Your Comment' required style='resize: none; overflow: hidden; height:40px;'></textarea>
                 <div>
                     <button class="bg-black text-white font-bold uppercase text-xs px-4 py-2 mb-4 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear mt-1" id="submit-comment-btn">Add comment</button>
                 </div>
@@ -340,6 +341,7 @@ $(document).ready(function(){
             success: function(data) {
                 $('#post-comment').append(data);
                 text.value = '';
+                text.style.height = "40px";
                 all_comment.scrollTop = all_comment.scrollHeight;
             },
             error: function (xhr, errmsg, err) {
@@ -376,6 +378,12 @@ $(document).ready(function(){
     }
   
     $('#myForm').trigger("reset");
+
+
+    function auto_grow(element) {
+        element.style.height = "20px";
+        element.style.height = (element.scrollHeight)+"px";
+    }
 </script>
 
 

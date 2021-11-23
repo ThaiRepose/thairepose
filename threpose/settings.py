@@ -13,7 +13,7 @@ from pathlib import Path
 import os
 import json
 # For external configuration values
-from decouple import config, Csv
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,7 +28,7 @@ SECRET_KEY = config('SECRET_KEY', default='its-no-secret')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default=["127.0.0.1", "localhost"])
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=list, default=["127.0.0.1", "localhost"])
 
 
 # Application definition

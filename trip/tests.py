@@ -1,7 +1,7 @@
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from django.utils import timezone
-from dotenv import load_dotenv
+from decouple import config
 import os
 import unittest
 from threpose.settings import BASE_DIR
@@ -26,9 +26,8 @@ class PlaceDetailsViewTest(TestCase):
 
     def setUp(self):
         """Initialize API key from env."""
-        load_dotenv()
-        self.frontend_api_key = os.getenv('FRONTEND_API_KEY')
-        self.backend_api_key = os.getenv('BACKEND_API_KEY')
+        self.frontend_api_key = config('FRONTEND_API_KEY')
+        self.backend_api_key = config('BACKEND_API_KEY')
 
     def test_invalid_place_id(self):
         """Test viewing place details page with invalid place_id."""

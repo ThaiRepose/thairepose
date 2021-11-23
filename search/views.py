@@ -74,7 +74,7 @@ def place_list(request, *args, **kwargs):  # pragma: no cover
         context, token = get_new_context(types, lat, lng)
     context = check_downloaded_image(context)
     # get all image file name in static/images/place_image
-    api_key = os.getenv('API_KEY')
+    api_key = os.getenv('FRONTEND_API_KEY')
     return render(request, "search/place_list.html", {'places': context, 'all_token': token, 'api_key': api_key})
 
 

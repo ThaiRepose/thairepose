@@ -10,60 +10,120 @@
             background-position: center center;
             background-size: cover;
         }
+
+      .bg-translucent {
+            /* Background color */
+            background-color: rgba(227, 229, 232, 0.8);
+        }
+
+      .main-container {
+          width: 50vw;
+      }
+
+      @media only screen and (max-width: 768px) {
+        .main-container {
+          width: 100vw;
+
+        }
+      }
     </style>
+    <link href="https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css" rel="stylesheet">
 {% endblock %}
 
 {% block main_content %}
-  <link href="https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css" rel="stylesheet">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initAutocomplete" async defer>
-</script>
-<script>
-let autocomplete;
 
-function initAutocomplete() {
-    var autocomplete;
-    autocomplete = new google.maps.places.Autocomplete(
-        document.getElementById('autocomplete'), {
-            types: ['establishment', 'geocode'],
-            componentRestrictions: { 'country': ['TH'] },
-            field: ['place_id', 'geometry', 'name']
-        });
-    console.log('hello world');
-    autocomplete.addListener('place_changed', 
-			function() {
-			var place = autocomplete.getPlace();
-			var lat = place.geometry.location.lat(),
-					lng = place.geometry.location.lng();
-			
-			console.log(lat)
-			console.log(lng)
-			const urlElement = document.getElementById('url');
-			window.location.replace(`${urlElement.value}?lat=${lat}&lng=${lng}`)
-		});
-}
-
-</script>
-
-<div class="bg-page flex-grow">
-  <div class="flex-grow rounded-3xl justify-center max-w-6xl mx-auto p-10 mt-10 bg-fixed">
-    <div class="text-gray-600 flex-grow flex justify-center " style="z-index: 1;">
-      <div class="relative rounded-3xl justify-center bg-fixed">
-        <input id='autocomplete' type="search" name="search" placeholder="Search" class="bg-white h-12  px-5 pr-10 rounded-full text-sm focus:outline-none">
-        <input type="hidden" id="url" value="{% url 'search:place-list' %}">
-        <button type="submit" class=" absolute right-0 top-0 mt-4 mr-4"">
-            <svg class="text-gray-600 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px"
-              viewBox="0 0 56.966 56.966" style="enable-background:new 0 0 56.966 56.966;" xml:space="preserve"
-              width="512px" height="512px">
-              <path
-                d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z" />
-            </svg>
+<div class="bg-page flex flex-grow justify-center md:items-center items-start pt-5 md:pt-0">
+  <div class="flex flex-col md:flex-row justify-center max-w-7xl mx-auto bg-fixed w-screen space-y-20 md:space-y-0">
+      <!-- Left side -->
+    <div class="main-container text-gray-600 flex-grow flex justify-center items-center" style="z-index: 1;">
+      <div class="relative rounded-3xl flex justify-center bg-fixed w-5/6 md:w-full max-w-lg">
+    <div class="relative text-gray-600 focus-within:text-gray-400 w-full">
+      <span class="absolute mt-1 left-0 flex items-center pl-2">
+        <button type="submit" class="p-1 focus:outline-none focus:shadow-outline">
+          <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-6 h-6"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         </button>
+      </span>
+        <input type="search" id='autocomplete' class="w-full py-2 pl-14 bg-white rounded-full text-md focus:outline-none focus:outline-none border-none shadow-lg focus:shadow-xl hover:shadow-xl transition ease-in-out duration-200" placeholder="Find your trip!">
+    <input type="hidden" id="url" value="{% url 'search:place-list' %}">
+    </div>
       </div>
+    </div>
+      <!-- Right side -->
+    <div class="main-container text-gray-600 flex-row flex justify-center" style="z-index: 1;">
+        <div class="bg-translucent w-5/6 max-w-md py-3 rounded-2xl px-4">
+            <div class="mb-3 text-center text-xl font-bold">TOP</div>
+            <div class="py-3 text-lg">1</div>
+            <div class="py-3 text-lg">2</div>
+            <div class="py-3 text-lg">3</div>
+            <div class="py-3 text-lg">4</div>
+            <div class="py-3 text-lg">5</div>
+            <div class="py-3 text-lg">6</div>
+        </div>
     </div>
   </div>
 </div>
 
+{% endblock %}
 
+{% block script %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initAutocomplete" async defer>
+    </script>
+    <script>
+    let lastCall = Date.now();
+
+    function initAutocomplete(){
+        let options = {
+          types: ['establishment', 'geocode'],
+          componentRestrictions: {country: "th"},
+          field: ['place_id', 'geometry', 'name']
+        };
+
+        let input = $('#autocomplete')[0];
+        if(input){
+            var autocomplete = new google.maps.places.Autocomplete(input, options);
+            google.maps.event.addListener(autocomplete, 'place_changed', function() {
+                var place = autocomplete.getPlace();
+                var lat = place.geometry.location.lat(),
+                        lng = place.geometry.location.lng();
+                const urlElement = document.getElementById('url');
+                window.location.replace(`${urlElement.value}?lat=${lat}&lng=${lng}`)
+            });
+            $('#autocomplete').keypress(function(event){
+                console.log(1);
+                let miliseconds = (Date.now() - lastCall)
+                if(miliseconds <= 3000){
+                    console.log(2);
+                    event.preventDefault();
+                    $('#autocomplete').val($('#autocomplete').val()+event.key);
+                    setTimeout(function(){
+                        console.log(3);
+                        google.maps.event.trigger($('#autocomplete')[0],'focus',{});
+                        lastCall = Date.now();
+                    }, 2999);
+                }
+                lastCall = Date.now()
+            });
+        }
+    }
+    </script>
+    <script>
+        function getQueryFromDatabase(keyword) {
+          $.ajax({
+            type: 'POST',
+            url: "{% url 'trip:get-trip-query' %}",
+            async: false,
+            data: {
+              csrfmiddlewaretoken: "{{ csrf_token }}",
+              places: JSON.stringify(keyword),
+            },
+          })
+        }
+        async function displayQueries(e) {
+          let all_trips = [];
+          console.log(e);
+          let keyword = "";
+          //await getQueryFromDatabase(keyword);
+        }
+    </script>
 {% endblock %}

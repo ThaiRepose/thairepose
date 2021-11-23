@@ -3,6 +3,7 @@ from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from allauth.account.decorators import verified_email_required
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 import json
 import os
 from django.http.response import JsonResponse
@@ -32,6 +33,23 @@ def index(request):
     """Render Index page."""
     api_key = os.getenv('FRONTEND_API_KEY')
     return render(request, "trip/index.html", {'api_key': api_key})
+
+
+@require_http_methods(["POST"])
+def get_trip_queries(request):
+    """Search for trip and return queries.
+
+    POST params:
+        keyword: keyword to search for trip plans.
+    """
+    if 'keyword' not in request.POST:
+        return JsonResponse({"status": "BAD_REQUEST"})
+    query_startswith = TripPlan.objects.filter(title__startswith=request.POST['keyword'],
+                                               complete=True).order_by('-total_like')
+    query_contain = TripPlan.objects.filter(title__contains=request.POST['keyword'],
+                                            complete=True).order_by('-total_like')
+    queries = query_startswith | query_contain
+    return JsonResponse({"status": "OK", "results": json.dumps(queries)})
 
 
 class AllTrip(ListView):

@@ -12,6 +12,8 @@ jobs:
       SECRET_KEY: 'THREPOSE'
       DEBUG: True 
       HOSTS: 127.0.0.1, localhost
+      BACKEND_API_KEY: None
+      FRONTEND_API_KEY: None
       EMAIL_HOST_USER: "test@email.com"
       EMAIL_HOST_PASSWORD: "Test1234@"
       EMAIL_PORT: 587

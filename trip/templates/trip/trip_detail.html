@@ -90,11 +90,16 @@
                     {% comment %} Writer card {% endcomment %}
                     <hr class="flex my-3 border-gray-400 w-11/12 mx-auto">
                     <div class="px-4 py-3 mx-4 mt-4 bg-white max-h-80">
+                        <p class="text-xl font-bold">Writer information</p>
+                        <img class="mt-4 w-20 flex justify-center items-center mx-auto" style="border-radius: 50%;" src="{{user.profile.profile_pic.url}}"
+                        alt="Profile picture" />
+                        <p class="mt-8 text-lg font-semibold">First name: <span class="font-medium">{{post.author.first_name}}</span></p>
+                        <p class="text-lg font-semibold">Last name: <span class="font-medium">{{post.author.last_name}}</span></p>
                     </div>
                 </div>
             </div>
             {% comment %} Lower block {% endcomment %}
-            <div class="mx-4 px-4 py-3 rounded-lg">
+            <div class="mx-4 mt-8 px-4 py-3 rounded-lg">
                 <p class="text-xl font-bold">Description</p>
                 <p>{{ post.body|safe }}<p>
             </div>

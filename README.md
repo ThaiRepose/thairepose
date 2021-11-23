@@ -44,7 +44,17 @@
     ```
     pip install -r requirements.txt
     ```
-   1. Create `.env` file in the same level as manage.py and write down:
+   <details>
+    <summary>If you's using Windows</summary>
+    Run this command to install caching system.
+
+    ```
+    pip install --editable src\caching\.
+    ```
+   </details>
+
+
+6. Create `.env` file in the same level as manage.py and write down:
 
        ```
        DEBUG=True
@@ -59,11 +69,13 @@
        EMAIL_USE_TLS=TLS-using-true-or-false
        EMAIL_USE_SSL=-SSL-true-or-false
        ```
-       (If you don't use gmail. Please change EMAIL_PORT and EMAIL_HOST in setting)
+
+   (If you don't use gmail. Please change EMAIL_PORT and EMAIL_HOST in setting)
     
-       **Warning: For anyone who use macOS. It may have problem while import email with os.environ.get. please try another way to import it**
+   **Warning: For anyone who use macOS. It may have problem while import email with os.environ.get. please try another way to import it**
     
-       **Warning: If you use Gmail you have to adjust to less secure**
+   **Warning: If you use Gmail you have to adjust to less secure**
+
 
 7. Add Oauth API Key
     Go to domain/admin/socialaccount/socialapp/ (local: http://127.0.0.1:8000/admin/socialaccount/socialapp/) 
@@ -71,22 +83,23 @@
     - Add Client id and Secret key that retrieve form API owner.
     - Add site to chosen sites.
 
-9. Install TailwindCSS framework.
+
+8. Install TailwindCSS framework.
 
    ```
    python manage.py tailwind install
    ```
-10. Build TailwindCSS frontend framework the get GUI.
+9. Build TailwindCSS frontend framework the get GUI.
 
-    ```
-    python manage.py tailwind build
-    ```
-11. Run this command to migrate the database.
+   ```
+   python manage.py tailwind build
+   ```
+10. Run this command to migrate the database.
 
     ```
     python manage.py migrate
     ```
-12. Start running the server by this command.
+11. Start running the server by this command.
     ```
     tr-caching start
     python manage.py runserver

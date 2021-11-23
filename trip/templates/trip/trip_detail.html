@@ -82,10 +82,13 @@
                 <div class="2xl:w-4/12 2xl:ml-4">
                     <div class="px-4 pb-2 h-32">
                         <p class="text-xl font-bold">Trip information</p>
-                        <P class="font-bold mt-1">Durations: {{ post.duration }}</P>
+                        <P class="font-bold">Durations: {{ post.duration }}</P>
                         <P class="font-bold">Price: {{ post.price }}</P>
-                        <button id = "post-like-button">Like</button>
-                        <span class="font-bold">: </span class="font-bold"><span id='post_total_like'>{{ post.total_like }}</span>
+                        <div class="flex">
+                            <button class="text-3xl"id = "post-like-button">&#9825;</button>
+                            <p class="text-lg font-bold mt-1 ml-2" id='post_total_like'>{{ post.total_like }}</p>
+                        </div>
+                        
                     </div>
                     {% comment %} Writer card {% endcomment %}
                     <hr class="flex my-3 border-gray-400 w-11/12 mx-auto">

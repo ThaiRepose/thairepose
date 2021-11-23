@@ -12,8 +12,12 @@ jobs:
       SECRET_KEY: 'THREPOSE'
       DEBUG: True 
       HOSTS: 127.0.0.1, localhost
-      EMAIL_FROM_USER: "test@email.com"
+      EMAIL_HOST_USER: "test@email.com"
       EMAIL_HOST_PASSWORD: "Test1234@"
+      EMAIL_PORT: 587
+      EMAIL_HOST: "smtp.gmail.com"
+      EMAIL_USE_TLS: True
+      EMAIL_USE_SSL: False
     strategy:
       max-parallel: 4
       matrix:

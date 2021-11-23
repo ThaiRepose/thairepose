@@ -49,7 +49,7 @@ def write_img_from_gmap_api(key: str, photo_ref: str):
 
         photo_ref: photo reference from gmap api
     """
-    api_key = config('API_KEY')
+    api_key = config('BACKEND_API_KEY')
     url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={photo_ref}&key={api_key}"
     payload = {}
     headers = {}

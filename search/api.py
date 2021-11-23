@@ -8,7 +8,7 @@ from decouple import config
 
 class GoogleAPI:
 
-    api_key = config('API_KEY')
+    api_key = config('BACKEND_API_KEY')
 
     def search_nearby(self, lat, lng, type):
         """Call search nearby place from google map API.

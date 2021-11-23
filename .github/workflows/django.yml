@@ -40,11 +40,11 @@ jobs:
         pip install -r requirements.txt
     - name: Build
       run: |
-          python manage.py migrate
           python manage.py makemigrations users
           python manage.py migrate users
           python manage.py makemigrations trip
           python manage.py migrate trip
+          python manage.py migrate --run-syncdb
           python manage.py tailwind install
           python manage.py tailwind build
     - name: Run Tests

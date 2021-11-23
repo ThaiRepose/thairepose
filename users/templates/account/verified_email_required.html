@@ -31,7 +31,7 @@
 			<div class="text-center text-xl mt-10 mx-10">We have sent an e-mail to <span class="text-xl text-blue-600">{{ user.email }}</span>
                 for verification. Please click on the link inside this e-mail. Please contact us if you do not receive it within a few minutes.
             </div>
-            <div class="text-center text-lg mt-6 -mb-2">Note: you can still <a href="{{ email_url }}" class="text-lg text-blue-700">change your e-mail address</a>.</div>
+            <div class="text-center text-lg mt-6 -mb-2">If you don't get email verification <a href={{ email_url }} class="text-lg text-blue-600">click here</a>.</div>
 		</div>
         {% else %}
         {% endif %}

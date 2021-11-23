@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'users',
+    'ckeditor',
     'trip',
     'tailwind',
     'theme',
@@ -51,7 +52,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'search',
-    'ckeditor',
     'ckeditor_uploader',
     'planner.apps.PlannerConfig',
     'mptt'
@@ -172,10 +172,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
-# Meida root
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+if DEBUG:
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+else:
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# Upload folder for ckeditorupload
+CKEDITOR_UPLOAD_PATH = 'uploads/'
+
 
 # Profile picture path
 PROFILE_PIC_LOCATION = os.path.join(MEDIA_ROOT, 'user', 'profile_picture')

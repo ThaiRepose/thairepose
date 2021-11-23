@@ -1,9 +1,14 @@
+from django.forms.fields import EmailField
+import selenium
 from .utils import upload_profile_pic
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.test import TestCase, RequestFactory
 from .models import Profile
 from .adapter import ProfileAccountAdapter
+from selenium import webdriver
+from django.test import LiveServerTestCase
+import unittest
 
 import os
 
@@ -66,13 +71,38 @@ class TestEmailVerificationPage(TestCase):
 
     def test_template(self):
         """Test template and response code of response email verification page."""
-        response = ProfileAccountAdapter.respond_email_verification_sent(ProfileAccountAdapter, self.rf, self.user)
+        response = ProfileAccountAdapter.respond_email_verification_sent(
+            ProfileAccountAdapter, self.rf, self.user)
         self.assertEqual(response.status_code, 302)
         self.assertTemplateUsed('verification_sent.html')
 
     def test_email_already_in_session(self):
         """Test template and response code of response email verification page with user_email aready in session."""
         self.rf.session = {'user_email': 'test@email.com'}
-        response = ProfileAccountAdapter.respond_email_verification_sent(ProfileAccountAdapter, self.rf, self.user)
+        response = ProfileAccountAdapter.respond_email_verification_sent(
+            ProfileAccountAdapter, self.rf, self.user)
         self.assertEqual(response.status_code, 302)
         self.assertTemplateUsed('verification_sent.html')
+
+
+@unittest.skip("Skip due we are not deploy yet")
+class TestSignup(LiveServerTestCase):
+    """Test user signup"""
+
+    def test_register(self) -> None:
+        """Test user signup"""
+        selenium = webdriver.Chrome()
+        selenium.get('http://127.0.0.1:8000/accounts/signup/')
+        input = selenium.find_elements_by_tag_name("input")
+        username = input[1]
+        email = input[2]
+        password = input[3]
+        password2 = input[4]
+        username.send_keys('tester223')
+        email.send_keys('tester223@email.com')
+        password.send_keys('Adfg1234')
+        password2.send_keys('Adfg1234')
+        register_button = selenium.find_elements_by_tag_name("button")[1]
+        register_button.click()
+        assert 'tester223' in selenium.page_source
+        assert 'tester223@email.com' in selenium.page_source

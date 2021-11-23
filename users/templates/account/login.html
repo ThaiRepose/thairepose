@@ -36,7 +36,7 @@
 					<!-- Col -->
 					<div class="w-full lg:w-7/12 p-5">
 						<h3 class="pt-4 text-3xl text-center">Login</h3>
-						<form class="login px-8 pt-6 pb-8 mb-4 rounded" method="Post" action="{% url 'account_login' %}">
+						<form class="login px-8 pt-6 pb-8 mb-4 rounded" method="Post">
               {% csrf_token %}
               <div>
                 {{form.login.label}}</br>{% render_field form.login class="input rounded-md" style="width:100%;"%}
@@ -51,6 +51,7 @@
 								>
 									Login
 								</button>
+                                <input type="hidden" name="next" value="{{ next }}"/>
 							</div>
               {% if form.errors %}
                 {% for field in form %}

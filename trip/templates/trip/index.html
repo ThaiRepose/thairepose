@@ -26,6 +26,9 @@
 
         }
       }
+
+      /*@apply bg-white text-blue-400 rounded-full;*/
+      .active {background: white; border-radius: 9999px; color: #63b3ed;}
     </style>
     <link href="https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css" rel="stylesheet">
 {% endblock %}
@@ -38,6 +41,16 @@
     <div class="main-container text-gray-600 flex-grow flex justify-center items-center" style="z-index: 1;">
       <div class="relative rounded-3xl flex justify-center bg-fixed w-5/6 md:w-full max-w-lg">
     <div class="relative text-gray-600 focus-within:text-gray-400 w-full">
+        <div id="search-selector" class="bg-gray-200 text-sm text-gray-500 leading-none border-2 border-gray-200 rounded-full inline-flex">
+            <button class="inline-flex items-center transition-colors duration-300 ease-in focus:outline-none hover:text-blue-400 focus:text-blue-400 rounded-l-full px-4 py-2 transition ease-in-out duration-300 active" id="grid">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fill-current w-4 h-4 mr-2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              <span>Grid</span>
+            </button>
+            <button class="inline-flex items-center transition-colors duration-300 ease-in focus:outline-none hover:text-blue-400 focus:text-blue-400 rounded-r-full px-4 py-2 transition ease-in-out duration-300" id="list">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fill-current w-4 h-4 mr-2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+              <span>List</span>
+            </button>
+        </div>
       <span class="absolute mt-1 left-0 flex items-center pl-2">
         <button type="submit" class="p-1 focus:outline-none focus:shadow-outline">
           <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-6 h-6"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -52,12 +65,9 @@
     <div class="main-container text-gray-600 flex-row flex justify-center" style="z-index: 1;">
         <div class="bg-translucent w-5/6 max-w-md py-3 rounded-2xl px-4">
             <div class="mb-3 text-center text-xl font-bold">TOP</div>
-            <div class="py-3 text-lg">1</div>
-            <div class="py-3 text-lg">2</div>
-            <div class="py-3 text-lg">3</div>
-            <div class="py-3 text-lg">4</div>
-            <div class="py-3 text-lg">5</div>
-            <div class="py-3 text-lg">6</div>
+            {% for trip in top_trips %}
+                <div class="py-3 text-lg">{{ forloop.counter }}. {{ trip.title }}</div>
+            {% endfor %}
         </div>
     </div>
   </div>
@@ -70,6 +80,12 @@
     <script src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places&callback=initAutocomplete" async defer>
     </script>
     <script>
+      /**
+       * search type selector
+       */
+      document.getElementById("search-selector").addEventListener("click", function(event) {
+        console.log(1);
+      })
     let lastCall = Date.now();
 
     function initAutocomplete(){

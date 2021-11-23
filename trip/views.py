@@ -32,7 +32,8 @@ PLACE_IMG_PATH = os.path.join(
 def index(request):
     """Render Index page."""
     api_key = os.getenv('FRONTEND_API_KEY')
-    return render(request, "trip/index.html", {'api_key': api_key})
+    top_trips = sorted(TripPlan.objects.filter(complete=True),  key=lambda m: m.total_like, reverse=True)[:6]
+    return render(request, "trip/index.html", {'api_key': api_key, "top_trips": top_trips})
 
 
 @require_http_methods(["POST"])

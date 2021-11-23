@@ -74,7 +74,6 @@ def trip_detail(request, pk):
     except EmptyPage:
         comments = paginator.page(paginator.num_pages)
 
-
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():

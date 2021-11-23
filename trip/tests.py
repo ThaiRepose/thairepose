@@ -85,7 +85,7 @@ class PlaceDetailsViewTest(TestCase):
         """Test for get_details_context() function with empty place_data."""
         context = get_details_context(
             {}, self.backend_api_key, self.frontend_api_key)
-        self.assertEqual({'api_key': None}, context)
+        self.assertEqual({'api_key': self.frontend_api_key}, context)
 
     @unittest.skip("Skip due to not provided API key.")
     def test_view_one_place(self):

@@ -10,7 +10,7 @@ load_dotenv()
 
 class GoogleAPI:
 
-    api_key = os.getenv("API_KEY")
+    api_key = os.getenv("BACKEND_API_KEY")
 
     def search_nearby(self, lat, lng, type):
         """Call search nearby place from google map API.

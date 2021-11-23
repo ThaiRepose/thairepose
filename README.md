@@ -62,7 +62,7 @@
        HOSTS=localhost,127.0.0.1
        BACKEND_API_KEY=Your-Google-API-key-in-server-side
        FRONTEND_API_KEY=Your-Google-API-key-in-client-side
-       EMAIL_FROM_USER = email-for-send-verification-form 
+       EMAIL_HOST_USER = email-for-send-verification-form 
        EMAIL_HOST_PASSWORD = email-password
        EMAIL_PORT=Your-configured-email-port
        EMAIL_HOST=Your-email-provider-host

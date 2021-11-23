@@ -54,6 +54,10 @@
        FRONTEND_API_KEY=Your-Google-API-key-in-client-side
        EMAIL_FROM_USER = email-for-send-verification-form 
        EMAIL_HOST_PASSWORD = email-password
+       EMAIL_PORT=Your-configured-email-port
+       EMAIL_HOST=Your-email-provider-host
+       EMAIL_USE_TLS=TLS-using-true-or-false
+       EMAIL_USE_SSL=-SSL-true-or-false
        ```
        (If you don't use gmail. Please change EMAIL_PORT and EMAIL_HOST in setting)
     
@@ -61,20 +65,12 @@
     
        **Warning: If you use Gmail you have to adjust to less secure**
 
-6. Add location for store profile picture in setting.py
-    ```
-    PROFILE_PIC_LOCATION = your-storage-path-for-store-picture
-    ```
 7. Add Oauth API Key
     Go to domain/admin/socialaccount/socialapp/ (local: http://127.0.0.1:8000/admin/socialaccount/socialapp/) 
     - Add provider to Google.
     - Add Client id and Secret key that retrieve form API owner.
     - Add site to chosen sites.
-8. Install TR-CACHING. (auto-download image from google api)
-    ```
-    pip install --editable src\caching\.
-    ```
-    recommend: project-folder/users/static/profile_pic
+
 9. Install TailwindCSS framework.
 
    ```

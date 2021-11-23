@@ -18,6 +18,7 @@ from requests.api import post
 from .models import TripPlan, Review, CategoryPlan, UploadImage
 from .forms import TripPlanForm, TripPlanImageForm, ReviewForm
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 load_dotenv()
 
 
@@ -224,7 +225,6 @@ def like_post(request):
     """
     if request.method == 'POST':
         pk = request.POST.get('pk')
-        print(pk)
         post = get_object_or_404(TripPlan, id=pk)
         if post.like.filter(id=request.user.id).exists():
             post.like.remove(request.user)
@@ -448,3 +448,15 @@ def resturct_to_place_detail(context):
     if 'phone' in context[0]:
         init_data["phone"] = context[0]['phone']
     return init_data
+
+
+def postComment(request):
+    if request.method == 'POST':
+        pk = request.POST.get('pk')
+        post = get_object_or_404(TripPlan, id=pk)
+        comment = Review()
+        comment.name = request.user
+        comment.post = post
+        comment.body = request.POST.get('comment')
+        comment.save()       
+    return render(request, 'trip/single_comment.html', {'commend': comment})

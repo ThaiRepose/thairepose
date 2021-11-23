@@ -89,8 +89,7 @@
                     </div>
                     {% comment %} Writer card {% endcomment %}
                     <hr class="flex my-3 border-gray-400 w-11/12 mx-auto">
-                    <div class="px-4 py-3 mt-4 bg-white max-h-80">
-                        <p class="text-xl font-bold">Writer information</p>
+                    <div class="px-4 py-3 mx-4 mt-4 bg-white max-h-80">
                     </div>
                 </div>
             </div>
@@ -101,70 +100,58 @@
             </div>
             <hr class="flex my-6 border-gray-400 w-11/12 mx-auto">
             <p class="text-xl font-bold mx-8 pb-4 pt-3">Review</p >
-            <div class="mx-4 px-4 rounded-lg overflow-y-scroll js-show-on-scroll no-scrollbar" style="max-height:50rem">           
-                    <br>
-                    {% if not commend.all %}
-                        <p class="mx-auto text-center text-xl">No review yet</p>
-                    {% else %}
-                    {% for commend in commend %}
-                        <div class="bg-translucent rounded-lg mb-8 px-4 py-2 js-show-on-scroll">
-                            <div class="flex justify-between">
-                                <div>
-                                    <strong>{{commend.name}}</strong>
-                                    <p>{{commend.date_added}}</p>
-                                </div>
-                                <div>
-                                    <div class="flex flex-grow">
-                                        <p id="total-like-{{commend.id}}"class="flex justify-center pt-3 pb-20 pr-2 text-2xl font-semibold -mb-2">{{ commend.total_like }}</p>
-                                            <div class="pt-1 hover:scale-110">
-                                                <button id="review-like-button" value="{{ commend.id }}">
-                                                    <span class="text-5xl text-gray-600">&#8679;</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        {% comment %} <button type="submit" name="commend_id" value="{{ commend.id }}">Like</button>
-                                    - {{ commend.total_like }} {% endcomment %}
-                                </div>
+            <div id = "post-comment" class="mx-4 px-4 rounded-lg overflow-y-scroll js-show-on-scroll no-scrollbar" style="max-height:50rem">           
+                {% for commend in commend %}
+                    <div class="bg-translucent rounded-lg mb-8 px-4 py-2 js-show-on-scroll">
+                        <div class="flex justify-between">
+                            <div>
+                            <strong>{{commend.name}}</strong>
+                                <p>{{commend.date_added}}</p>
                             </div>
-                            <p class="-mt-10 relative w-9/12">{{commend.body}}</p>
+                            <div>
+                                <div class="flex flex-grow">
+                                    <p id="total-like-{{commend.id}}"class="flex justify-center pt-3 pb-20 pr-2 text-2xl font-semibold -mb-2">{{ commend.total_like }}</p>
+                                        <div class="pt-1 hover:scale-110">
+                                            <button id="review-like-button" value="{{ commend.id }}">                                                    <span class="text-5xl text-gray-600">&#8679;</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {% comment %} <button type="submit" name="commend_id" value="{{ commend.id }}">Like</button>
+                                - {{ commend.total_like }} {% endcomment %}
+                            </div>
                         </div>
-                    {% endfor %}
-                {% endif %}
-                <h1>Comment</h1>
-                    <form method="POST">
-                        {% csrf_token %}
-                        {{ review_form.body }}
-                        <div>
-                            <button>Add comment</button>
-                        </div>
-                    </form> 
-                    <div>
-                        <a href="{% url 'trip:tripplan' %}">
-                            Back
-                        </a>
+                        <p class="-mt-10 relative w-9/12">{{commend.body}}</p>
                     </div>
+                {% endfor %}
+            </div>
+            <hr class="flex my-6 border-gray-400 w-11/12 mx-auto">
+            <div class="mx-8">
+                <textarea id="comment-body" cols="40" rows="5" class="w-full bg-while rounded border border-gray-400 leading-normal resize-none h-20 py-2 px-3 font-medium placeholder-gray-700 focus:outline-none focus:bg-white" placeholder='Type Your Comment' required></textarea>
+                <div>
+                    <button class="bg-black text-white font-bold uppercase text-xs px-4 py-2 mb-4 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear mt-1" id="submit-comment-btn">Add comment</button>
                 </div>
-                
+            </div>
         </div>
     </div>
 </div>
 
-<div>
+{% comment %} <div>
     {% load mptt_tags %}
-    {% recursetree comments %}
-    <div id="{{ node.id }}" class="my-2 p-2" style="border: 1px solid grey">
-        <div class="flex justify-between">By {{ node.name }}<div></div>{{ node.date_added }}</div>
-        <div>{{ node.body }}</div>
-        <hr/>
-        {% if node.level < 3 %}
-        <button class="button" onclick="myFunction({{ node.id }})">Reply</button>
-    {% endif %}
-        </div>
-        {% if not node.is_leaf_node %}
-        <div class="children ml-8">
-        {{ children }}
-        </div>
+    <div id="{{ comment }}">
+        {% recursetree comments %}
+        <div id="{{ node.id }}" class="my-2 p-2" style="border: 1px solid grey">
+            <div class="flex justify-between">By {{ node.name }}<div></div>{{ node.date_added }}</div>
+            <div>{{ node.body }}</div>
+            <hr/>
+            {% if node.level < 1%}
+            <button class="button" onclick="myFunction({{ node.id }})">Reply</button>
         {% endif %}
+            </div>
+            {% if not node.is_leaf_node %}
+            <div class="children ml-8">
+            {{ children }}
+            </div>
+            {% endif %}
         {% endrecursetree %}
     </div>
 
@@ -207,7 +194,7 @@
       <button type="submit">Submit</button>
     </form>
   </div>
-{% endif %}
+{% endif %} {% endcomment %}
 
 <div id="overlay" class="absolute hidden h-full w-full justify-center items-center" style="background-color: rgba(0,0,0,0.5);">
     <div class="bg-gray-100 px-6 py-4 rounded-lg animate-fade-in-up">
@@ -328,7 +315,34 @@ $(document).ready(function(){
 
             }
         });
+    });
+
+
+    $(document).on('click', '#submit-comment-btn', function (e) {
+        e.preventDefault();
+        var pk = {{ post.pk|safe }};
+        var text = document.getElementById("comment-body");
+        var all_comment = document.getElementById("post-comment");
+        $.ajax({
+            type: 'POST',
+            url: '{% url "trip:add_comment" %}',
+            data: {
+                pk:pk,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                'comment': text.value,
+                action: 'post',
+            },
+            success: function(data) {
+                $('#post-comment').append(data);
+                text.value = '';
+                all_comment.scrollTop = all_comment.scrollHeight;
+            },
+            error: function (xhr, errmsg, err) {
+                console.log("1234")
+
+            }
         });
+    });
 });
 
     function formExit() {

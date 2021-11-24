@@ -32,8 +32,7 @@ from os.path import join
 from pathlib import Path
 from caching_gmap import APICaching
 
-from dotenv import load_dotenv
-load_dotenv()
+from decouple import config
 
 api_caching = APICaching()
 
@@ -50,7 +49,7 @@ def write_img_from_gmap_api(key: str, photo_ref: str):
 
         photo_ref: photo reference from gmap api
     """
-    api_key = os.getenv('API_KEY')
+    api_key = config('BACKEND_API_KEY')
     url = f"https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={photo_ref}&key={api_key}"
     payload = {}
     headers = {}

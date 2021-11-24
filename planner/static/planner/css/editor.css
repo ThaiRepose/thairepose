@@ -1,0 +1,52 @@
+/* block for days increment/decrement */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* block for days increment/decrement */
+.custom-number-input input:focus {
+    outline: none !important;
+}
+
+/* block for days increment/decrement */
+.custom-number-input button:focus {
+    outline: none !important;
+}
+
+/* Darken place search box */
+#place-search:disabled {
+    background-color: rgba(156, 163, 175, 0.7);
+}
+
+/* container for google place search */
+.pac-container {
+    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+    border-radius: 0.375rem;
+    --tw-bg-opacity: 1;
+    background-color: rgba(255, 255, 255, var(--tw-bg-opacity));
+    width: 12rem;
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+    transition-duration: 150ms;
+}
+
+/* list of google place search queries */
+.pac-item {
+    height: 30px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+/* highlight when hover on any query */
+.pac-item:hover {
+    font-family: 'sf_thonburiregular', 'Prompt', sans-serif;
+    background-color: rgba(245, 189, 140, 0.5);
+    cursor: pointer;
+}
+
+/* hide marker icon */
+.pac-icon {
+    display: none;
+}

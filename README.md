@@ -44,51 +44,62 @@
     ```
     pip install -r requirements.txt
     ```
-6. Create `.env` file in the same level as manage.py and write down:
+   <details>
+    <summary>If you's using Windows</summary>
+    Run this command to install caching system.
 
     ```
-    DEBUG=True
-    SECRET_KEY=Your-Secret-Key
-    HOSTS=localhost,127.0.0.1
-    API_KEY=Your-Google-API-key
-    EMAIL_FROM_USER = email-for-send-verification-form 
-    EMAIL_HOST_PASSWORD = email-password
+    pip install --editable src\caching\.
     ```
-    (If you don't use gmail. Please change EMAIL_PORT and EMAIL_HOST in setting)
+   </details>
+
+
+6. Create `.env` file in the same level as manage.py and write down:
+
+       ```
+       DEBUG=True
+       SECRET_KEY=Your-Secret-Key
+       HOSTS=localhost,127.0.0.1
+       BACKEND_API_KEY=Your-Google-API-key-in-server-side
+       FRONTEND_API_KEY=Your-Google-API-key-in-client-side
+       EMAIL_HOST_USER = email-for-send-verification-form 
+       EMAIL_HOST_PASSWORD = email-password
+       EMAIL_PORT=Your-configured-email-port
+       EMAIL_HOST=Your-email-provider-host
+       EMAIL_USE_TLS=TLS-using-true-or-false
+       EMAIL_USE_SSL=-SSL-true-or-false
+       ```
+
+   (If you don't use gmail. Please change EMAIL_PORT and EMAIL_HOST in setting)
     
-    **Warning: For anyone who use macOS. It may have problem while import email with os.environ.get. please try another way to import it**
+   **Warning: For anyone who use macOS. It may have problem while import email with os.environ.get. please try another way to import it**
     
-    **Warning: If you use Gmail you have to adjust to less secure**
-7. Add location for store profile picture in setting.py
-    ```
-    PROFILE_PIC_LOCATION = your-storage-path-for-store-picture
-    ```
-8. Add Oauth API Key
+   **Warning: If you use Gmail you have to adjust to less secure**
+
+
+7. Add Oauth API Key
     Go to domain/admin/socialaccount/socialapp/ (local: http://127.0.0.1:8000/admin/socialaccount/socialapp/) 
     - Add provider to Google.
     - Add Client id and Secret key that retrieve form API owner.
     - Add site to chosen sites.
-9. Install TR-CACHING. (auto-download image from google api)
-    ```
-    pip install --editable src\caching\.
-    ```
-    recommend: project-folder/users/static/profile_pic
-10. Install TailwindCSS framework.
 
-    ```
-    python manage.py tailwind install
-    ```
-11. Build TailwindCSS frontend framework the get GUI.
 
-    ```
-    python manage.py tailwind build
-    ```
-12. Run this command to migrate the database.
+8. Install TailwindCSS framework.
+
+   ```
+   python manage.py tailwind install
+   ```
+9. Build TailwindCSS frontend framework the get GUI.
+
+   ```
+   python manage.py tailwind build
+   ```
+10. Run this command to migrate the database.
 
     ```
     python manage.py migrate
     ```
-13. Start running the server by this command.
+11. Start running the server by this command.
     ```
     tr-caching start
     python manage.py runserver

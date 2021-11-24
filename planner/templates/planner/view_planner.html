@@ -9,116 +9,8 @@
             background-size: cover;
         }
     </style>
-    <style>
-        input[type='number']::-webkit-inner-spin-button,
-        input[type='number']::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .custom-number-input input:focus {
-            outline: none !important;
-        }
-
-        .custom-number-input button:focus {
-            outline: none !important;
-        }
-    </style>
-    <style>
-        .table {
-            border-spacing: 0 11px;
-        }
-
-        i {
-            font-size: 1rem !important;
-        }
-        .blink-bg {
-            color: #fff;
-            animation: blinkingBackground 3s infinite;
-        }
-        @keyframes blinkingBackground{
-            0%		{ background-color: #f02435;}
-            50%		{ background-color: transparent;}
-            100%	{ background-color: #f02435;}
-        }
-    </style>
-    <style>
-        .material-icons.md-18 {
-            font-size: 18px;
-        }
-
-        .material-icons.md-24 {
-            font-size: 24px;
-        }
-
-        .material-icons.md-36 {
-            font-size: 36px;
-        }
-
-        .material-icons.md-48 {
-            font-size: 48px;
-        }
-
-        #place-search:disabled {
-            background-color: rgba(156, 163, 175, 0.7);
-        }
-
-        .pac-container {
-            box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-            border-radius: 0.375rem;
-            --tw-bg-opacity: 1;
-            background-color: rgba(255, 255, 255, var(--tw-bg-opacity));
-            width: 12rem;
-            transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
-            transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
-            transition-duration: 150ms;
-        }
-
-        .pac-item {
-            height: 30px;
-            padding-right: 10px;
-            padding-left: 10px;
-        }
-
-        .pac-item:hover {
-            font-family: 'sf_thonburiregular', 'Prompt', sans-serif;
-            background-color: rgba(245, 189, 140, 0.5);
-            cursor: pointer;
-        }
-
-        .pac-icon {
-            display: none;
-        }
-
-        .limit-text {
-            display: block;
-            width: 100%;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-
-        #map {
-          height: 100%;
-          width: 100%;
-          margin: 0px;
-          padding: 0px
-        }
-    </style>
-    <style>
-        .top-100 {
-            top: 100%
-        }
-
-        .bottom-100 {
-            bottom: 100%
-        }
-
-        .max-h-select {
-            max-height: 300px;
-        }
-    </style>
     <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}"/>
+    <link rel="stylesheet" href="{% static 'planner/css/style.css' %}" />
     <link href="https://cdn.jsdelivr.net/npm/@tailwindcss/custom-forms@0.2.1/dist/custom-forms.css" rel="stylesheet"/>
 {% endblock %}
 
@@ -126,18 +18,51 @@
     <div class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10 w-screen">
         <div class="h-full w-full rounded-3xl container-lg flex flex-col pb-8">
             <div class="flex flex-col md:flex-row">
-                <!-- Left column (details) -->
-                <div class="w-full md:w-1/2">
+                <div class="w-full">
                     <!-- Page title -->
                     <div id="place_name" class="mx-8 my-6 flex flex-row">
                         <h1 class="text-3xl font-bold" style="line-height: 1.6;">{{ details.name }}</h1>
                     </div>
+                    {% for day, places_list in places.items %}
+                    <div id="day-title" class="mt-10 mx-8"><h1 class="text-2xl">Day {{ day }}</h1></div>
+                    <div id="{{ day }}" name="day-table" class="w-full md:px-8">
+                        <table class="w-full text-gray-400 text-sm body-transparent-table" id="table-day-1">
+                            <thead class="bg-translucent text-gray-700 shadow-lg">
+                            <tr>
+                                <th class="py-3 text-center">Arrival</th>
+                                <th class="py-3 text-center">Place</th>
+                                <th class="py-3 text-center">Departure</th>
+                            </tr>
+                            </thead>
+                            <tbody class="text-gray-700">
+                            {% for place in places_list %}
+                            <tr name="place" onclick="window.open('{% url 'trip:place-detail' place.place_id %}', '_blank');" class="hover:bg-gray-400" style="cursor: pointer;">
+                                <td id="time" class="py-3 text-center text-xl"><div name="arrival">{{ place.arrival_time|date:"H:i"|default:"" }}</div></td>
+                                <td class="p-3">
+                                    <div class="flex align-items-center">
+                                        <div class="ml-3">
+                                            <div style="width: 50vw;"><span class="limit-text">{{ place.place_name }}</span></div>
+                                            <div class="text-gray-500" style="width: 50vw;"><span class="limit-text">{{ place.place_vicinity }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-3 text-center text-xl">{{ place.departure_time|date:"H:i" }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
                 </div>
-            </div>
-            <!-- Trip day row -->
-            <div id="trip-days">
-                <!-- Table created by JS -->
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'planner/js/main.js' %}"></script>
+    <script>
+        checkOverDate();
+    </script>
 {% endblock %}

@@ -140,10 +140,10 @@ def add_post(request):
             if form.is_valid():
                 image_form = TripPlanImageForm(request.POST, request.FILES)
                 post_form = form.save(commit=False)
-                if post_form.body == '' or post_form.title == '' or post_form.duration == None or post_form.price == None:
+                if post_form.body == '' or post_form.title == '' or post_form.duration is None or post_form.price is None:
                     post_form.save()
                     return render(request, 'trip/add_blog.html', {'form': form,
-                                                          'image_form': image_form, 'message': 'Need fill all fields'})
+                                                                  'image_form': image_form, 'message': 'Need fill all fields'})
                 post_form.author = request.user
                 post_form.complete = True
                 post_form.save()

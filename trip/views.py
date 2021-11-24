@@ -19,7 +19,6 @@ from .models import TripPlan, Review, CategoryPlan, UploadImage
 from .forms import TripPlanForm, TripPlanImageForm, ReviewForm
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
-load_dotenv()
 
 
 api_caching = APICaching()

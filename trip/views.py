@@ -440,6 +440,11 @@ def resturct_to_place_detail(context):
 
 
 def postComment(request):
+    """Add comment to database and return html to render in front-end
+
+    Returns:
+        http: html of comment
+    """
     if request.method == 'POST':
         pk = request.POST.get('pk')
         post = get_object_or_404(TripPlan, id=pk)
@@ -447,5 +452,5 @@ def postComment(request):
         comment.name = request.user
         comment.post = post
         comment.body = request.POST.get('comment')
-        comment.save()       
+        comment.save()
     return render(request, 'trip/single_comment.html', {'commend': comment})

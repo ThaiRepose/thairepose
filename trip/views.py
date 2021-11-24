@@ -14,9 +14,9 @@ from src.caching.caching_gmap import APICaching
 from decouple import config
 from django.views.generic import ListView, UpdateView
 from requests.api import post
-from .models import TripPlan, Review, CategoryPlan, UploadImage
+from .models import TripPlan, Review, CategoryPlan, UploadImage, PlaceDetail, PlaceReview
 from .forms import TripPlanForm, TripPlanImageForm, ReviewForm
-from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 
 
 api_caching = APICaching()
@@ -237,7 +237,6 @@ def place_info(request, place_id: str):
         url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={backend_api_key}"
         response = requests.get(url)
         data = json.loads(response.content)
-        print(data)
         if data['status'] != "OK":
             return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
         context = get_details_context(data, backend_api_key, frontend_api_key)
@@ -250,6 +249,15 @@ def place_info(request, place_id: str):
     context['rating'] = range(round(context['rating']))
     context['api_key'] = frontend_api_key
     context = check_downloaded_image(context)
+
+    # Get review collected from our website
+    try:
+        place = PlaceDetail.objects.get(place_id=place_id)
+    except ObjectDoesNotExist:
+        place = PlaceDetail.objects.create(name=context['place_name'], place_id=place_id)
+        place.save()
+    reviews = PlaceReview.objects.filter(place=place)
+    context['reviews'] = reviews
     return render(request, "trip/place_details.html", context)
 
 
@@ -258,7 +266,7 @@ def get_details_context(place_data: dict, backend_api_key: str, frontend_api_key
     """Get context for place details page.
     Args:
         place_data: The data received from Google Cloud Platform.
-        backend_api_key:
+        backend_api_key: API key used in server.
         frontend_api_key: Exposed API key used to display images in website, restriction in GCP needed.
     Returns:
         context data needed for place details page.
@@ -415,7 +423,7 @@ def resturct_to_place_detail(context):
             "rating": <rating>,
             "blank_rating": <blank_rating>,
             "images": [],
-            "reviews": [],
+            "google_reviews": [],
             "suggestions": []
         }
     """
@@ -426,7 +434,7 @@ def resturct_to_place_detail(context):
         "rating": context[0]['rating'],
         "blank_rating": context[0]['blank_rating'],
         "images": [img for img in context[0]['photo_ref']],
-        "reviews": context[0]['reviews'],
+        "google_reviews": context[0]['reviews'],
         "suggestions": [place for place in context[1:]]
     }
     if 'website' in context[0]:

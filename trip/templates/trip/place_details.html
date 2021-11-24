@@ -75,18 +75,26 @@
                     <h1 class="text-2xl font-bold mt-6 ml-10">REVIEWS</h1>
                     <div class="overflow-y-scroll hide-scrollbar px-10 py-2 detail-scrolllist">
                     {% for review in reviews %}
-                        <div class="rounded-2xl bg-translucent flex flex-row my-2 transition duration-75 js-show-on-scroll" style="min-height: 7rem;">
+                        <div class="rounded-2xl bg-translucent custom-shadow flex flex-row my-2 transition duration-75 js-show-on-scroll" style="min-height: 7rem;">
                             <div class="px-6 py-4 w-4/5">
                                 <h1 class="text-lg font-bold">{{ review.author }}</h1>
-                                <p class="text-sm">{{ review.text }}</p>
+                                <p class="text-sm">{{ review.review_text }}</p>
                             </div>
                             <div class="flex flex-grow">
                                 <div class="pt-6 hover:scale-110">
-                                    <a href=""><span class="text-5xl">&#8679;</span></a>
+                                    <a class="text-xl" href="">{{ review.likes }}<span class="text-5xl">&#8679;</span></a>
                                 </div>
                                 <div class="pt-12 pr-2 hover:scale-110">
-                                    <a href=""><span class="text-5xl">&#8681;</span></a>
+                                    <a class="text-xl" href=""><span class="text-5xl">&#8681;</span>{{ review.dislikes }}</a>
                                 </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% for review in google_reviews %}
+                        <div class="rounded-2xl bg-translucent custom-shadow flex flex-row my-2 transition duration-75 js-show-on-scroll" style="min-height: 7rem;">
+                            <div class="px-6 py-4 w-4/5">
+                                <h1 class="text-lg font-bold">{{ review.author }}</h1>
+                                <p class="text-sm">{{ review.text }}</p>
                             </div>
                         </div>
                     {% endfor %}
@@ -97,7 +105,7 @@
                     <div class="overflow-y-scroll hide-scrollbar detail-scrolllist px-10">
                         {% for place in suggestions %}
                             <div class="px-2 py-2 flex justify-center hover:scale-110 transition duration-75 js-show-on-scroll">
-                                <a class="rounded-2xl h-52 w-44 bg-translucent px-2 py-2 flex flex-col bg-gray-900" href="{% url 'trip:place-detail' place.place_id %}">
+                                <a class="rounded-2xl h-52 w-44 bg-translucent custom-shadow px-2 py-2 flex flex-col bg-gray-900" href="{% url 'trip:place-detail' place.place_id %}">
                                     <div class="rounded-2xl bg-gray-300 w-40 h-40">
                                         {% if place.downloaded == True %}
                                         <img class="object-cover h-full w-full rounded-xl" src="{% get_media_prefix %}places_image/{{ place.place_id }}photo.jpeg">

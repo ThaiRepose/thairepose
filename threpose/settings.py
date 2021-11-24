@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'search',
     'ckeditor_uploader',
-    'planner.apps.PlannerConfig',
     'mptt',
     'planner'
 ]

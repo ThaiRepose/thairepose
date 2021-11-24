@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'search',
     'ckeditor_uploader',
     'planner.apps.PlannerConfig',
-    'mptt'
+    'mptt',
     'planner'
 ]
 

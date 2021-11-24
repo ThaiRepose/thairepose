@@ -12,13 +12,12 @@ import shutil
 import requests
 from threpose.settings import BASE_DIR, MEDIA_ROOT
 from src.caching.caching_gmap import APICaching
-from dotenv import load_dotenv
+from decouple import config
 from django.views.generic import ListView, UpdateView
 from requests.api import post
 from .models import TripPlan, Review, CategoryPlan, UploadImage
 from .forms import TripPlanForm, TripPlanImageForm, ReviewForm
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
 
 
 api_caching = APICaching()
@@ -31,7 +30,7 @@ PLACE_IMG_PATH = os.path.join(
 # View page
 def index(request):
     """Render Index page."""
-    api_key = os.getenv('FRONTEND_API_KEY')
+    api_key = config('FRONTEND_API_KEY')
     # Get top like trip blogs.
     top_trips = sorted(TripPlan.objects.filter(complete=True), key=lambda m: m.total_like, reverse=True)[:6]
     return render(request, "trip/index.html", {'api_key': api_key, "top_trips": top_trips})
@@ -258,9 +257,8 @@ def place_info(request, place_id: str):
     Returns:
         HttpRequest: Return 200 if place_id is correct, and return 404 if invalid.
     """
-    load_dotenv()
-    backend_api_key = os.getenv('BACKEND_API_KEY')
-    frontend_api_key = os.getenv('FRONTEND_API_KEY')
+    backend_api_key = config('BACKEND_API_KEY')
+    frontend_api_key = config('FRONTEND_API_KEY')
     if api_caching.get(f"{place_id}detailpage"):
         cache_data = json.loads(api_caching.get(
             f"{place_id}detailpage"))['cache']

@@ -18,7 +18,7 @@ from requests.api import post
 from .models import TripPlan, Review, CategoryPlan, UploadImage
 from .forms import TripPlanForm, TripPlanImageForm, ReviewForm
 from django.contrib.auth.decorators import login_required
-load_dotenv()
+from django.core import serializers
 
 
 api_caching = APICaching()
@@ -32,7 +32,8 @@ PLACE_IMG_PATH = os.path.join(
 def index(request):
     """Render Index page."""
     api_key = os.getenv('FRONTEND_API_KEY')
-    top_trips = sorted(TripPlan.objects.filter(complete=True),  key=lambda m: m.total_like, reverse=True)[:6]
+    # Get top like trip blogs.
+    top_trips = sorted(TripPlan.objects.filter(complete=True), key=lambda m: m.total_like, reverse=True)[:6]
     return render(request, "trip/index.html", {'api_key': api_key, "top_trips": top_trips})
 
 
@@ -45,12 +46,21 @@ def get_trip_queries(request):
     """
     if 'keyword' not in request.POST:
         return JsonResponse({"status": "BAD_REQUEST"})
-    query_startswith = TripPlan.objects.filter(title__startswith=request.POST['keyword'],
-                                               complete=True).order_by('-total_like')
-    query_contain = TripPlan.objects.filter(title__contains=request.POST['keyword'],
-                                            complete=True).order_by('-total_like')
-    queries = query_startswith | query_contain
-    return JsonResponse({"status": "OK", "results": json.dumps(queries)})
+    keyword = json.loads(request.POST['keyword'])
+    # get query that has title starts with keyword.
+    query_startswith = sorted(TripPlan.objects.filter(title__istartswith=keyword,
+                                                      complete=True),
+                              key=lambda m: m.total_like,
+                              reverse=True)[:3]
+    quantity_requested = 4 - len(query_startswith)  # define how much we need query left.
+    # get query that contains keyword.
+    query_contain = sorted(TripPlan.objects.filter(title__icontains=keyword,
+                                                   complete=True),
+                           key=lambda m: m.total_like,
+                           reverse=True)[:quantity_requested]
+    queries_combined = set(query_startswith + query_contain)  # list of query, type is list
+    queries = [{"id": query.id, "name": query.title} for query in queries_combined]  # prepare for context
+    return JsonResponse({"status": "OK", "results": queries})
 
 
 class AllTrip(ListView):

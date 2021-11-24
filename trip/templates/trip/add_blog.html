@@ -16,6 +16,9 @@
 {% block main_content %}
 {% if user.is_authenticated %}
 
+{% if message %}
+<script>alert('{{message}}')</script>
+{% endif %}
 <div class="bg-page flex-grow">
   <!-- Tailwind CSS -->
   <link href="https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css" rel="stylesheet">

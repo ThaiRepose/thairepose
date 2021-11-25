@@ -18,7 +18,6 @@ from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -42,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'users',
-    'ckeditor',
     'trip',
     'tailwind',
     'theme',
@@ -52,6 +50,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'search',
+    'ckeditor',
     'ckeditor_uploader',
     'mptt',
     'planner'
@@ -59,7 +58,7 @@ INSTALLED_APPS = [
 
 # Upload folder for ckeditorupload
 CKEDITOR_UPLOAD_PATH = "uploads/"
-
+CKEDITOR_RESTRICT_BY_USER = True
 # Config for Tailwind CSS
 TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [

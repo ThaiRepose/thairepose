@@ -34,7 +34,8 @@ def index(request):
     """Render Index page."""
     api_key = config('FRONTEND_API_KEY')
     # Get top like trip blogs.
-    top_trips = sorted(TripPlan.objects.filter(complete=True), key=lambda m: m.total_like, reverse=True)[:6]
+    top_trips = sorted(TripPlan.objects.filter(complete=True),
+                       key=lambda m: m.total_like, reverse=True)[:6]
     return render(request, "trip/index.html", {'api_key': api_key, "top_trips": top_trips})
 
 
@@ -53,14 +54,17 @@ def get_trip_queries(request):
                                                       complete=True),
                               key=lambda m: m.total_like,
                               reverse=True)[:3]
-    quantity_requested = 4 - len(query_startswith)  # define how much we need query left.
+    # define how much we need query left.
+    quantity_requested = 4 - len(query_startswith)
     # get query that contains keyword.
     query_contain = sorted(TripPlan.objects.filter(title__icontains=keyword,
                                                    complete=True),
                            key=lambda m: m.total_like,
                            reverse=True)[:quantity_requested]
-    queries_combined = set(query_startswith + query_contain)  # list of query, type is list
-    queries = [{"id": query.id, "name": query.title} for query in queries_combined]  # prepare for context
+    # list of query, type is list
+    queries_combined = set(query_startswith + query_contain)
+    queries = [{"id": query.id, "name": query.title}
+               for query in queries_combined]  # prepare for context
     return JsonResponse({"status": "OK", "results": queries})
 
 
@@ -153,6 +157,7 @@ def add_post(request):
             post_form.author = request.user
             post_form.save()
             if image_form.is_valid():
+                all_img = UploadImage.objects.filter(post=post)
                 image = request.FILES.getlist('image')
                 list_img = []
                 for img in image:
@@ -162,36 +167,41 @@ def add_post(request):
                 image_form = TripPlanImageForm()
                 form = TripPlanForm(request.POST, instance=post)
                 return render(request, 'trip/add_blog.html', {'form': form,
-                                                              'image_form': image_form, 'img_obj': list_img})
+                                                              'image_form': image_form, 'img_obj': all_img, 'new_img': list_img})
+            all_img = UploadImage.objects.filter(post=post)
             form = TripPlanForm(request.POST, instance=post)
             image_form = TripPlanImageForm()
             return render(request, 'trip/add_blog.html', {'form': form,
-                                                          'image_form': image_form})
+                                                          'image_form': image_form, 'img_obj': all_img})
         elif 'blog' in request.POST:
             if form.is_valid():
-                image_form = TripPlanImageForm(request.POST, request.FILES)
+                all_img = UploadImage.objects.filter(post=post)
+                image_form = TripPlanImageForm()
                 post_form = form.save(commit=False)
                 if post_form.body == '' or post_form.title is None or post_form.duration is None or post_form.price is None:
                     post_form.save()
                     return render(request, 'trip/add_blog.html', {'form': form,
-                                                                  'image_form': image_form, 'message': 'Need fill all fields'})
+                                                                  'image_form': image_form, 'message': 'Need fill all fields',
+                                                                  'img_obj': all_img})
                 post_form.author = request.user
                 post_form.complete = True
                 post_form.save()
                 return HttpResponseRedirect(reverse('trip:tripdetail', args=[post_form.pk]))
         elif 'save_blog' in request.POST:
             if form.is_valid():
+                all_img = UploadImage.objects.filter(post=post)
                 post_form = form.save(commit=False)
                 post_form.author = request.user
                 post_form.save()
                 image_form = TripPlanImageForm()
                 form = TripPlanForm(request.POST, instance=post)
                 return render(request, 'trip/add_blog.html', {'form': form,
-                                                              'image_form': image_form})
+                                                              'image_form': image_form, 'img_obj': all_img})
     post = get_object_or_404(TripPlan, author=request.user, complete=False)
+    all_img = UploadImage.objects.filter(post=post)
     form = TripPlanForm(instance=post)
     image_form = TripPlanImageForm()
-    return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form})
+    return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': all_img})
 
 
 class EditPost(UpdateView):
@@ -290,7 +300,8 @@ def place_info(request, place_id: str):
     try:
         place = PlaceDetail.objects.get(place_id=place_id)
     except ObjectDoesNotExist:
-        place = PlaceDetail.objects.create(name=context['place_name'], place_id=place_id)
+        place = PlaceDetail.objects.create(
+            name=context['place_name'], place_id=place_id)
         place.save()
     reviews = PlaceReview.objects.filter(place=place)
     if request.user.is_authenticated:
@@ -299,7 +310,8 @@ def place_info(request, place_id: str):
         context['reviews_user_disliked'] = PlaceReview.objects.filter(placereviewlike__like=False,
                                                                       placereviewlike__user=request.user)
         try:
-            context['user_reviewed'] = PlaceReview.objects.get(place=place, author=request.user)
+            context['user_reviewed'] = PlaceReview.objects.get(
+                place=place, author=request.user)
             context['is_reviewed'] = True
         except ObjectDoesNotExist:
             context['is_reviewed'] = False
@@ -324,7 +336,8 @@ def place_like(request, place_id):
     user = request.user
     review_id = request.POST['review_id']
     try:
-        review = PlaceReview.objects.get(place__place_id=place_id, id=review_id)
+        review = PlaceReview.objects.get(
+            place__place_id=place_id, id=review_id)
     except ObjectDoesNotExist:
         return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
     try:
@@ -335,7 +348,8 @@ def place_like(request, place_id):
             review_respond.like = True
             review_respond.save()
     except ObjectDoesNotExist:
-        review_respond = PlaceReviewLike.objects.create(review=review, user=user, like=True)
+        review_respond = PlaceReviewLike.objects.create(
+            review=review, user=user, like=True)
         review_respond.save()
     return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
 
@@ -356,7 +370,8 @@ def place_dislike(request, place_id):
     user = request.user
     review_id = request.POST['review_id']
     try:
-        review = PlaceReview.objects.get(place__place_id=place_id, id=review_id)
+        review = PlaceReview.objects.get(
+            place__place_id=place_id, id=review_id)
     except ObjectDoesNotExist:
         return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
     try:
@@ -367,7 +382,8 @@ def place_dislike(request, place_id):
             review_respond.like = False
             review_respond.save()
     except ObjectDoesNotExist:
-        review_respond = PlaceReviewLike.objects.create(review=review, user=user, like=False)
+        review_respond = PlaceReviewLike.objects.create(
+            review=review, user=user, like=False)
         review_respond.save()
     return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
 
@@ -388,7 +404,8 @@ def place_review(request, place_id):
     user = request.user
     review_text = request.POST['review']
     place = PlaceDetail.objects.get(place_id=place_id)
-    review = PlaceReview.objects.create(place=place, review_text=review_text, author=user)
+    review = PlaceReview.objects.create(
+        place=place, review_text=review_text, author=user)
     review.save()
     return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
 

@@ -59,17 +59,25 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
       <input name='image' type='file' multiple>
       <button type="submit" name="imgpic">Upload</button>
     </form>
+    <div class="flex justify-between grid grid-cols-3 gap-y-3">
+      {% if new_img %}
+        <p class="font-bold text-center">New Image: </p>
+        {% for image in new_img %}
+          <img src="{{image.image.url}}" alt="connect" height="300", width="300">
+        {% endfor %}
+      {% endif %}
+      <br><br>
+    </div>
+    <div class="flex mt-4 grid grid-cols-3 gap-y-3">
+      {% if img_obj %}
+      <p class="font-bold text-center">All Image: </p>
+      {% for image in img_obj %}
+        <img src="{{image.image.url}}" alt="connect" height="300", width="300">
+      {% endfor %}
+    {% endif %}
+    </div>
   </div>
 </div>
-
-
-{% if img_obj %}
-{% for image in img_obj %}
-{{image.image.url}}
-<img src="{{image.image.url}}" alt="connect" height="300", width="300">
-{% endfor %}
-{% endif %}
-
 {% else %} 
 <script>alert('You need to login.')</script>
 <META HTTP-EQUIV="Refresh" CONTENT="0 ; URL={% url 'account_login' %}">

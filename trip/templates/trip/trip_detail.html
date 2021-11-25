@@ -10,8 +10,10 @@
 {% block header %}
   <title>ThaiRepose::{{ name }}</title>
     <style>
-        body {
-            background: url("{% static '/images/bg-blur.jpg' %}") no-repeat fixed;
+        .bg-page {
+            background-image: url("{% static 'images/bg-blur.jpg' %}");
+            background-repeat: no-repeat;
+            background-position: center center;
             background-size: cover;
         }
 
@@ -39,7 +41,7 @@
 {% endblock %}
 
 {% block main_content %}
-<div id="main-content">
+<div id="main-content" class="bg-page flex-grow">
     <div id="content" class="flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10 mb-20">
         <div class="justify-center items-center rounded-lg lg:w-7/12 mx-auto pb-4" style="background-color: rgba(255,255,255,0.75);">
             <div class="flex justify-between mx-8 pt-4">

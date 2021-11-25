@@ -437,6 +437,7 @@ def resturct_to_place_detail(context):
         init_data["phone"] = context[0]['phone']
     return init_data
 
+
 def new_line_html(text):
     out = ""
     for idx in range(len(text)):
@@ -445,6 +446,7 @@ def new_line_html(text):
         else:
             out += text[idx]
     return out
+
 
 def post_comment(request):
     """Add comment to database and return html to render in front-end

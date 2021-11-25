@@ -13,7 +13,11 @@ urlpatterns = [
     path('tripdetail/<int:pk>/remove', views.delete_post, name='deletepost'),
     path('category/<category>', views.CatsListView.as_view(), name='category'),
     path('addcomment/', views.post_comment, name="add_comment"),
+    path('action/gettripqueries', views.get_trip_queries, name='get-trip-query'),
     # 127.0.0.1/domnfoironkwe_0394
     path('place/<str:place_id>/', views.place_info, name='place-detail'),
-    path('action/gettripqueries', views.get_trip_queries, name='get-trip-query'),
+    path('place/<str:place_id>/like', views.place_like, name='place-like'),
+    path('place/<str:place_id>/dislike', views.place_dislike, name='place-dislike'),
+    path('place/<str:place_id>/addreview', views.place_review, name='place-review'),
+    path('place/<str:place_id>/removereview', views.place_remove_review, name='place-remove-review'),
 ]

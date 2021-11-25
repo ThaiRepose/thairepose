@@ -11,6 +11,7 @@
     </style>
     <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}" />
     <link rel="stylesheet" href="https://npmcdn.com/flickity@2/dist/flickity.css" />
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@1.7.0/dist/tailwind.min.css" />
 {% endblock %}
 
 {% block main_content %}
@@ -81,12 +82,28 @@
                                 <p class="text-sm">{{ review.review_text }}</p>
                             </div>
                             <div class="flex flex-grow">
-                                <div class="pt-6 hover:scale-110">
-                                    <a class="text-xl" href="">{{ review.likes }}<span class="text-5xl">&#8679;</span></a>
-                                </div>
-                                <div class="pt-12 pr-2 hover:scale-110">
-                                    <a class="text-xl" href=""><span class="text-5xl">&#8681;</span>{{ review.dislikes }}</a>
-                                </div>
+                                <form action="{% url 'trip:place-like' place_id %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="review_id" value="{{ review.id }}" />
+                                    <div class="pt-6 hover:scale-110">
+                                        {% if review in reviews_user_liked %}
+                                            <button type="submit" class="text-xl text-green-500">{{ review.likes }}<span class="text-5xl text-green-500">&#8679;</span></button>
+                                        {% else %}
+                                            <button type="submit" class="text-xl">{{ review.likes }}<span class="text-5xl">&#8679;</span></button>
+                                        {% endif %}
+                                    </div>
+                                </form>
+                                <form action="{% url 'trip:place-dislike' place_id %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="review_id" value="{{ review.id }}" />
+                                    <div class="pt-12 pr-2 hover:scale-110">
+                                        {% if review in reviews_user_disliked %}
+                                            <button class="text-xl text-red-600"><span class="text-5xl text-red-500">&#8681;</span>{{ review.dislikes }}</button>
+                                        {% else %}
+                                            <button class="text-xl"><span class="text-5xl">&#8681;</span>{{ review.dislikes }}</button>
+                                        {% endif %}
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     {% endfor %}
@@ -98,6 +115,13 @@
                             </div>
                         </div>
                     {% endfor %}
+                        <form action="{% url 'trip:place-dislike' place_id %}" method="post">
+                            {% csrf_token %}
+                            <div class="flex items-center mb-5 w-5/6 border-b-2 border-gray-400 outline-none">
+                                <input type="text" id="name" name="name" placeholder="Add a review"
+                                       class="flex-1 py-2 border-none text-gray-700 placeholder-gray-600 bg-transparent outline-none">
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <div class="w-full md:w-1/5">

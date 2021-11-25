@@ -1,0 +1,21 @@
+<div class="bg-translucent rounded-lg mb-8 px-4 py-2 js-show-on-scroll">
+    <div class="flex justify-between">
+        <div>
+            <strong>{{commend.name}}</strong>
+            <p>{{commend.date_added}}</p>
+        </div>
+        <div>
+            <div class="flex flex-grow">
+                <p id="total-like-{{commend.id}}"class="flex justify-center pt-3 pb-20 pr-2 text-2xl font-semibold -mb-2">{{ commend.total_like }}</p>
+                    <div class="pt-1 hover:scale-110">
+                        <button id="review-like-button" value="{{ commend.id }}">
+                            <span class="text-5xl text-gray-600">&#8679;</span>
+                        </button>
+                    </div>
+                </div>
+                {% comment %} <button type="submit" name="commend_id" value="{{ commend.id }}">Like</button>
+            - {{ commend.total_like }} {% endcomment %}
+        </div>
+    </div>
+    <p class="-mt-10 relative w-9/12">{{commend.body|safe}}</p>
+</div>

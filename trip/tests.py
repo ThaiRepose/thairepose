@@ -5,7 +5,7 @@ from decouple import config
 import os
 import unittest
 from threpose.settings import BASE_DIR
-from .views import delete_post, get_details_context, trip_detail
+from .views import delete_post, get_details_context, new_line_html, trip_detail
 from .views import check_downloaded_image
 from .views import restruct_detail_context_data
 from .views import resturct_to_place_detail
@@ -261,6 +261,12 @@ class ReviewModelTests(TestCase):
         Review.objects.create(post=self.trip, name=self.user, body='review')
         TripPlan.objects.filter(id='1').delete()
         self.assertEqual(Review.objects.all().count(), 0)
+
+    def test_convert_string_to_html(self):
+        """Test convert newline python syntax to html syntax"""
+        expect = "hello<br>world"
+        input = "hello\nworld"
+        self.assertEqual(expect, new_line_html(input))
 
     def tearDown(self):
         """Remove all user and all trip plan"""

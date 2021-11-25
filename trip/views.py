@@ -4,6 +4,7 @@ from django.urls import reverse, reverse_lazy
 from allauth.account.decorators import verified_email_required
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
 import os
 from django.http.response import JsonResponse
@@ -18,6 +19,7 @@ from requests.api import post
 from .models import TripPlan, Review, CategoryPlan, UploadImage
 from .forms import TripPlanForm, TripPlanImageForm, ReviewForm
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 
 
 api_caching = APICaching()
@@ -91,20 +93,20 @@ def trip_detail(request, pk):
     """
     post = get_object_or_404(TripPlan, id=pk)
     commend = Review.objects.filter(post=post)
-    if request.method == 'POST':
-        form = ReviewForm(request.POST)
-        if form.is_valid():
-            review_form = form.save(commit=False)
-            review_form.post = TripPlan.objects.filter(id=pk)[0]
-            review_form.name = request.user
-            review_form.save()
-            return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
-    else:
-        form = ReviewForm()
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(commend, 8)
+    try:
+        comments = paginator.page(page)
+    except PageNotAnInteger:
+        comments = paginator.page(1)
+    except EmptyPage:
+        comments = paginator.page(paginator.num_pages)
+
     context = {
         'post': post,
         'commend': commend,
-        'review_form': form
+        'comments': comments
     }
     return render(request, 'trip/trip_detail.html', context)
 
@@ -167,7 +169,12 @@ def add_post(request):
                                                           'image_form': image_form})
         elif 'blog' in request.POST:
             if form.is_valid():
+                image_form = TripPlanImageForm(request.POST, request.FILES)
                 post_form = form.save(commit=False)
+                if post_form.body == '' or post_form.title is None or post_form.duration is None or post_form.price is None:
+                    post_form.save()
+                    return render(request, 'trip/add_blog.html', {'form': form,
+                                                                  'image_form': image_form, 'message': 'Need fill all fields'})
                 post_form.author = request.user
                 post_form.complete = True
                 post_form.save()
@@ -192,7 +199,8 @@ class EditPost(UpdateView):
 
     model = TripPlan
     template_name = "trip/update_plan.html"
-    fields = ['title', 'duration', 'price', 'body']
+    # fields = ['title', 'duration', 'price', 'body']
+    form_class = TripPlanForm
     context_object_name = 'post'
 
 
@@ -240,7 +248,6 @@ def like_post(request):
     """
     if request.method == 'POST':
         pk = request.POST.get('pk')
-        print(pk)
         post = get_object_or_404(TripPlan, id=pk)
         if post.like.filter(id=request.user.id).exists():
             post.like.remove(request.user)
@@ -462,3 +469,31 @@ def resturct_to_place_detail(context):
     if 'phone' in context[0]:
         init_data["phone"] = context[0]['phone']
     return init_data
+
+
+def new_line_html(text):
+    out = ""
+    for idx in range(len(text)):
+        if text[idx] == '\n':
+            out += '<br>'
+        else:
+            out += text[idx]
+    return out
+
+
+def post_comment(request):
+    """Add comment to database and return html to render in front-end
+
+    Returns:
+        http: html of comment
+    """
+    if request.method == 'POST':
+        pk = request.POST.get('pk')
+        post = get_object_or_404(TripPlan, id=pk)
+        comment = Review()
+        comment.name = request.user
+        comment.post = post
+        comment.body = request.POST.get('comment')
+        comment.body = new_line_html(comment.body)
+        comment.save()
+    return render(request, 'trip/single_comment.html', {'commend': comment})

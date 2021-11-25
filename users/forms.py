@@ -18,12 +18,18 @@ class UserUpdateForm(forms.ModelForm):
             'first_name': forms.TextInput(attrs={'maxlength': 10, }),
         }
 
+class DateInput(forms.DateInput):
+    input_type = 'date'
 
 class ProfileUpdateForm(forms.ModelForm):
     """Class for set field of profile form."""
 
     profile_pic = forms.ImageField()
+    birthday = forms.DateField(widget=DateInput)
 
     class Meta:
         model = Profile
         fields = ['birthday', 'profile_pic']
+        widgets = {
+            'birthday': forms.DateInput(format='%d-%m-%Y'),
+        }

@@ -5,6 +5,7 @@ from django.urls import reverse
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.utils.deconstruct import deconstructible
 from django.conf import settings
+from mptt.models import MPTTModel, TreeForeignKey
 
 
 class CategoryPlan(models.Model):
@@ -91,7 +92,7 @@ class TripPlan(models.Model):
         return UploadImage.objects.filter(post=self)
 
 
-class Review(models.Model):
+class Review(MPTTModel):
     """Extended user model class that use for Review.
 
     Attributes:
@@ -103,6 +104,7 @@ class Review(models.Model):
 
     post = models.ForeignKey(
         TripPlan, related_name="review", on_delete=models.CASCADE)
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='children')
     name = models.ForeignKey(User, on_delete=models.CASCADE)
     body = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)

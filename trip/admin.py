@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import TripPlan, Review, CategoryPlan, UploadImage, PlaceDetail, PlaceReview
+from mptt.admin import MPTTModelAdmin
 
 
 class ReviewInline(admin.StackedInline):
@@ -24,6 +25,6 @@ class PlaceDetailAdmin(admin.ModelAdmin):
 
 admin.site.register(TripPlan)
 admin.site.register(CategoryPlan)
-admin.site.register(Review)
+admin.site.register(Review, MPTTModelAdmin)
 admin.site.register(UploadImage)
 admin.site.register(PlaceDetail, PlaceDetailAdmin)

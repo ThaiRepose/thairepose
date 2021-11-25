@@ -18,6 +18,7 @@ django-ckeditor==6.1.0
 django-js-asset==1.2.2
 django-tailwind==2.2.1
 django-widget-tweaks==1.4.9
+django-mptt==0.13.4
 environ==1.0
 flake8==4.0.1
 h11==0.12.0

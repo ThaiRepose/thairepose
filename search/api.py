@@ -31,6 +31,7 @@ class GoogleAPI:
         payload = {}
         headers = {}
         response = requests.request("GET", url, headers=headers, data=payload)
+        print(response.content)
         return response.content
 
     def next_search_nearby(self, token: str):

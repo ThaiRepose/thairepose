@@ -66,14 +66,14 @@ def edit_profile(request):
             request.POST, request.FILES, instance=profile)
         if profile_form.is_valid():
             user_form.save()
-            filename = profile_form.save(commit=False).profile_pic
             profile_form.save()
+            filename = profile_form.save(commit=False).profile_pic
             im1 = Image.open(pic_profile_path(filename))
             im2 = Image.open(pic_profile_rename_path(request.user.pk))
             if list(im1.getdata()) != list(im2.getdata()):
                 os.remove(pic_profile_rename_path(request.user.pk))
-            os.rename(pic_profile_path(filename),
-                      pic_profile_rename_path(request.user.pk))
+                os.rename(pic_profile_path(filename),
+                        pic_profile_rename_path(request.user.pk))
             profile_form.save(commit=False).profile_pic = pic_profile_rename_path(request.user.pk)
             profile_form.save()
             messages.success(request, 'Your account has been updated!')

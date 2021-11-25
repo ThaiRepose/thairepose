@@ -129,7 +129,7 @@
                                 - {{ commend.total_like }} {% endcomment %}
                             </div>
                         </div>
-                        <p class="-mt-10 relative w-9/12">{{commend.body}}</p>
+                        <p class="-mt-10 relative w-9/12">{{commend.body|safe}}</p>
                     </div>
                 {% endfor %}
             </div>
@@ -352,7 +352,7 @@ $(document).ready(function(){
                 all_comment.scrollTop = all_comment.scrollHeight;
             },
             error: function (xhr, errmsg, err) {
-                console.log("1234")
+                console.log("error")
 
             }
         });
@@ -397,10 +397,8 @@ $(document).ready(function(){
         if (body == ""){
             return false;
         }
-        console.log(body.length)
         var check = false
         for (var i = 0; i < body.length; i++){
-            console.log(body[i])
             if (body[i] != " "){
                 console.log(body[i])
                 check = true;

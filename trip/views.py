@@ -436,8 +436,16 @@ def resturct_to_place_detail(context):
         init_data["phone"] = context[0]['phone']
     return init_data
 
+def new_line_html(text):
+    out = ""
+    for idx in range(len(text)):
+        if text[idx] == '\n':
+            out += '<br>'
+        else:
+            out += text[idx]
+    return out
 
-def postComment(request):
+def post_comment(request):
     """Add comment to database and return html to render in front-end
 
     Returns:
@@ -450,5 +458,6 @@ def postComment(request):
         comment.name = request.user
         comment.post = post
         comment.body = request.POST.get('comment')
+        comment.body = new_line_html(comment.body)
         comment.save()
     return render(request, 'trip/single_comment.html', {'commend': comment})

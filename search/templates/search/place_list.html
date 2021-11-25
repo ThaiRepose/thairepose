@@ -75,7 +75,7 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
           
           $new = $("#place_box").clone()
           if (place.downloaded){
-            $new.find('img').attr('src', `{% static '/images/places_image' %}/${place.place_id}photo.jpeg`)
+            $new.find('img').attr('src', `{% get_media_prefix %}places_image/${place.place_id}photo.jpeg`)
           }
           else if (place.photo_ref.length == 1){
             $new.find('img').attr('src', `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${place.photo_ref[0]}&key={{ api_key }}`)

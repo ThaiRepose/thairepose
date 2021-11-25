@@ -194,7 +194,7 @@ class PlaceDetailsViewTest(TestCase):
             'rating': 4,
             'blank_rating': 1,
             'images': ['Aap_uECILxxdbdn'],
-            'reviews': [{'author': '- - SHJR', 'text': 'It was perfect'}],
+            'google_reviews': [{'author': '- - SHJR', 'text': 'It was perfect'}],
             'suggestions': [{'place_name': 'Ban', 'photo_ref': 'A', 'place_id': 'ChIJae'}],
             'website': 'threpose',
             'phone': '1111111'

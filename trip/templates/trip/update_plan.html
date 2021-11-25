@@ -52,7 +52,7 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
 
       </form>
       {% else %}
-      <script>alert('You are allow to access.')</script>
+      <script>alert('You are not allow to access.')</script>
       <META HTTP-EQUIV="Refresh" CONTENT="0 ; URL={% url 'trip:tripplan' %}">
       {% endif %}
   {% else %}

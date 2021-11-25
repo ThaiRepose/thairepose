@@ -140,7 +140,7 @@
           if (places[i].type === "place" && place_added < maximum) {
             result_box.innerHTML += `<a href="${place_detail_url}${places[i].placeId}"><div style="z-index: 10;" class="relative w-full py-2 pl-14 h-9 bg-white text-md focus:outline-none focus:outline-none border-none shadow-lg md:hover:scale-110 transition ease-in-out duration-200"><div  style="z-index: 10;"><span class="material-icons material-icons-outlined md-20 mr-2 inline-block align-middle">pin_drop</span>${places[i].name}<span style="text-overflow: ellipsis;" class="text-gray-400 text-sm">  - ${places[i].address}</span></div></div></a>`;
             place_added++;
-          } else if (nearby_added < maximum) {
+          } else if (places[i].type === "nearby" && nearby_added < maximum) {
             result_box.innerHTML += `<a href="${place_list_url}?lat=${places[i].lat}&lng=${places[i].lng}"><div style="z-index: 10;" class="relative h-9 w-full py-2 pl-14 bg-white text-md focus:outline-none focus:outline-none border-none shadow-lg md:hover:scale-110 transition ease-in-out duration-200"><div style="text-overflow: ellipsis; z-index: 10;"><span style="z-index: 10;" class="material-icons material-icons-outlined md-20 mr-2 inline-block align-middle">location_city</span>Search nearby: ${places[i].name}</div></div></a>`;
             nearby_added++;
           }
@@ -205,7 +205,6 @@
             await sleep(400);
             await displayQueries(event, places);
             await displayPlaceQueries(places);
-            console.log(places);
             await sleep(150);
             await roundedSearchBox();
             await sleep(2000);

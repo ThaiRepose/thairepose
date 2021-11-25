@@ -3,6 +3,7 @@ from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from allauth.account.decorators import verified_email_required
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
 import os
@@ -32,7 +33,35 @@ PLACE_IMG_PATH = os.path.join(
 def index(request):
     """Render Index page."""
     api_key = config('FRONTEND_API_KEY')
-    return render(request, "trip/index.html", {'api_key': api_key})
+    # Get top like trip blogs.
+    top_trips = sorted(TripPlan.objects.filter(complete=True), key=lambda m: m.total_like, reverse=True)[:6]
+    return render(request, "trip/index.html", {'api_key': api_key, "top_trips": top_trips})
+
+
+@require_http_methods(["POST"])
+def get_trip_queries(request):
+    """Search for trip and return queries.
+
+    POST params:
+        keyword: keyword to search for trip plans.
+    """
+    if 'keyword' not in request.POST:
+        return JsonResponse({"status": "BAD_REQUEST"})
+    keyword = json.loads(request.POST['keyword'])
+    # get query that has title starts with keyword.
+    query_startswith = sorted(TripPlan.objects.filter(title__istartswith=keyword,
+                                                      complete=True),
+                              key=lambda m: m.total_like,
+                              reverse=True)[:3]
+    quantity_requested = 4 - len(query_startswith)  # define how much we need query left.
+    # get query that contains keyword.
+    query_contain = sorted(TripPlan.objects.filter(title__icontains=keyword,
+                                                   complete=True),
+                           key=lambda m: m.total_like,
+                           reverse=True)[:quantity_requested]
+    queries_combined = set(query_startswith + query_contain)  # list of query, type is list
+    queries = [{"id": query.id, "name": query.title} for query in queries_combined]  # prepare for context
+    return JsonResponse({"status": "OK", "results": queries})
 
 
 class AllTrip(ListView):
@@ -237,19 +266,18 @@ def place_info(request, place_id: str):
     """
     backend_api_key = config('BACKEND_API_KEY')
     frontend_api_key = config('FRONTEND_API_KEY')
-    if api_caching.get(f"{place_id}detailpage"):
+    if api_caching.get(f"{place_id[:50]}detailpage"):
         cache_data = json.loads(api_caching.get(
-            f"{place_id}detailpage"))['cache']
+            f"{place_id[:50]}detailpage"))['cache']
     else:
         url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={backend_api_key}"
         response = requests.get(url)
         data = json.loads(response.content)
-        print(data)
         if data['status'] != "OK":
             return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
         context = get_details_context(data, backend_api_key, frontend_api_key)
         cache_data = restruct_detail_context_data(context)
-        api_caching.add(f"{place_id}detailpage", json.dumps(
+        api_caching.add(f"{place_id[:50]}detailpage", json.dumps(
             {'cache': cache_data}, indent=3).encode())
 
     context = resturct_to_place_detail(cache_data)

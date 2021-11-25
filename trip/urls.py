@@ -14,5 +14,6 @@ urlpatterns = [
     path('category/<category>', views.CatsListView.as_view(), name='category'),
     path('addcomment/', views.post_comment, name="add_comment"),
     # 127.0.0.1/domnfoironkwe_0394
-    path('place/<str:place_id>/', views.place_info, name='place-detail')
+    path('place/<str:place_id>/', views.place_info, name='place-detail'),
+    path('action/gettripqueries', views.get_trip_queries, name='get-trip-query'),
 ]

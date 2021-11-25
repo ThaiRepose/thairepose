@@ -259,19 +259,18 @@ def place_info(request, place_id: str):
     """
     backend_api_key = config('BACKEND_API_KEY')
     frontend_api_key = config('FRONTEND_API_KEY')
-    if api_caching.get(f"{place_id}detailpage"):
+    if api_caching.get(f"{place_id[:50]}detailpage"):
         cache_data = json.loads(api_caching.get(
-            f"{place_id}detailpage"))['cache']
+            f"{place_id[:50]}detailpage"))['cache']
     else:
         url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={backend_api_key}"
         response = requests.get(url)
         data = json.loads(response.content)
-        print(data)
         if data['status'] != "OK":
             return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
         context = get_details_context(data, backend_api_key, frontend_api_key)
         cache_data = restruct_detail_context_data(context)
-        api_caching.add(f"{place_id}detailpage", json.dumps(
+        api_caching.add(f"{place_id[:50]}detailpage", json.dumps(
             {'cache': cache_data}, indent=3).encode())
 
     context = resturct_to_place_detail(cache_data)

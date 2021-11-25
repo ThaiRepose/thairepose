@@ -482,7 +482,7 @@ def get_details_context(place_data: dict, backend_api_key: str, frontend_api_key
                 f"json?location={lat}%2C{lng}&radius=2000&key={backend_api_key}"
             response = requests.get(url)
             place_data = json.loads(response.content)
-            for place in place_data['results'][1:]:
+            for place in place_data['results'][1:10]:
                 if place['name'] == context['place_name']:
                     continue
                 if 'photos' not in place.keys():

@@ -19,5 +19,5 @@ urlpatterns = [
     path('place/<str:place_id>/like', views.place_like, name='place-like'),
     path('place/<str:place_id>/dislike', views.place_dislike, name='place-dislike'),
     path('place/<str:place_id>/addreview', views.place_review, name='place-review'),
-    path('place/<str:place_id>/removereview', views.place_remove_review, name='place-remove-review'),   
+    path('place/<str:place_id>/removereview', views.place_remove_review, name='place-remove-review'),
 ]

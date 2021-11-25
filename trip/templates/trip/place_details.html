@@ -233,18 +233,15 @@
         }
 
         function getSuggestionPhotos(placeId) {
-          console.log(placeId.length);
           for (let i=0; i<placeId.length; i++) {
             place_service.getDetails({
               placeId: placeId[i],
               fields: ['place_id', 'photos']
             }, (result, status) => {
-              console.log(status);
               if (status !== "OK")
                 return;
               let photoObj = document.getElementById("suggestionPlacePhoto-" + (i + 1));
               photoObj.setAttribute("src", result.photos[0].getUrl());
-              console.log(result.photos[0].getUrl());
             })
             sleep(2000);
           }

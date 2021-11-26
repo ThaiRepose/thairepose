@@ -576,3 +576,20 @@ class PlaceDetailModelTest(TestCase):
         review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
         self.assertEqual(review.dislikes, 0)
         self.assertEqual(review.likes, 0)
+
+    def test_like_dislike_invalid_method(self):
+        """Test like/dislike with method isn't POST, should redirect to place detail page without doing any like."""
+        review_text = "This is a good place!"
+        self.client.post(reverse("trip:place-review", args=[self.place_id]),
+                         {"review": review_text})
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        response1 = self.client.get(reverse("trip:place-dislike", args=[self.place_id]),
+                                    {"review_id": review.id})
+        response2 = self.client.get(reverse("trip:place-dislike", args=[self.place_id]),
+                                    {"review_id": review.id})
+        # All response should return redirect
+        self.assertEqual(response1.status_code, 302)
+        self.assertEqual(response2.status_code, 302)
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        self.assertEqual(review.dislikes, 0)
+        self.assertEqual(review.likes, 0)

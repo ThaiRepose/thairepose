@@ -78,6 +78,7 @@ def pic_profile_path(path):
         path(str): path.
     """
     new_path = os.path.join(settings.MEDIA_ROOT, str(path))
+    new_path = new_path.replace('\\', '/')
     return new_path
 
 

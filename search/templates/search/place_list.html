@@ -85,7 +85,15 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
                 }, 2000);
             }
         }
-        async function addBoxPlace(place) {
+        let additionalToDownload = [];
+        {% for place in places %}
+          {% if not place.downloaded and place.photo_ref.0 %}
+            additionalToDownload.push({elem: "PlacePhoto-{{ forloop.counter }}", placeId: "{{ place.place_id }}"});
+            getPlacePhoto("PlacePhoto-{{ forloop.counter }}", "{{ place.place_id }}")
+          {% endif %}
+        {% endfor %}
+
+        function addBoxPlace(place) {
           let getPhoto = false;
           $new = $("#place_box").clone()
           if (place.downloaded){
@@ -107,15 +115,18 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
           $new.attr('href', url).end();
           $new.find('p').replaceWith(`<p class="font-bold text-xl mb-2">${place.place_name}</p>`).end().appendTo("#big_box");
           if (getPhoto) {
-            await sleep(1500);
-            await getPlacePhoto(`AdditionalPlacePhoto-${place.place_id}`, place.place_id);
+            additionalToDownload.push({elem: `AdditionalPlacePhoto-${place.place_id}`, placeId: place.place_id});
           }
         }
-
-        {% for place in places %}
-          {% if not place.downloaded and place.photo_ref.0 %}
-            getPlacePhoto("PlacePhoto-{{ forloop.counter }}", "{{ place.place_id }}")
-          {% endif %}
-        {% endfor %}
+        var delayTimer;
+        async function getAllAdditionalPhotos() {
+          clearTimeout(delayTimer);
+          delayTimer = setTimeout(async function() {
+            for (let i = 0; i < additionalToDownload.length; i++) {
+                await sleep(1500);
+                getPlacePhoto(additionalToDownload[i].elem, additionalToDownload[i].placeId);
+              }
+          }, 2000)
+        }
     </script>
 {% endblock %}

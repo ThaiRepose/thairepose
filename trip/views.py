@@ -618,4 +618,4 @@ def post_comment(request):
         comment.body = request.POST.get('comment')
         comment.body = new_line_html(comment.body)
         comment.save()
-    return render(request, 'trip/single_comment.html', {'commend': comment})
+        return render(request, 'trip/single_comment.html', {'commend': comment})

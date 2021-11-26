@@ -1,7 +1,7 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -110,7 +110,7 @@ def get_default_name(user: User) -> str:
         return user.first_name + "'s Plan"
 
 
-@receiver(post_save, sender=Plan)
+@receiver(pre_save, sender=Plan)
 def initial_plan_validate(**kwargs):
     """Initialize planner name if not specified."""
     # validate name shouldn't be blank

@@ -35,7 +35,6 @@ urlpatterns = [
     path('planner/', include('planner.urls', namespace="planner")),
     path('service/', views.term_of_service, name="service"),
     path('policy/', views.privacy_policy, name="policy"),
-    path('ckeditor/', include('ckeditor_uploader.urls')),
     path('profile', views.profile, name='profile'),
     path('editprofile/', views.edit_profile, name='editprofile'),
     path('ckeditor/upload/', login_required(ckeditor_views.upload), name='ckeditor_upload'),

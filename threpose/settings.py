@@ -181,7 +181,7 @@ else:
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Upload folder for ckeditorupload
 CKEDITOR_UPLOAD_PATH = 'uploads/'
-
+CKEDITOR_ALLOW_NONIMAGE_FILES = True
 
 # Profile picture path
 PROFILE_PIC_LOCATION = os.path.join(MEDIA_ROOT, 'user', 'profile_picture')

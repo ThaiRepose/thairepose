@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block main_content %}
+{% if user.is_authenticated %}
+    {% if user.id == post.author.id %}
+<h1>Delete post</h1>
+<he>Post that you want to delete: {{ post.title }}</he>
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">!!!Delete!!!</button>
+</form>
+    {% else %}
+    <script>alert('You are allow to access.')</script>
+    <META HTTP-EQUIV="Refresh" CONTENT="0 ; URL={% url 'trip:tripplan' %}">
+    {% endif %}
+{% else %}
+<a href="{% url 'account_login' %}">You need to login</a>
+{% endif %}
+{% endblock %}

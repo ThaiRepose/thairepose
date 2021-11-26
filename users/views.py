@@ -1,42 +1,14 @@
-import django
-from django.conf import settings
-from django.contrib.auth.models import Group
-from django.core.mail import EmailMessage
-from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.sites.shortcuts import get_current_site
-from django.http import HttpResponse
-from django.shortcuts import redirect, render
-from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_text
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect
 from django.urls import reverse
-
-from .models import Profile, User
-from .forms import CreateUserForm
-from .utils import generate_token
-# Create your views here.
-
-
-def send_action_email(user, request):
-    """Retrieve user model and send email to user and return status 200.
-
-    Args:
-        user (Profile): extended model from user
-    """
-    current_site = get_current_site(request)
-    email_subject = 'Activate your account'
-    email_body = render_to_string('users/activate.html', {
-        'user': user,
-        'domain': current_site,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-        'token': generate_token.make_token(user)
-    })
-
-    email = EmailMessage(subject=email_subject, body=email_body, from_email=settings.EMAIL_FROM_USER,
-                         to=[user.email]
-                         )
-    email.send()
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from PIL import Image
+from .models import Profile
+from .forms import UserUpdateForm, ProfileUpdateForm
+from .utils import pic_profile_path, pic_profile_rename_path
+import os
 
 
 def home(request):
@@ -49,100 +21,72 @@ def index(request):
     return render(request, "users/index.html")
 
 
-def register(request):
-    """Add user to database.
-
-    Returns:
-        Httprequest: return register page with status 403 if registeration fail
-                     and return login page with status 200 if registeration success
-    """
-    form = CreateUserForm()
-
-    if request.method == 'POST':
-        form = CreateUserForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data.get('username')
-            Profile.objects.create(
-                user=user,
-                username=username,
-            )
-            send_action_email(user, request)
-            return redirect('login')
-        return render(request, "users/register.html", {'form': form}, status=403)
-
-    return render(request, "users/register.html", {'form': form})
-
-
-def loginPage(request):
-    """Send user to home page if user put right username and password.
-
-    Returns:
-        Httprequest: return home page with status 302 if user put right username and password.
-                     And return login page with status 401 if use put wrong
-    """
-    context = {
-        'has_error': False
-    }
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            if not user.profile.is_email_verified:
-                messages.info(
-                    request, 'Email is not verified, please check your email inbox')
-                context['has_error'] = True
-            else:
-                login(request, user)
-                return redirect('temphome')
-        else:
-            messages.info(
-                request, 'Username or Password is incorrect')
-            context['has_error'] = True
-
-    if context['has_error']:
-        return render(request, "users/login.html", status=401)
-
-    return render(request, "users/login.html")
-
-
-def logoutUser(request):
-    """Logout user.
-
-    Returns:
-        Httprequest: return login page after logout
-    """
-    logout(request)
-    return redirect('login')
-
-
-def activate_user(request, uidb64, token):
-    """Change is_email_verified to true if token are right.
-
-    Retrieve uidb64 and token from activation link. which uidb64
-    is encoded.
+@login_required
+def profile(request):
+    """Render Profile page.
 
     Args:
-        uidb64 (string): encoded user id(uid)
-        token (string): string of token
+        request(HTTP): request from profiel page.
 
-    Returns:
-        Httprequest: return login page if user verified success with statuss 302 and
-                     return activate-fail with status 401 if user verified fail
+    Return:
+        HTTPResponse: link of profile and content.
     """
-    try:
-        # decode uid
-        uid = force_text(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except Exception:
-        user = None
+    profile = get_object_or_404(Profile, user=request.user)
+    user_form = UserUpdateForm(instance=request.user)
+    profile_form = ProfileUpdateForm(instance=request.user.profile)
+    context = {'profile': profile,
+               'u_form': user_form,
+               'p_form': profile_form,
+               }
+    return render(request, "users/profile.html", context)
 
-    # check user and token
-    if user and generate_token.check_token(user, token):
-        user.profile.is_email_verified = True
-        user.profile.save()
-        messages.info(request, 'Email verified')
-        return redirect(reverse('login'))
-    return render(request, "users/activation-fail.html", {"user": user}, status=401)
+
+def privacy_policy(request):
+    return render(request, "policy/privacy_policy.html")
+
+
+def term_of_service(request):
+    return render(request, "policy/term_of_service.html")
+
+
+@login_required
+def edit_profile(request):
+    """Config fiel of user form and profile form.
+
+    Args:
+        request(hTTP): request from url of edit page.
+
+    Return:
+        HTTPResponse: link of profile and content.
+    """
+    profile = Profile.objects.get(user=request.user)
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(
+            request.POST, request.FILES, instance=profile)
+        if profile_form.is_valid():
+            user_form.save()
+            filename = profile_form.save(commit=False).profile_pic
+            profile_form.save()
+            im1 = Image.open(pic_profile_path(filename))
+            im2 = Image.open(pic_profile_rename_path(request.user.pk))
+            if list(im1.getdata()) != list(im2.getdata()):
+                os.remove(pic_profile_rename_path(request.user.pk))
+            os.rename(pic_profile_path(filename),
+                      pic_profile_rename_path(request.user.pk))
+            profile_form.save(commit=False).profile_pic = pic_profile_rename_path(request.user.pk)
+            profile_form.save()
+            messages.success(request, 'Your account has been updated!')
+            return HttpResponseRedirect(reverse('profile'))
+        elif user_form.is_valid():
+            user_form.save()
+            messages.success(request, 'Your account has been updated!')
+            return HttpResponseRedirect(reverse('profile'))
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=request.user.profile)
+    context = {'u_form': user_form,
+               'p_form': profile_form,
+               'profile': profile
+               }
+    return render(request, "users/edit_profile.html", context)

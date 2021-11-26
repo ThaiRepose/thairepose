@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block header %}
+    <title>ThaiRepose: create blog</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+    
+    .bg-page {
+            background-image: url("{% static 'images/bg-blur.jpg' %}");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover;
+        }
+    </style>
+{% endblock %}
+{% block main_content %}
+{% if user.is_authenticated %}
+
+{% if message %}
+<script>alert('{{message}}')</script>
+{% endif %}
+<div class="bg-page flex-grow">
+  <!-- Tailwind CSS -->
+  <link href="https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css" rel="stylesheet">
+
+  <div id="big_box" class="flex-grow rounded-3xl justify-center max-w-6xl mx-auto p-8 m-10 bg-green-600 bg-fixed" style="background-color: rgba(209, 213, 219, 0.3);
+box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
+    <h1 class="justify-center flex text-2xl mb-3 ">Create Post</h1>
+    <hr style="height:2px;border-width:0;color:gray;background-color:gray">
+    <div class="flex flex-row my-3">
+      <img  width="50" height="50" src="{{ user.profile.profile_pic.url }}" style="border-radius: 50%;">
+      <p class="pl-3 pt-1">{{ user.username }}</p>
+    </div>
+    
+    
+    <form method="POST" enctype="multipart/form-data"  class="w-full">
+      {% csrf_token %}
+      {{ form.media }}
+      <div class="flex flex-wrap -mx-3 mb-6">
+        <div class="w-full px-3">
+          {{ form.title }}
+        </div>
+        <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+          {{ form.duration }}
+        </div>
+        <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+          {{ form.price }}
+        </div>
+        <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+          {{ form.category }}
+        </div>
+      </div>
+      {{ form.body }}
+      <div class="flex">
+        <button type="submit" class="w-20 mt-4 px-4 py-2 font-bold text-white bg-black rounded-full hover:bg-black focus:outline-none focus:shadow-outline" name="blog">Post</button>
+        <button type="submit" class="w-20 ml-3 mt-4 px-4 py-2 font-bold text-white bg-yellow-700 rounded-full hover:bg-black focus:outline-none focus:shadow-outline" name="save_blog">Save</button>
+      </div>
+      <br>
+      <input name='image' type='file' multiple>
+      <button type="submit" name="imgpic">Upload</button>
+    </form>
+    <div class="flex justify-between grid grid-cols-3 gap-y-3">
+      {% if new_img %}
+        <p class="font-bold text-center">New Image: </p>
+        {% for image in new_img %}
+          <img src="{{image.image.url}}" alt="connect" height="300", width="300">
+        {% endfor %}
+      {% endif %}
+      <br><br>
+    </div>
+    <div class="flex mt-4 grid grid-cols-3 gap-y-3">
+      {% if img_obj %}
+      <p class="font-bold text-center">All Image: </p>
+      {% for image in img_obj %}
+        <img src="{{image.image.url}}" alt="connect" height="300", width="300">
+      {% endfor %}
+    {% endif %}
+    </div>
+  </div>
+</div>
+{% else %} 
+<script>alert('You need to login.')</script>
+<META HTTP-EQUIV="Refresh" CONTENT="0 ; URL={% url 'account_login' %}">
+{% endif %}
+<script>
+    function myFunction() {
+        document.getElementById("myblog").submit();
+        document.getElementById("image_blog").submit();
+    }
+    </script>
+{% endblock %}

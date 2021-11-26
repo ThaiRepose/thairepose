@@ -21,6 +21,8 @@ before_script:
   - python manage.py migrate
   - python manage.py makemigrations users
   - python manage.py migrate users
+  - python manage.py makemigrations trip
+  - python manage.py migrate trip
   - python manage.py tailwind install
   - python manage.py tailwind build
 

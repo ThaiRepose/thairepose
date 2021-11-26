@@ -1,19 +1,149 @@
 {% load static tailwind_tags %}
+
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-    <title>Django Tailwind</title>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta http-equiv="X-UA-Compatible" content="ie=edge">
-		{% tailwind_css %}
-	</head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Custom style for website -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Start TailwindCSS -->
+    {% tailwind_css %}
+    <link href="https://unpkg.com/tailwindcss@1.3.4/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    {% block header %}
+    {% endblock %}
+</head>
+<body>
+<!-- Arrange components: Header on top, Footer in bottom. -->
+<div class="flex flex-col h-screen">
+    <!-- Navbar -->
+    {% if request.resolver_match.url_name == "index" %}
+        <header class="w-full text-gray-700 bg-white dark-mode:text-gray-200 dark-mode:bg-gray-800" style="background-color: #f7f6f1">
+    {% else %}
+        <header class="w-full text-gray-700 bg-white dark-mode:text-gray-200 dark-mode:bg-gray-800 shadow-lg" style="background-color: #f7f6f1">
+    {% endif %}
+        <div x-data="{ open: false }"
+             class="flex flex-col max-w-screen-xl px-4 mx-auto md:items-center md:justify-between md:flex-row md:px-6 lg:px-8">
+            <div class="p-4 flex flex-row items-center justify-between">
+                <!-- Left-side content: logo -->
+                <a href="/"
+                   class="text-lg font-semibold tracking-widest text-gray-900 uppercase rounded-lg dark-mode:text-white focus:outline-none focus:shadow-outline">
+                    <img src="{% static 'images/logo.png' %}" alt="Logo" class="w-12 h-12 mx-auto">
+                </a>
+                <!-- Right button to show menus for responsive. -->
+                <button class="md:hidden rounded-lg focus:outline-none focus:shadow-outline" @click="open = !open">
+                    <svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
+                        <path x-show="!open" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                        <path x-show="open" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Navigation links -->
+            <nav :class="{'flex': open, 'hidden': !open}" class="flex-col flex-grow pb-4 md:pb-0 hidden md:flex md:justify-end md:flex-row">
+                {% if request.resolver_match.app_name == "trip" %}
+                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-extrabold text-gray-900 bg-gray-300 rounded-lg hover:rounded-lg dark-mode:bg-gray-700 dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
+                        href="{% url 'trip:tripplan'%}">TRIP</a>
+                {% else %}
+                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-medium bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
+                        href="{% url 'trip:tripplan'%}">TRIP</a>
+                {% endif %}
+                {% if request.resolver_match.app_name == "planner" %}
+                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-extrabold text-gray-900 bg-gray-300 rounded-lg hover:rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
+                        href="{% url 'planner:index' %}">Planner</a>
+                {% else %}
+                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-medium bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
+                        href="{% url 'planner:index' %}">Planner</a>
+                {% endif %}
+                <!-- Remove?
+                {% if request.resolver_match.app_name == "search" %}
+                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-extrabold text-gray-900 bg-gray-300 rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
+                        href="/">Search</a>
+                {% else %}
+                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-medium bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
+                        href="/">Search</a>
+                {% endif %}
+                -->
+                {% if user.is_authenticated %}
+                    <div @click.away="open = false" class="relative" x-data="{ open: false }">
+                        <button @click="open = !open"
+                                class="flex flex-row items-center w-full px-4 py-2 mt-2 text-sm font-semibold text-left bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:focus:bg-gray-600 dark-mode:hover:bg-gray-600 md:w-auto md:inline md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300">
+                            <span>Hi, {{ user.first_name|default:user.username }}</span>
+                            <svg fill="currentColor" viewBox="0 0 20 20"
+                                 :class="{'rotate-180': open, 'rotate-0': !open}"
+                                 class="inline w-4 h-4 mt-1 ml-1 transition-transform duration-200 transform md:-mt-1">
+                                <path fill-rule="evenodd"
+                                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                      clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition:enter="transition ease-out duration-100"
+                              x-transition:enter-start="transform opacity-0 scale-95"
+                              x-transition:enter-end="transform opacity-100 scale-100"
+                              x-transition:leave="transition ease-in duration-75"
+                              x-transition:leave-start="transform opacity-100 scale-100"
+                              x-transition:leave-end="transform opacity-0 scale-95"
+                              class="absolute right-0 w-full mt-2 origin-top-right rounded-md shadow-lg md:w-48">
+                             <div class="px-2 py-2 bg-white rounded-md shadow dark-mode:bg-gray-800">
+                                 <a class="block px-4 py-2 mt-2 text-sm font-semibold rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
+                                    href="{% url 'profile' %}" style="z-index: 100;">My profile</a>
+                                 <a class="block px-4 py-2 mt-2 text-sm font-semibold rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
+                                    href="{% url 'account_change_password' %}" style="z-index:999999 !important;">Change password</a>
+                             </div>
+                        </div>
+                    </div>
+                    <a class="px-4 py-2 mt-2 text-sm md:text-md font-medium bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300">
+                    <form method="post" action="{% url 'account_logout' %}">
+                    {% csrf_token %}
+                    {% if redirect_field_value %}
+                        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                    {% endif %}
+                    <button class="STYLE_ME" type="submit">Logout</button>
+                    </form></a>
+                {% else %}
+                    {% if request.resolver_match.url_name == "account_login" %}
+                        <a class="px-4 py-2 ml-2 mt-2 text-sm md:text-md font-extrabold text-gray-900 bg-gray-300 rounded-lg hover:rounded-lg dark-mode:bg-gray-700 dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
+                            href="{% url 'account_login' %}">Login</a>
+                    {% else %}
+                        <a class="px-4 py-2 ml-2 mt-2 text-sm md:text-md font-medium bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 md:ml-4 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline hover:scale-110 transition duration-300"
+                            href="{% url 'account_login' %}">Login</a>
+                    {% endif %}
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+    {% block main_content %}
 
-	<body class="bg-gray-50 font-serif leading-normal tracking-normal">
-		<div class="container mx-auto">
-			<section class="flex items-center justify-center h-screen">
-				<h1 class="text-5xl">Django + Tailwind = ❤️</h1>
-			</section>
-		</div>
-	</body>
+    {% endblock %}
+    <!-- Footer -->
+    <div class="w-full h-2 bg-gradient-to-t from-black to-current"></div>
+    <div class="bg-black">
+        <div class="container mx-auto py-5 px-5 flex flex-wrap flex-col sm:flex-row">
+            <p class="text-white text-sm text-center sm:text-left">
+                ThaiRepose © 2021
+            </p>
+            <span class="inline-flex sm:ml-auto sm:mt-0 mt-2 justify-center sm:justify-start">
+                <a class="text-white hover:text-gray-700 px-2 text-sm" href="{% url 'policy' %}">Privacy Policy</a>
+                <a class="text-white hover:text-gray-700 px-2 text-sm" href="{% url 'service' %}">Term of service</a>
+                <a class="text-white hover:text-gray-700 px-2 text-sm" href="{% url 'about-us' %}">About us</a>
+                <a class="text-white hover:text-gray-700 px-2 text-sm" href="{% url 'feedback' %}">Feedback</a>
+                <p class="px-0 md:px-2"></p>
+                <a class="ml-3 text-black" href="https://github.com/ThaiRepose/thairepose" target="_blank">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path style="fill: white;"
+                              d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path>
+                    </svg>
+                </a>
+            </span>
+        </div>
+    </div>
+</div>
+    <!-- Script to show/hide navigation button in responsive -->
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    {% block script %}
+    {% endblock %}
+</body>
 </html>

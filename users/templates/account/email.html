@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% load account %}
+{% load static tailwind_tags %}
+
+{% block header %}
+    <title>ThaiRepose::{{ name }}</title>
+    <style>
+        body {
+            background: url("{% static '/images/bg-blur.jpg' %}") no-repeat fixed;
+            background-size: cover;
+        }
+    </style>
+    <link rel="stylesheet" href="https://npmcdn.com/flickity@2/dist/flickity.css" />
+{% endblock %}
+
+{% block main_content %}
+<div id="content" class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10">
+	<div class="items-center justify-center w-full p-8 flex flex-col">
+		<div class="bg-white items-center justify-center md:w-1/2 w-full shadow-md p-5 h-auto rounded-lg blur-3 bg-opacity-50 flex flex-col col-span-12">
+    <img class="w-20 md:w-24 mb-4" src="{% static "/template-picture/email-13750.png" %}">
+      <p class="text-2xl">{% trans "E-mail Addresses" %}</p>
+      {% if user.emailaddress_set.all %}
+
+      <form action="{% url 'account_email' %}" class="email_list" method="post">
+      {% csrf_token %}
+      <fieldset class="blockLabels">
+
+      {% for emailaddress in user.emailaddress_set.all %}
+        <div class="ctrlHolder">
+          <input id="email_radio_{{forloop.counter}}" type="hidden" name="email" {% if emailaddress.primary or user.emailaddress_set.count == 1 %}checked="checked"{%endif %} value="{{emailaddress.email}}"/>
+          <p class="text-lg mt-6">Your email adress:
+            <span class="text-blue-600">{{ emailaddress.email }}</span>
+            {% if emailaddress.verified %}
+              <span class="verified">{% trans "verified" %}</span>
+            {% else %}
+              <span class="unverified">{% trans "is unverified" %}</span>
+            {% endif %}
+          </p>
+          </div>
+      {% endfor %}
+
+      <div class="buttonHolder flex justify-center items-center mx-auto">
+        {% if emailaddress.verified %}
+          <div class="text-center text-md mt-6 -mb-2">Click here to back to <a class="text-md text-blue-700" href={% url 'trip:index' %}>Home page</a></div>
+        {% else %}
+          <button class="secondaryAction px-2 py-1 rounded-md mt-4" style="background-color:#E7E4D7" type="submit" name="action_send" >{% trans 'Re-send Verification' %}</button>
+        {% endif %}
+      </div>
+
+      </fieldset>
+      </form>
+
+      {% else %}
+        <p><strong>{% trans 'Warning:'%}</strong> {% trans "You currently do not have any e-mail address set up. You should really add an e-mail address so you can receive notifications, reset your password, etc." %}</p>
+
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

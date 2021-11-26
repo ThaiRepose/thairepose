@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static tailwind_tags %}
+
+{% block header %}
+    <title>Trip Planner | ThaiRepose</title>
+    <style>
+        body {
+            background: url("{% static 'images/bg-blur.jpg' %}") no-repeat fixed;
+            background-size: cover;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}" />
+    <link rel="stylesheet" href="{% static 'planner/css/style.css' %}" />
+{% endblock %}
+
+{% block main_content %}
+    <div class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10 w-screen">
+        <div class="h-full w-full rounded-3xl container-lg flex flex-col md:p-8 py-8">
+            <div class="text-3xl font-bold mb-6 md:text-left text-center">Trip Organizer</div>
+                <div class="w-full">
+                    <div class="flex h-full w-81 mx-auto md:justify-end justify-center">
+                        <a href="{% url 'planner:create' %}">
+                            <div class="flex w-44 bg-translucent hover:bg-white shadow rounded-lg py-2 px-4 align-middle justify-center">
+                                <p class="text-lg font-semibold text-center text-gray-800">Create new</p>
+                                <span class="material-icons material-icons-outlined ml-2" style="margin-top: 0.15rem;">add</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            <table class="body-transparent-table">
+                <thead>
+                <tr class="h-14 bg-translucent rounded-lg shadow-lg md:pl-6">
+                    <th class="w-3/6 text-left">
+                        <div class="ml-6">Name</div>
+                    </th>
+                    <th class="text-center">Owner</th>
+                    <th class="text-right">Last modified</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for plan in plans %}
+                    <tr class="h-12 hover:bg-gray-400"
+                        onclick="window.location='{% url 'planner:edit_plan' plan.id %}';" style="cursor: pointer;">
+                        <td class="w-3/6 text-left">
+                            <div class="ml-6"><span class="material-icons material-icons-outlined md-24 mr-3 mb-1"
+                                                    style="vertical-align: middle;">luggage</span>{{ plan.name }}</div>
+                        </td>
+                        <td class="text-center">{{ plan.author.first_name|default:plan.author.username }}</td>
+                        <td class="text-right">{{ plan.last_modified }}</td>
+                        <td class="text-center">
+                            <a href="{% url 'planner:view_plan' plan.id %}"><span class="material-icons material-icons-outlined md-18 hover:scale-150 hover:text-blue-400">visibility</span></a>
+                            <a href="{% url 'planner:delete' plan.id %}"><span class="material-icons material-icons-outlined md-18 hover:scale-150 hover:text-red-600">delete_outline</span></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% load static tailwind_tags %}
+
+{% block header %}
+    <title>{{ place_name }} | ThaiRepose</title>
+    <style>
+        body {
+            background: url("{% static 'images/bg-blur.jpg' %}") no-repeat fixed;
+            background-size: cover;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}" />
+    <link rel="stylesheet" href="https://npmcdn.com/flickity@2/dist/flickity.css" />
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@1.7.0/dist/tailwind.min.css" />
+{% endblock %}
+
+{% block main_content %}
+    <div class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10">
+        <div class="w-full rounded-3xl container-lg container-height flex flex-col md:overflow-hidden">
+            <div id="place_name" class="mx-8 my-6">
+                <h1 class="text-3xl font-bold underline-md" style="line-height: 1.6;">{{ place_name }}</h1>
+            </div>
+            <div class="h-full flex flex-col md:flex-row">
+                <div class="w-full md:w-2/5">
+                    <!-- Flickity HTML init -->
+                    <div class="carousel js-flickity h-60 md:h-2/5 js-show-on-scroll">
+                        {% if images %}
+                            {% for image in images %}
+                                <div class="carousel-cell" style="height: 100%">
+                                    {% if downloaded == True %}
+                                    <img src="{% get_media_prefix %}places_image/{{ place_id }}_{{ image }}photo.jpeg">
+                                    {% else %}
+                                    <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={{ image }}&key={{ api_key }}" alt="{{ name }}">
+                                    {% endif %}
+                               </div>
+                            {% endfor %}
+                            {% else %}
+                                <div class="carousel-cell" style="height: 100%">
+                                    <img src="{% static 'trip/images/img_not_found.jpg' %}" alt="NotFound" />
+                                </div>
+                        {% endif %}
+                    </div>
+                    <div id="basic-info" class="flex flex-col lg:flex-row mt-15 js-show-on-scroll">
+                        <div class="flex flex-col w-full lg:w-1/2 ml-6 lg:ml-9">
+                            <h1 class="text-2xl font-bold">CONTACT</h1>
+                            <div class="flex flex-row mt-2">
+                                <span class="text-lg">Phone:&nbsp;</span>
+                                {% if phone %}
+                                    <a class="text-lg text-indigo-500 underline" href="tel:{{ phone }}">{{ phone }}</a>
+                                {% else %}
+                                    <a class="text-lg">N/A</a>
+                                {% endif %}
+                            </div>
+                            <div class="w-4/5 md:w-full h-full">
+                                <p class="text-lg">Website:&nbsp;</p>
+                                {% if website %}
+                                    <a href="{{ website }}" class="text-lg text-indigo-500 underline" target="_blank"><span class="limit-text">{{ website }}</span></a>
+                                {% else %}
+                                    <a class="text-lg">N/A</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="flex justify-center w-full lg:w-1/2 lg:justify-end mt-4 lg:mt-0">
+                            {% if rating %}
+                                {% for _ in rating %}
+                                    <span class="material-icons md-36">star_rate</span>
+                                {% endfor %}
+                                {% for _ in blank_rating %}
+                                    <span class="material-icons md-36">star_border</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-2/5">
+                    <h1 class="text-2xl font-bold mt-6 ml-10">REVIEWS</h1>
+                    <div class="overflow-y-scroll hide-scrollbar px-10 py-2 detail-scrolllist">
+                    {% if user.is_authenticated %}
+                        {% if not is_reviewed %}
+                            <form action="{% url 'trip:place-review' place_id %}" method="post">
+                                {% csrf_token %}
+                                <div class="flex items-center w-full border-b-2 border-gray-400 outline-none md:mt-2">
+                                    <input type="text" name="review" placeholder="Add a review"
+                                           class="flex-1 border-none text-gray-700 placeholder-gray-600 bg-transparent outline-none" value="">
+                                    <button><span class="material-icons material-icons-outlined">add_circle</span></button>
+                                </div>
+                            </form>
+                        {% else %}
+                            <div class="rounded-2xl bg-translucent custom-shadow flex flex-row my-2 transition duration-75 js-show-on-scroll" style="min-height: 7rem;">
+                                <div class="px-6 py-4 w-4/5">
+                                    <form action="{% url 'trip:place-remove-review' place_id %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="text-lg font-bold flex items-center">{{ user_reviewed.author.first_name|default:user_reviewed.author }}<button><span class="material-icons material-icons-outlined md-22 ml-2 text-red-500 hover:scale-150">delete_outline</span></button></div>
+                                    </form>
+                                    <p class="text-sm">{{ user_reviewed.review_text }}</p>
+                                </div>
+                                <div class="flex flex-grow">
+                                    <form action="{% url 'trip:place-like' place_id %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="review_id" value="{{ user_reviewed.id }}" />
+                                        <div class="pt-6 hover:scale-110">
+                                            {% if user_reviewed in reviews_user_liked %}
+                                                <button type="submit" class="text-xl text-green-500">{{ user_reviewed.likes }}<span class="text-5xl text-green-500">&#8679;</span></button>
+                                            {% else %}
+                                                <button type="submit" class="text-xl">{{ user_reviewed.likes }}<span class="text-5xl">&#8679;</span></button>
+                                            {% endif %}
+                                        </div>
+                                    </form>
+                                    <form action="{% url 'trip:place-dislike' place_id %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="review_id" value="{{ user_reviewed.id }}" />
+                                        <div class="pt-12 pr-2 hover:scale-110">
+                                            {% if user_reviewed in reviews_user_disliked %}
+                                                <button class="text-xl text-red-600"><span class="text-5xl text-red-500">&#8681;</span>{{ user_reviewed.dislikes }}</button>
+                                            {% else %}
+                                                <button class="text-xl"><span class="text-5xl">&#8681;</span>{{ user_reviewed.dislikes }}</button>
+                                            {% endif %}
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    {% for review in reviews %}
+                        <div class="rounded-2xl bg-translucent custom-shadow flex flex-row my-2 transition duration-75 js-show-on-scroll" style="min-height: 7rem;">
+                            <div class="px-6 py-4 w-4/5">
+                                <h1 class="text-lg font-bold">{{ review.author.first_name|default:review.author }}</h1>
+                                <p class="text-sm">{{ review.review_text }}</p>
+                            </div>
+                            <div class="flex flex-grow">
+                                <form action="{% url 'trip:place-like' place_id %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="review_id" value="{{ review.id }}" />
+                                    <div class="pt-6 hover:scale-110">
+                                        {% if review in reviews_user_liked %}
+                                            <button type="submit" class="text-xl text-green-500">{{ review.likes }}<span class="text-5xl text-green-500">&#8679;</span></button>
+                                        {% else %}
+                                            <button type="submit" class="text-xl">{{ review.likes }}<span class="text-5xl">&#8679;</span></button>
+                                        {% endif %}
+                                    </div>
+                                </form>
+                                <form action="{% url 'trip:place-dislike' place_id %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="review_id" value="{{ review.id }}" />
+                                    <div class="pt-12 pr-2 hover:scale-110">
+                                        {% if review in reviews_user_disliked %}
+                                            <button class="text-xl text-red-600"><span class="text-5xl text-red-500">&#8681;</span>{{ review.dislikes }}</button>
+                                        {% else %}
+                                            <button class="text-xl"><span class="text-5xl">&#8681;</span>{{ review.dislikes }}</button>
+                                        {% endif %}
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% for review in google_reviews %}
+                        <div class="rounded-2xl bg-translucent custom-shadow flex flex-row my-2 transition duration-75 js-show-on-scroll" style="min-height: 7rem;">
+                            <div class="px-6 py-4 w-4/5">
+                                <h1 class="text-lg font-bold">{{ review.author }}</h1>
+                                <p class="text-sm">{{ review.text }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    </div>
+                </div>
+                <div class="w-full md:w-1/5">
+                    <h1 class="text-xl font-bold mt-6 ml-6">SUGGESTIONS</h1>
+                    <div class="overflow-y-scroll hide-scrollbar detail-scrolllist px-10">
+                        {% for place in suggestions %}
+                            <div class="px-2 py-2 flex justify-center hover:scale-110 transition duration-75 js-show-on-scroll">
+                                <a class="rounded-2xl h-52 w-44 bg-translucent custom-shadow px-2 py-2 flex flex-col" href="{% url 'trip:place-detail' place.place_id %}">
+                                    <div class="rounded-2xl bg-gray-300 w-40 h-40">
+                                        {% if place.downloaded == True %}
+                                        <img class="object-cover h-full w-full rounded-xl" src="{% get_media_prefix %}places_image/{{ place.place_id }}photo.jpeg">
+                                        {% else %}
+                                        <img class="object-cover h-full w-full rounded-xl" src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={{ place.photo_ref }}&key={{ api_key }}" alt="{{ name }}">
+                                        {% endif %}
+                                   </div>
+                                    <div class="flex justify-center items-center">
+                                        <h1 class="font-bold text-center">{{ place.place_name }}</h1>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script defer src="https://npmcdn.com/flickity@2/dist/flickity.pkgd.js"></script>
+    <script>
+        const callback = function (entries) {
+          entries.forEach((entry) => {
+            console.log(entry);
+
+            if (entry.isIntersecting) {
+              entry.target.classList.add("animate-fadeIn");
+            } else {
+              entry.target.classList.remove("animate-fadeIn");
+            }
+          });
+        };
+
+        const observer = new IntersectionObserver(callback);
+
+        const targets = document.querySelectorAll(".js-show-on-scroll");
+        targets.forEach(function (target) {
+          target.classList.add("opacity-0");
+          observer.observe(target);
+        });
+    </script>
+{% endblock %}

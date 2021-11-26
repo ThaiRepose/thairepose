@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static tailwind_tags %}
+
+{% block header %}
+    <title>Feedback | ThaiRepose</title>
+    <style>
+        body {
+            background: url("{% static 'images/bg-blur.jpg' %}") no-repeat fixed;
+            background-size: cover;
+        }
+    </style>
+    <link href="https://unpkg.com/tailwindcss@2.2.4/dist/tailwind.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block main_content %}
+    <div id="content" class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10 mb-20">
+        <!-- Container -->
+        <div class="container mx-auto">
+            <div class="flex justify-center items-center align-middle px-6">
+                <!-- Row -->
+                <div class="w-full xl:w-3/4 lg:w-11/12 flex rounded-lg"
+                     style="background-color: rgba(255,255,255,0.7);">
+                    <!-- Col -->
+                    <div class="w-full h-auto bg-gray-400 hidden lg:block lg:w-5/12 bg-cover rounded-l-lg" style="background-image: url('{% static '/template-picture/beach_picture.jpg' %}')">
+                        <image class="w-2/6 mx-auto" src="{% static '/template-picture/tr-logo.png' %}"></image>
+                    </div>
+                    <!-- Col -->
+                    <div class="w-full lg:w-7/12 p-5 px-10">
+                        <form action="javascript:sendEmail();" method="post" enctype="multipart/form-data">
+                            <h3 class="pt-4 text-3xl text-center">Feedback</h3>
+                            <div>
+                                Full name
+                                <br>
+                                <input type="text" id="name" name="name" placeholder="Your Name" maxlength="150" style="width:100%;" class="input rounded-md" required="">
+                            </div>
+                            <div class="mt-2">
+                                Email
+                                <br>
+                                <input type="email" id="email" name="mail" placeholder="Email" maxlength="150" style="width:100%;" class="input rounded-md" required="">
+                            </div>
+                            <div class="mt-2">
+                                Title
+                                <br>
+                                <input type="text" id="subject" name="subject" placeholder="Title" maxlength="150" style="width:100%;" class="input rounded-md" required="">
+                            </div>
+                            <div class="mt-2">
+                                Message
+                                <br>
+                                <textarea id="body" name="comment" class="w-full h-32 text-gray-900 p-3 rounded-lg focus:outline-none focus:shadow-outline" style="min-height: 100px;" required></textarea>
+                            </div>
+                            <div class="mb-6 text-center">
+                                <input type="submit"
+                                       class="w-full mt-4 px-4 py-2 font-bold text-white bg-black rounded-full hover:bg-black focus:outline-none focus:shadow-outline"
+                                       value="Send" />
+                                <input type="reset" value="Reset" class="flex justify-end mt-4 text-sm text-blue-500 align-baseline hover:text-blue-800 cursor-pointer text-md bg-transparent" />
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        function sendEmail() {
+          let name = document.getElementById("name").value;
+          let subject = document.getElementById("subject").value;
+          let body = document.getElementById("body").value;
+          let email = document.getElementById("email").value;
+          body += "\n\n" + name + "\n" + email;
+          let mailToLink = "mailto:contact@thairepose.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+          window.location.href = mailToLink;
+        }
+    </script>
+{% endblock %}

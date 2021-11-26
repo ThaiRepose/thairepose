@@ -14,15 +14,31 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.conf.urls import url
 from django.urls import path, include
 from users import views
+from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
+from ckeditor_uploader import views as ckeditor_views
+from django.views.static import serve
+from theme import views as homepage
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    url(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
+    path('admin', admin.site.urls),
+    path('accounts/', include('allauth.urls')),
     path('', include('trip.urls', namespace="trip")),
-    path('register/', views.register, name='register'),
-    path('login/', views.loginPage, name='login'),
-    path('logout/', views.logoutUser, name='logout'),
-    path('temphome/', views.home, name='temphome'),
-    path('activate-user/<uidb64>/<token>', views.activate_user, name='activate'),
-]
+    path('search/', include('search.urls', namespace="search")),
+    path('planner/', include('planner.urls', namespace="planner")),
+    path('service/', views.term_of_service, name="service"),
+    path('policy/', views.privacy_policy, name="policy"),
+    path('profile', views.profile, name='profile'),
+    path('editprofile/', views.edit_profile, name='editprofile'),
+    url(r'^ckeditor/upload/', login_required(ckeditor_views.upload), name='ckeditor_upload'),
+    url(r'^ckeditor/browse/', never_cache(login_required(ckeditor_views.browse)), name='ckeditor_browse'),
+    path('about-us/', homepage.about_us, name='about-us'),
+    path('feedback/', homepage.feedback, name='feedback'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

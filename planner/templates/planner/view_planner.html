@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static tailwind_tags %}
+
+{% block header %}
+    <title>{{ details.name }} | ThaiRepose</title>
+    <style>
+        body {
+            background: url("{% static 'images/bg-blur.jpg' %}") no-repeat fixed;
+            background-size: cover;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}"/>
+    <link rel="stylesheet" href="{% static 'planner/css/style.css' %}" />
+    <link href="https://cdn.jsdelivr.net/npm/@tailwindcss/custom-forms@0.2.1/dist/custom-forms.css" rel="stylesheet"/>
+{% endblock %}
+
+{% block main_content %}
+    <div class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10 w-screen">
+        <div class="h-full w-full rounded-3xl container-lg flex flex-col pb-8">
+            <div class="flex flex-col md:flex-row">
+                <div class="w-full">
+                    <!-- Page title -->
+                    <div id="place_name" class="mx-8 my-6 flex flex-row">
+                        <h1 class="text-3xl font-bold" style="line-height: 1.6;">{{ details.name }}</h1>
+                    </div>
+                    {% for day, places_list in places.items %}
+                    <div id="day-title" class="mt-10 mx-8"><h1 class="text-2xl">Day {{ day }}</h1></div>
+                    <div id="{{ day }}" name="day-table" class="w-full md:px-8">
+                        <table class="w-full text-gray-400 text-sm body-transparent-table" id="table-day-1">
+                            <thead class="bg-translucent text-gray-700 shadow-lg">
+                            <tr>
+                                <th class="py-3 text-center">Arrival</th>
+                                <th class="py-3 text-center">Place</th>
+                                <th class="py-3 text-center">Departure</th>
+                            </tr>
+                            </thead>
+                            <tbody class="text-gray-700">
+                            {% for place in places_list %}
+                            <tr name="place" onclick="window.open('{% url 'trip:place-detail' place.place_id %}', '_blank');" class="hover:bg-gray-400" style="cursor: pointer;">
+                                <td id="time" class="py-3 text-center text-xl"><div name="arrival">{{ place.arrival_time|date:"H:i"|default:"" }}</div></td>
+                                <td class="p-3">
+                                    <div class="flex align-items-center">
+                                        <div class="ml-3">
+                                            <div style="width: 50vw;"><span class="limit-text">{{ place.place_name }}</span></div>
+                                            <div class="text-gray-500" style="width: 50vw;"><span class="limit-text">{{ place.place_vicinity }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-3 text-center text-xl">{{ place.departure_time|date:"H:i" }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'planner/js/main.js' %}"></script>
+    <script>
+        checkOverDate();
+    </script>
+{% endblock %}

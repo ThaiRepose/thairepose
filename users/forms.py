@@ -1,28 +1,29 @@
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from django import forms
+from django.contrib.auth.models import User
+from .models import Profile
 
 
-class CreateUserForm(UserCreationForm):
-    """Create user registeration form class."""
+class UserUpdateForm(forms.ModelForm):
+    """Class for set field of user form."""
+
+    first_name = forms.CharField().required
+    last_name = forms.CharField().required
+    first_name = forms.CharField(max_length=20)
+    last_name = forms.CharField(max_length=20)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ['first_name', 'last_name']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'maxlength': 10, }),
+        }
 
-    def clean_email(self):
-        """Check email is avaliable or not.
 
-        Raises:
-            forms.ValidationError: raise message if email is already exist
+class ProfileUpdateForm(forms.ModelForm):
+    """Class for set field of profile form."""
 
-        Returns:
-            str: user email
-        """
-        email = self.cleaned_data.get('email')
+    profile_pic = forms.ImageField()
 
-        if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("This email address is already in use. \
-                                        Please supply a different email address.")
-
-        return email
+    class Meta:
+        model = Profile
+        fields = ['birthday', 'profile_pic']

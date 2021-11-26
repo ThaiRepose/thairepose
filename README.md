@@ -1,5 +1,5 @@
-[![Build Status](https://app.travis-ci.com/ThaiRepose/thairepose.svg?branch=main)](https://app.travis-ci.com/ThaiRepose/thairepose)
-[![codecov](https://codecov.io/gh/ThaiRepose/thairepose/branch/main/graph/badge.svg?token=uocBU8wW8W)](https://codecov.io/gh/ThaiRepose/thairepose)
+![workflow](https://github.com/ThaiRepose/thairepose/actions/workflows/django.yml/badge.svg)
+[![codecov](https://codecov.io/gh/ThaiRepose/thairepose/branch/beta/graph/badge.svg?token=uocBU8wW8W)](https://codecov.io/gh/ThaiRepose/thairepose)
 # ThaiRepose
 **ThaiRepose** website is a web application that helps to find areas that users want to travel and it can help people to make decisions for making trips. People who don't even have any experience planning a trip before, it can help them to easily plan a trip. ThaiRepose.com will be a community for people who love to travel.
 
@@ -44,35 +44,69 @@
     ```
     pip install -r requirements.txt
     ```
+   <details>
+    <summary>If you's using Windows</summary>
+    Run this command to install caching system.
+
+    ```
+    pip install --editable src\caching\.
+    ```
+   </details>
+
+
 6. Create `.env` file in the same level as manage.py and write down:
 
-    ```
-    DEBUG=True
-    SECRET_KEY=Your-Secret-Key
-    HOSTS=localhost,127.0.0.1
-    EMAIL_FROM_USER = email-for-send-verification-form 
-    EMAIL_HOST_PASSWORD = email-password
-    ```
-    (If you don't use gmail. Please change EMAIL_PORT and EMAIL_HOST in setting)
-7. Install TailwindCSS framework.
+       ```
+       DEBUG=True
+       SECRET_KEY=Your-Secret-Key
+       HOSTS=localhost,127.0.0.1
+       BACKEND_API_KEY=Your-Google-API-key-in-server-side
+       FRONTEND_API_KEY=Your-Google-API-key-in-client-side
+       EMAIL_HOST_USER = email-for-send-verification-form 
+       EMAIL_HOST_PASSWORD = email-password
+       EMAIL_PORT=Your-configured-email-port
+       EMAIL_HOST=Your-email-provider-host
+       EMAIL_USE_TLS=TLS-using-true-or-false
+       EMAIL_USE_SSL=-SSL-true-or-false
+       ```
 
-    ```
-    python manage.py tailwind install
-    ```
-8. Build TailwindCSS frontend framework the get GUI.
+   (If you don't use gmail. Please change EMAIL_PORT and EMAIL_HOST in setting)
+    
+   **Warning: For anyone who use macOS. It may have problem while import email with os.environ.get. please try another way to import it**
+    
+   **Warning: If you use Gmail you have to adjust to less secure**
 
-    ```
-    python manage.py tailwind build
-    ```
-9. Run this command to migrate the database.
+
+7. Add Oauth API Key
+    Go to domain/admin/socialaccount/socialapp/ (local: http://127.0.0.1:8000/admin/socialaccount/socialapp/) 
+    - Add provider to Google.
+    - Add Client id and Secret key that retrieve form API owner.
+    - Add site to chosen sites.
+
+
+8. Install TailwindCSS framework.
+
+   ```
+   python manage.py tailwind install
+   ```
+9. Build TailwindCSS frontend framework the get GUI.
+
+   ```
+   python manage.py tailwind build
+   ```
+10. Run this command to migrate the database.
 
     ```
     python manage.py migrate
     ```
-10. Start running the server by this command.
+11. Start running the server by this command.
     ```
+    tr-caching start
     python manage.py runserver
     ```
+
+
+
 
 ## Team Members
 | Name | Github  |
@@ -81,3 +115,4 @@
 | Tanin Pewluangsawat | [💤 TaninDean](https://github.com/TaninDean) |
 | Vitvara Varavithya | [💦 vitvara](https://github.com/vitvara) |
 | Nabhan Suwanachote | [ ☔ nabhan-au](https://github.com/nabhan-au) |
+

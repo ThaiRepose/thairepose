@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Prompt&display=swap');
+
+@font-face {
+    font-family: 'sf_thonburibold';
+    src: url('sfthonburi-bold-webfont.woff2') format('woff2'), url('sfthonburi-bold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'sf_thonburiregular';
+    src: url('sfthonburi-regular-webfont.woff2') format('woff2'), url('sfthonburi-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'sf_thonburisemibold';
+    src: url('sfthonburi-semibold-webfont.woff2') format('woff2'), url('sfthonburi-semibold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    font-family: 'sf_thonburiregular', 'Prompt', sans-serif;
+}
+
+.material-icons.md-12 {
+    font-size: 12px;
+}
+
+.material-icons.md-14 {
+    font-size: 14px;
+}
+
+.material-icons.md-16 {
+    font-size: 16px;
+}
+
+.material-icons.md-18 {
+    font-size: 18px;
+}
+
+.material-icons.md-20 {
+    font-size: 20px;
+}
+
+.material-icons.md-22 {
+    font-size: 22px;
+}
+
+.material-icons.md-24 {
+    font-size: 24px;
+}
+
+.material-icons.md-26 {
+    font-size: 26px;
+}
+
+.material-icons.md-28 {
+    font-size: 28px;
+}
+
+.material-icons.md-30 {
+    font-size: 30px;
+}
+
+.material-icons.md-32 {
+    font-size: 18px;
+}
+
+.material-icons.md-34 {
+    font-size: 34px;
+}
+
+.material-icons.md-36 {
+    font-size: 36px;
+}
+
+.material-icons.md-38 {
+    font-size: 38px;
+}
+
+.material-icons.md-40 {
+    font-size: 40px;
+}
+
+.material-icons.md-42 {
+    font-size: 42px;
+}
+
+.material-icons.md-44 {
+    font-size: 44px;
+}
+
+.material-icons.md-46 {
+    font-size: 46px;
+}
+
+.material-icons.md-48 {
+    font-size: 48px;
+}

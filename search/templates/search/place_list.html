@@ -120,7 +120,7 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
         }
         async function getAllAdditionalPhotos() {
           for (let i = 0; i < additionalToDownload.length; i++) {
-            await sleep(1500);
+            await sleep(1000);
             getPlacePhoto(additionalToDownload[i].elem, additionalToDownload[i].placeId);
           }
         }

@@ -34,7 +34,8 @@ def index(request):
     """Render Index page."""
     api_key = config('FRONTEND_API_KEY')
     # Get top like trip blogs.
-    top_trips = sorted(TripPlan.objects.filter(complete=True), key=lambda m: m.total_like, reverse=True)[:6]
+    top_trips = sorted(TripPlan.objects.filter(complete=True),
+                       key=lambda m: m.total_like, reverse=True)[:6]
     return render(request, "trip/index.html", {'api_key': api_key, "top_trips": top_trips})
 
 
@@ -53,14 +54,17 @@ def get_trip_queries(request):
                                                       complete=True),
                               key=lambda m: m.total_like,
                               reverse=True)[:3]
-    quantity_requested = 4 - len(query_startswith)  # define how much we need query left.
+    # define how much we need query left.
+    quantity_requested = 4 - len(query_startswith)
     # get query that contains keyword.
     query_contain = sorted(TripPlan.objects.filter(title__icontains=keyword,
                                                    complete=True),
                            key=lambda m: m.total_like,
                            reverse=True)[:quantity_requested]
-    queries_combined = set(query_startswith + query_contain)  # list of query, type is list
-    queries = [{"id": query.id, "name": query.title} for query in queries_combined]  # prepare for context
+    # list of query, type is list
+    queries_combined = set(query_startswith + query_contain)
+    queries = [{"id": query.id, "name": query.title}
+               for query in queries_combined]  # prepare for context
     return JsonResponse({"status": "OK", "results": queries})
 
 
@@ -227,9 +231,13 @@ def delete_post(request, pk):
     return render(request, "trip/delete_plan.html", context)
 
 
-@login_required
 def like_comment_view(request):
     """Method that store user like in comment model"""
+    if not request.user.is_authenticated:
+        response = JsonResponse(
+            {"error": "You must login before use this function"})
+        response.status_code = 403
+        return response
     if request.method == 'POST':
         post = get_object_or_404(Review, id=request.POST.get('comment_id'))
         if post.like.filter(id=request.user.id).exists():
@@ -239,7 +247,6 @@ def like_comment_view(request):
         return JsonResponse({'result': post.total_like, 'id': request.POST.get('comment_id')})
 
 
-@login_required
 def like_post(request):
     """Method for store user like of each trip.
     Args:
@@ -247,6 +254,11 @@ def like_post(request):
     Return:
         HttpResponse: Redirect to page that link blog located.
     """
+    if not request.user.is_authenticated:
+        response = JsonResponse(
+            {"error": "You must login before use this function"})
+        response.status_code = 403
+        return response
     if request.method == 'POST':
         pk = request.POST.get('pk')
         post = get_object_or_404(TripPlan, id=pk)
@@ -290,7 +302,8 @@ def place_info(request, place_id: str):
     try:
         place = PlaceDetail.objects.get(place_id=place_id)
     except ObjectDoesNotExist:
-        place = PlaceDetail.objects.create(name=context['place_name'], place_id=place_id)
+        place = PlaceDetail.objects.create(
+            name=context['place_name'], place_id=place_id)
         place.save()
     reviews = PlaceReview.objects.filter(place=place)
     if request.user.is_authenticated:
@@ -299,7 +312,8 @@ def place_info(request, place_id: str):
         context['reviews_user_disliked'] = PlaceReview.objects.filter(placereviewlike__like=False,
                                                                       placereviewlike__user=request.user)
         try:
-            context['user_reviewed'] = PlaceReview.objects.get(place=place, author=request.user)
+            context['user_reviewed'] = PlaceReview.objects.get(
+                place=place, author=request.user)
             context['is_reviewed'] = True
         except ObjectDoesNotExist:
             context['is_reviewed'] = False
@@ -324,7 +338,8 @@ def place_like(request, place_id):
     user = request.user
     review_id = request.POST['review_id']
     try:
-        review = PlaceReview.objects.get(place__place_id=place_id, id=review_id)
+        review = PlaceReview.objects.get(
+            place__place_id=place_id, id=review_id)
     except ObjectDoesNotExist:
         return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
     try:
@@ -335,7 +350,8 @@ def place_like(request, place_id):
             review_respond.like = True
             review_respond.save()
     except ObjectDoesNotExist:
-        review_respond = PlaceReviewLike.objects.create(review=review, user=user, like=True)
+        review_respond = PlaceReviewLike.objects.create(
+            review=review, user=user, like=True)
         review_respond.save()
     return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
 
@@ -356,7 +372,8 @@ def place_dislike(request, place_id):
     user = request.user
     review_id = request.POST['review_id']
     try:
-        review = PlaceReview.objects.get(place__place_id=place_id, id=review_id)
+        review = PlaceReview.objects.get(
+            place__place_id=place_id, id=review_id)
     except ObjectDoesNotExist:
         return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
     try:
@@ -367,7 +384,8 @@ def place_dislike(request, place_id):
             review_respond.like = False
             review_respond.save()
     except ObjectDoesNotExist:
-        review_respond = PlaceReviewLike.objects.create(review=review, user=user, like=False)
+        review_respond = PlaceReviewLike.objects.create(
+            review=review, user=user, like=False)
         review_respond.save()
     return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
 
@@ -388,7 +406,8 @@ def place_review(request, place_id):
     user = request.user
     review_text = request.POST['review']
     place = PlaceDetail.objects.get(place_id=place_id)
-    review = PlaceReview.objects.create(place=place, review_text=review_text, author=user)
+    review = PlaceReview.objects.create(
+        place=place, review_text=review_text, author=user)
     review.save()
     return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
 
@@ -609,6 +628,11 @@ def post_comment(request):
     Returns:
         http: html of comment
     """
+    if not request.user.is_authenticated:
+        response = JsonResponse(
+            {"error": "You must login before use this function"})
+        response.status_code = 403
+        return response
     if request.method == 'POST':
         pk = request.POST.get('pk')
         post = get_object_or_404(TripPlan, id=pk)
@@ -618,4 +642,4 @@ def post_comment(request):
         comment.body = request.POST.get('comment')
         comment.body = new_line_html(comment.body)
         comment.save()
-    return render(request, 'trip/single_comment.html', {'commend': comment})
+        return render(request, 'trip/single_comment.html', {'commend': comment})

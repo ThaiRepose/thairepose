@@ -5,13 +5,13 @@
 {% load socialaccount %}
 {% load widget_tweaks %}
 {% load static tailwind_tags %}
-
-
 {% block header %}
   <title>ThaiRepose::{{ name }}</title>
     <style>
-        body {
-            background: url("{% static '/images/bg-blur.jpg' %}") no-repeat fixed;
+        .bg-page {
+            background-image: url("{% static 'images/bg-blur.jpg' %}");
+            background-repeat: no-repeat;
+            background-position: center center;
             background-size: cover;
         }
 
@@ -24,13 +24,11 @@
         margin-left: +48px;
         /* will touch very left side */
         }
-
         .children .children form {
         margin-left: +96px;
         /* will touch very left side */
         }
     }
-
     </style>
     <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}" />
     <link rel="stylesheet" href="https://npmcdn.com/flickity@2/dist/flickity.css" />
@@ -39,7 +37,7 @@
 {% endblock %}
 
 {% block main_content %}
-<div id="main-content">
+<div id="main-content" class="bg-page flex-grow">
     <div id="content" class="flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10 mb-20">
         <div class="justify-center items-center rounded-lg lg:w-7/12 mx-auto pb-4" style="background-color: rgba(255,255,255,0.75);">
             <div class="flex justify-between mx-8 pt-4">
@@ -65,8 +63,8 @@
             </div>
             <div class="2xl:flex mx-4 mt-6 justify-between">
                 <div class="carousel js-flickity 2xl:w-8/12 2xl:ml-4 mb-6 js-show-on-scroll bg-black" style="max-height: 30rem;">
-                    {% if images %}
-                        {% for image in images %}
+                    {% if post.image %}
+                        {% for image in post.image %}
                             <div class="carousel-cell" style="height: 30rem">
                                 <img src="{{ image.image.url }}" alt="{{ name }}" style="max-height: 100%"/>
                                 {% comment %} <img src="{% static 'test_pic\france-in-pictures-beautiful-places-to-photograph-eiffel-tower.jpg' %}" alt="{{ name }}" /> {% endcomment %}
@@ -143,7 +141,6 @@
         </div>
     </div>
 </div>
-
 {% comment %} <div>
     {% load mptt_tags %}
     <div id="{{ comment }}">
@@ -163,7 +160,6 @@
             {% endif %}
         {% endrecursetree %}
     </div>
-
 <div class="py-4">
     <nav aria-label="Page navigation example">
         {% if comments.has_other_pages %}
@@ -191,7 +187,6 @@
         {% endif %}
     </nav>
 </div>
-
 <p>---Add commend---</p>
 {% if user.is_authenticated %}
     <div id="myDIV" style="display:block;">
@@ -204,7 +199,6 @@
     </form>
   </div>
 {% endif %} {% endcomment %}
-
 <div id="overlay" class="absolute hidden h-full w-full justify-center items-center" style="background-color: rgba(0,0,0,0.5);">
     <div class="bg-gray-100 px-6 py-4 rounded-lg animate-fade-in-up">
         <h3 class="text-xl text-black mb-4">Confirm Delete?</h3>
@@ -227,43 +221,33 @@
         const delBtn = document.querySelector('#background-delete-button')
         const CancelBtn = document.querySelector('#cancel-btn')
         const content = document.querySelector('#main-content')
-
         const toggleModal = () => {
             overlay.classList.toggle("animate-fadeIn")
             overlay.classList.toggle('hidden')
             overlay.classList.toggle('flex')
             window.scrollTo(0, 0)
         }
-
         const ModalVisible = () => {
             overlay.classList.add("animate-fadeIn")
             overlay.classList.toggle('hidden')
             overlay.classList.toggle('flex')
             window.scrollTo(0, 0)
         }
-
         const ModalInvisible = () => {
             overlay.classList.remove("animate-fadeIn")
             overlay.classList.toggle('hidden')
             overlay.classList.toggle('flex')
         }
-
         const toggleOverFlow = () => {
             content.classList.toggle('overflow-hidden')
         }
-
         delBtn.addEventListener('click', ModalVisible)
-
         CancelBtn.addEventListener('click', ModalInvisible)
-
         delBtn.addEventListener('click', toggleOverFlow)
-
         CancelBtn.addEventListener('click', toggleOverFlow)
     })
-
         const callback = function (entries) {
           entries.forEach((entry) => {
-
             if (entry.isIntersecting) {
               entry.target.classList.add("animate-fadeIn");
             } else {
@@ -271,15 +255,12 @@
             }
           });
         };
-
         const observer = new IntersectionObserver(callback);
-
         const targets = document.querySelectorAll(".js-show-on-scroll");
         targets.forEach(function (target) {
           target.classList.add("opacity-0");
           observer.observe(target);
         });
-
 $(document).ready(function(){
     $(document).on('click', '#review-like-button', function (e) {
         e.preventDefault();
@@ -302,8 +283,6 @@ $(document).ready(function(){
             }
         });
     });
-
-
     $(document).on('click', '#post-like-button', function (e) {
         e.preventDefault();
         var pk = {{ post.pk|safe }};
@@ -324,8 +303,6 @@ $(document).ready(function(){
             }
         });
     });
-
-
     $(document).on('click', '#submit-comment-btn', function (e) {
         e.preventDefault();
         var pk = {{ post.pk|safe }};
@@ -382,13 +359,10 @@ $(document).ready(function(){
     }
   
     $('#myForm').trigger("reset");
-
-
     function auto_grow(element) {
         element.style.height = "20px";
         element.style.height = (element.scrollHeight)+"px";
     }
-
     function comment_valid(body){
         body = body.value;
         
@@ -404,6 +378,4 @@ $(document).ready(function(){
         return check;
     }
 </script>
-
-
 {% endblock %}

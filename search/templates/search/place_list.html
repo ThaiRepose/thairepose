@@ -118,15 +118,11 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
             additionalToDownload.push({elem: `AdditionalPlacePhoto-${place.place_id}`, placeId: place.place_id});
           }
         }
-        var delayTimer;
         async function getAllAdditionalPhotos() {
-          clearTimeout(delayTimer);
-          delayTimer = setTimeout(async function() {
-            for (let i = 0; i < additionalToDownload.length; i++) {
-                await sleep(1500);
-                getPlacePhoto(additionalToDownload[i].elem, additionalToDownload[i].placeId);
-              }
-          }, 2000)
+          for (let i = 0; i < additionalToDownload.length; i++) {
+            await sleep(1500);
+            getPlacePhoto(additionalToDownload[i].elem, additionalToDownload[i].placeId);
+          }
         }
 
         getAllAdditionalPhotos();

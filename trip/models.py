@@ -134,8 +134,7 @@ class UploadImage(models.Model):
         image(file): image of user who uploaded
     """
     post = models.ForeignKey(TripPlan, on_delete=models.CASCADE, null=True)
-    image = models.ImageField(upload_to=UploadToPathAndRename(
-        os.path.join(settings.MEDIA_ROOT, 'pic')))
+    image = models.ImageField(upload_to=UploadToPathAndRename('pic'))
 
 
 class PlaceDetail(models.Model):

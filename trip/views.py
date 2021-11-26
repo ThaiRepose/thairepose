@@ -157,6 +157,7 @@ def add_post(request):
             post_form.author = request.user
             post_form.save()
             if image_form.is_valid():
+                all_img = UploadImage.objects.filter(post=post)
                 image = request.FILES.getlist('image')
                 list_img = []
                 for img in image:
@@ -166,11 +167,12 @@ def add_post(request):
                 image_form = TripPlanImageForm()
                 form = TripPlanForm(request.POST, instance=post)
                 return render(request, 'trip/add_blog.html', {'form': form,
-                                                              'image_form': image_form, 'img_obj': list_img})
+                                                              'image_form': image_form, 'img_obj': all_img, 'new_img': list_img})
+            all_img = UploadImage.objects.filter(post=post)
             form = TripPlanForm(request.POST, instance=post)
             image_form = TripPlanImageForm()
             return render(request, 'trip/add_blog.html', {'form': form,
-                                                          'image_form': image_form})
+                                                          'image_form': image_form, 'img_obj': all_img})
         elif 'blog' in request.POST:
             if form.is_valid():
                 image_form = TripPlanImageForm(request.POST, request.FILES)
@@ -185,17 +187,19 @@ def add_post(request):
                 return HttpResponseRedirect(reverse('trip:tripdetail', args=[post_form.pk]))
         elif 'save_blog' in request.POST:
             if form.is_valid():
+                all_img = UploadImage.objects.filter(post=post)
                 post_form = form.save(commit=False)
                 post_form.author = request.user
                 post_form.save()
                 image_form = TripPlanImageForm()
                 form = TripPlanForm(request.POST, instance=post)
                 return render(request, 'trip/add_blog.html', {'form': form,
-                                                              'image_form': image_form})
+                                                              'image_form': image_form, 'img_obj': all_img})
     post = get_object_or_404(TripPlan, author=request.user, complete=False)
+    all_img = UploadImage.objects.filter(post=post)
     form = TripPlanForm(instance=post)
     image_form = TripPlanImageForm()
-    return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form})
+    return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': all_img})
 
 
 class EditPost(UpdateView):

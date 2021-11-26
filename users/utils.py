@@ -92,7 +92,7 @@ def get_upload_pic_path(filename):
     Returns:
         path(str): path.
     """
-    get_path = os.path.join(settings.MEDIA_ROOT, filename)    
+    get_path = os.path.join(settings.MEDIA_ROOT, filename)
     return get_path
 
 

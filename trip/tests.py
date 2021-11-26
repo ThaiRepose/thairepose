@@ -528,7 +528,7 @@ class PlaceDetailModelTest(TestCase):
                          {"review": review_text})
         review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
         response = self.client.post(reverse("trip:place-like", args=[self.place_id]),
-                         {"review_id": review.id})
+                                    {"review_id": review.id})
         self.assertEqual(response.status_code, 302)  # redirect to the detail page.
         # get new review detail
         review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)

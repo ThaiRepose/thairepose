@@ -46,7 +46,7 @@ class E2ETestPlanner(StaticLiveServerTestCase):
         options.add_argument("--headless")
         self.browser = webdriver.Firefox(
             executable_path="/Users/tawaneiei/Desktop/KU/ISP/selenium-exercise/geckodriver", options=options)
-        self.browser = login(self.browser, self.url+reverse("account_login"),
+        self.browser = login(self.browser, self.url + reverse("account_login"),
                              self.user_detail['username'], self.user_detail['password'])
         self.browser.implicitly_wait(2)  # seconds
 
@@ -97,7 +97,7 @@ class E2ETestPlanner(StaticLiveServerTestCase):
         decrease_btn = self.browser.find_element_by_xpath('/html/body/div[1]/div[1]/div/div[1]/div[1]/div[2]/div/button[1]')
         decrease_btn.click()
         displayed_days = self.browser.find_element_by_xpath('//*[@id="days-selector"]').get_attribute("value")
-        self.assertEqual(int(initial_days)-1, int(displayed_days))
+        self.assertEqual(int(initial_days) - 1, int(displayed_days))
 
         # test that number of days is in range of positive integer and should be 1.
         for i in range(int(displayed_days) + 4):

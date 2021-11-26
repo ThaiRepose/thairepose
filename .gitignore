@@ -144,6 +144,7 @@ expireTable.json
 **/._.DS_Store
 
 # User profile
+media/*
 media/user/profile_picture/*
 !media/user/profile_picture/blank-profile-picture.png
 

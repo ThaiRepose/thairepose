@@ -15,6 +15,8 @@ from decouple import config
 
 from .models import Plan, Place, MAX_PLACES_PER_DAY
 
+MAX_PLACE_PER_REQUEST = 25
+
 
 @login_required(login_url='/accounts/login/')
 def planner_list(request):
@@ -324,7 +326,7 @@ def get_travel_time(request) -> JsonResponse:
         ordered by items order in the list.
     """
     places = json.loads(request.POST['places'])
-    if len(places) > 25:
+    if len(places) > MAX_PLACE_PER_REQUEST:
         return JsonResponse({"status": "TOO MANY PLACES"})
     if len(places) <= 1:
         return JsonResponse({"status": "NOT ENOUGH PLACE"})

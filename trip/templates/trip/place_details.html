@@ -26,13 +26,17 @@
                     <div class="carousel js-flickity h-60 md:h-2/5 js-show-on-scroll">
                         {% if images %}
                             {% for image in images %}
-                                <div class="carousel-cell" style="height: 100%">
-                                    {% if downloaded == True %}
-                                    <img src="{% get_media_prefix %}places_image/{{ place_id }}_{{ image }}photo.jpeg">
+                                <div id="thisPlacePhotoCorousel-{{ forloop.counter }}" class="carousel-cell" style="height: 100%">
+                                {% if downloaded == True %}
+                                    {% if images.2 %}
+                                    <img src="{% get_media_prefix %}places_image/{{ place_id }}_{{ image }}photo.jpeg" alt="">
                                     {% else %}
-                                    <img src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={{ image }}&key={{ api_key }}" alt="{{ name }}">
+                                    <img src="{% get_media_prefix %}places_image/{{ place_id }}photo.jpeg" alt="">
                                     {% endif %}
-                               </div>
+                                {% else %}
+                                    <img id="thisPlacePhoto-{{ forloop.counter }}" src="" alt="">
+                                {% endif %}
+                                </div>
                             {% endfor %}
                             {% else %}
                                 <div class="carousel-cell" style="height: 100%">
@@ -173,7 +177,7 @@
                                         {% if place.downloaded == True %}
                                         <img class="object-cover h-full w-full rounded-xl" src="{% get_media_prefix %}places_image/{{ place.place_id }}photo.jpeg">
                                         {% else %}
-                                        <img class="object-cover h-full w-full rounded-xl" src="https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photo_reference={{ place.photo_ref }}&key={{ api_key }}" alt="{{ name }}">
+                                        <img id="suggestionPlacePhoto-{{ forloop.counter }}" class="object-cover h-full w-full rounded-xl" src="" alt="{{ name }}">
                                         {% endif %}
                                    </div>
                                     <div class="flex justify-center items-center">
@@ -191,10 +195,15 @@
 
 {% block script %}
     <script defer src="https://npmcdn.com/flickity@2/dist/flickity.pkgd.js"></script>
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places"></script>
     <script>
+        function sleep(ms) {
+          return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
         const callback = function (entries) {
           entries.forEach((entry) => {
-            console.log(entry);
 
             if (entry.isIntersecting) {
               entry.target.classList.add("animate-fadeIn");
@@ -211,5 +220,51 @@
           target.classList.add("opacity-0");
           observer.observe(target);
         });
+
+        const place_service = new google.maps.places.PlacesService(document.createElement('div'));
+        function getThisPlacePhotos(placeId, photos) {
+          place_service.getDetails({
+            placeId: placeId,
+            fields: ['place_id', 'photos']
+          }, (result, status) => {
+            if (status !== "OK")
+              return;
+            for (let i=0; i<result.photos.length && i<4 && photos.includes(i+1); i++) {
+              let photoObj = document.getElementById("thisPlacePhoto-"+(i+1));
+              photoObj.setAttribute("src", result.photos[i].getUrl());
+            }
+          })
+        }
+
+        async function getSuggestionPhotos(places) {
+          for (let i=0; i<places.length; i++) {
+            place_service.getDetails({
+              placeId: places[i].placeId,
+              fields: ['place_id', 'photos']
+            }, (result, status) => {
+              if (status !== "OK")
+                return;
+              let photoObj = document.getElementById("suggestionPlacePhoto-" + places[i].index);
+              photoObj.setAttribute("src", result.photos[0].getUrl());
+            })
+            await sleep(1000);
+          }
+        }
+        let photoNotDownloaded = [];
+        {% for image in images %}
+          {% if not downloaded %}
+            photoNotDownloaded.push({{ forloop.counter }});
+          {% endif %}
+        {% endfor %}
+        if (photoNotDownloaded.length > 0)
+            getThisPlacePhotos("{{ place_id }}", photoNotDownloaded);
+        let suggestionNotDownloaded = [];
+        {% for place in suggestions %}
+          {% if not place.downloaded %}
+            suggestionNotDownloaded.push({placeId: "{{ place.place_id }}", index: {{ forloop.counter }}});
+          {% endif %}
+        {% endfor %}
+        if (suggestionNotDownloaded.length > 0)
+          getSuggestionPhotos(suggestionNotDownloaded);
     </script>
 {% endblock %}

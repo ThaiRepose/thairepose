@@ -1,24 +1,23 @@
-from django.test import TestCase, RequestFactory
+from django.http import response
+from django.test import TestCase, RequestFactory, Client
 from django.urls import reverse
 from django.utils import timezone
 from decouple import config
+from allauth.account.models import EmailAddress
 import os
 import unittest
 from threpose.settings import BASE_DIR
-from .views import delete_post, get_details_context, new_line_html, trip_detail
-from .views import check_downloaded_image
-from .views import restruct_detail_context_data
-from .views import resturct_to_place_detail
+from .views import delete_post, get_details_context, new_line_html, trip_detail, check_downloaded_image, restruct_detail_context_data
+from .views import resturct_to_place_detail, add_post, post_comment, like_comment_view, like_post
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from django.test import Client
-from .models import Review, TripPlan, CategoryPlan
+from .models import Review, TripPlan, CategoryPlan, PlaceDetail, PlaceReview, PlaceReviewLike
 from django.db import models
 from .forms import TripPlanImageForm, TripPlanForm, ReviewForm
-from .views import add_post
 from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+import json
 
 
 class PlaceDetailsViewTest(TestCase):
@@ -206,10 +205,39 @@ class PlaceDetailsViewTest(TestCase):
 class IndexViewTest(TestCase):
     """Test for index page."""
 
+    def setUp(self):
+        """Initialize user and trips."""
+        self.user = User.objects.create_user(username='tester', password='tester')
+        self.user.save()
+        self.client = Client()
+        self.client.login(username='tester', password='tester')
+
     def test_response(self):
         """Test response for directing index page."""
         response = self.client.get(reverse('trip:index'))
         self.assertEqual(response.status_code, 200)
+
+    def test_get_trip_queries(self):
+        """Test queries response form server."""
+        trip = TripPlan.objects.create(title='test', body='create_trip', author=self.user, duration=1, price=1, complete=True)
+        trip.save()
+        # input starting letters of trip.
+        response = self.client.post(reverse("trip:get-trip-query"),
+                                    {"keyword": json.dumps("te")})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content)['status'], "OK")
+        self.assertEqual(len(json.loads(response.content)["results"]), 1)
+
+    def test_invalid_get_trip_queries(self):
+        """Test queries response form server with invalid payload."""
+        trip = TripPlan.objects.create(title='test', body='create_trip', author=self.user,
+                                       duration=1, price=1, complete=True)
+        trip.save()
+        # input starting letters of trip.
+        response = self.client.post(reverse("trip:get-trip-query"),
+                                    {"k": json.dumps("te")})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content)['status'], "BAD_REQUEST")
 
 
 class ReviewModelTests(TestCase):
@@ -463,3 +491,232 @@ class SeleniumTripPlan(LiveServerTestCase):
         """Reset all user."""
         User.objects.all().delete()
         return super().tearDown()
+
+
+class PlaceDetailModelTest(TestCase):
+    """Tests for PlaceDetail model."""
+
+    def setUp(self):
+        """Initialize user and place detail."""
+        self.reviewed_user_data = {"username": "Tester", "password": "ThaiRepose"}
+        self.reviewed_user = User.objects.create_user(username=self.reviewed_user_data['username'],
+                                                      password=self.reviewed_user_data['password'])
+        self.reviewed_user.save()
+        self.client = Client()
+        self.client.login(username=self.reviewed_user_data['username'],
+                          password=self.reviewed_user_data['password'])
+        self.blog = TripPlan.objects.create(title='test', body='create_trip', author=self.reviewed_user,
+                                            duration=1, price=1, complete=True)
+        self.blog.save()
+        self.place_id = "Qwerty123456"
+        self.place = PlaceDetail.objects.create(name="NewPlace", place_id=self.place_id)
+
+    def test_post_review(self):
+        """Test that user can review a place properly."""
+        review_text = "This is a good place!"
+        response = self.client.post(reverse("trip:place-review", args=[self.place_id]),
+                                    {"review": review_text})
+        self.assertEqual(response.status_code, 302)  # redirect to place detail page
+        # Check that review has been added to correct place.
+        self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+
+    def test_review_like(self):
+        """Test that user can like review for 1 unit."""
+        review_text = "This is a good place!"
+        self.client.post(reverse("trip:place-review", args=[self.place_id]),
+                         {"review": review_text})
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        response = self.client.post(reverse("trip:place-like", args=[self.place_id]),
+                                    {"review_id": review.id})
+        self.assertEqual(response.status_code, 302)  # redirect to the detail page.
+        # get new review detail
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        self.assertEqual(review.likes, 1)
+        self.assertEqual(review.dislikes, 0)
+
+    def test_review_dislike(self):
+        """Test that user can dislike a review place for 1 unit."""
+        review_text = "This is a nice place!"
+        self.client.post(reverse("trip:place-review", args=[self.place_id]),
+                         {"review": review_text})
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        response = self.client.post(reverse("trip:place-dislike", args=[self.place_id]),
+                                    {"review_id": review.id})
+        self.assertEqual(response.status_code, 302)  # redirect to the detail page.
+        # get new review detail
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        self.assertEqual(review.dislikes, 1)
+        self.assertEqual(review.likes, 0)
+
+    def test_unlike(self):
+        """Test in case that user click like again, should remove like."""
+        review_text = "This is a nice place!"
+        self.client.post(reverse("trip:place-review", args=[self.place_id]),
+                         {"review": review_text})
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        self.client.post(reverse("trip:place-like", args=[self.place_id]),
+                         {"review_id": review.id})
+        self.client.post(reverse("trip:place-like", args=[self.place_id]),
+                         {"review_id": review.id})
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        self.assertEqual(review.dislikes, 0)
+        self.assertEqual(review.likes, 0)
+
+    def test_remove_dislike(self):
+        """Test in case that user click dislike again, should remove dislike."""
+        review_text = "This is a nice place!"
+        self.client.post(reverse("trip:place-review", args=[self.place_id]),
+                         {"review": review_text})
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        self.client.post(reverse("trip:place-dislike", args=[self.place_id]),
+                         {"review_id": review.id})
+        self.client.post(reverse("trip:place-dislike", args=[self.place_id]),
+                         {"review_id": review.id})
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        self.assertEqual(review.dislikes, 0)
+        self.assertEqual(review.likes, 0)
+
+    def test_like_dislike_invalid_method(self):
+        """Test like/dislike with method isn't POST, should redirect to place detail page without doing any like."""
+        review_text = "This is a good place!"
+        self.client.post(reverse("trip:place-review", args=[self.place_id]),
+                         {"review": review_text})
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        response1 = self.client.get(reverse("trip:place-dislike", args=[self.place_id]),
+                                    {"review_id": review.id})
+        response2 = self.client.get(reverse("trip:place-dislike", args=[self.place_id]),
+                                    {"review_id": review.id})
+        # All response should return redirect
+        self.assertEqual(response1.status_code, 302)
+        self.assertEqual(response2.status_code, 302)
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        self.assertEqual(review.dislikes, 0)
+        self.assertEqual(review.likes, 0)
+
+
+class TestPostComment(TestCase):
+    """Class for test post comment"""
+
+    def setUp(self) -> None:
+        self.user = User.objects.create(username='tester', password='tester')
+        post = TripPlan.objects.create()
+        post.save()
+        self.user.active = True
+        self.rf = RequestFactory()
+        self.rf.user = self.user
+        self.rf.method = 'POST'
+        self.rf.POST = {'pk': 1, 'comment': '123'}
+
+    def test_post_comment(self):
+        """Test post comment success"""
+        response = post_comment(self.rf)
+        self.assertEqual(response.status_code, 200)
+
+    def test_fail_post_comment(self):
+        """Test post comment fail"""
+        self.rf.method = 'GET'
+        self.assertIsNone(post_comment(self.rf))
+
+    def tearDown(self):
+        """Reset all user, all category and all tripplan."""
+        User.objects.all().delete()
+        TripPlan.objects.all().delete()
+        return super().tearDown()
+
+
+class TestLike(TestCase):
+    """Class for test like function"""
+
+    def setUp(self):
+        self.user = User.objects.create(username='tester', password='tester')
+        post = TripPlan.objects.create()
+        comment = Review.objects.create(name=self.user, post=post)
+        post.save()
+        comment.save()
+        self.rf = RequestFactory()
+        self.rf.user = self.user
+        self.rf.method = 'POST'
+        self.rf.POST = {'pk': 1, 'comment_id': comment.id}
+        post.save()
+
+    def test_like_unlike_post(self):
+        response = like_post(self.rf)
+        self.assertEqual(response.status_code, 200)
+        response = like_post(self.rf)
+        self.assertEqual(response.status_code, 200)
+
+    def test_like_unlike_comment(self):
+        response = like_comment_view(self.rf)
+        self.assertEqual(response.status_code, 200)
+        response = like_comment_view(self.rf)
+        self.assertEqual(response.status_code, 200)
+
+    def tearDown(self):
+        """Reset all user, all category and all tripplan."""
+        User.objects.all().delete()
+        TripPlan.objects.all().delete()
+        Review.objects.all().delete()
+        return super().tearDown()
+
+
+class TestAddPost(TestCase):
+    """Class for test add post function"""
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create(username='tester', password='tester')
+        email_model = EmailAddress.objects.create(
+            user=self.user, verified=True)
+        email_model.save()
+        self.user.save()
+        self.rf = RequestFactory()
+        self.rf.user = self.user
+        self.rf.method = 'POST'
+
+    def test_create_first_plan(self):
+        self.client.force_login(self.user)
+        info = {'title': 'test', 'duration': 1,
+                         'price': 1, 'category': 'category1', 'body': 'test',
+                         'post_date': timezone.now(), 'like': '', 'complete': 'False'}
+        response = self.client.post(reverse('trip:addpost'), data=info)
+        self.assertEqual(response.status_code, 200)
+
+    def test_create_second_blog(self):
+        trip = TripPlan.objects.create(author=self.user, complete=False)
+        trip.save()
+        self.client.force_login(self.user)
+        info = {'title': 'test', 'duration': 1,
+                         'price': 1, 'body': 'test',
+                         'post_date': timezone.now(), 'like': '', 'complete': 'False', 'blog': '123'}
+        response = self.client.post(reverse('trip:addpost'), data=info)
+        self.assertEqual(response.status_code, 302)
+
+    def test_create_second_save_blog(self):
+        trip = TripPlan.objects.create(author=self.user, complete=False)
+        trip.save()
+        self.client.force_login(self.user)
+        info = {'title': 'test', 'duration': 1,
+                         'price': 1, 'body': 'test',
+                         'post_date': timezone.now(), 'like': '', 'complete': 'False', 'save_blog': '100101'}
+        response = self.client.post(reverse('trip:addpost'), data=info)
+        self.assertEqual(response.status_code, 200)
+
+    def test_create_second_imgpic(self):
+        trip = TripPlan.objects.create(author=self.user, complete=False)
+        trip.save()
+        self.client.force_login(self.user)
+        info = {'title': 'test', 'duration': 1,
+                         'price': 1, 'body': 'test',
+                         'post_date': timezone.now(), 'like': '', 'complete': 'False', 'imgpic': '100101'}
+        response = self.client.post(reverse('trip:addpost'), data=info)
+        self.assertEqual(response.status_code, 200)
+
+    def test_empty_body(self):
+        trip = TripPlan.objects.create(author=self.user, complete=False)
+        trip.save()
+        self.client.force_login(self.user)
+        info = {'title': 'test', 'duration': 1,
+                         'price': 1, 'body': '',
+                         'post_date': timezone.now(), 'like': '', 'complete': 'False', 'blog': '123'}
+        response = self.client.post(reverse('trip:addpost'), data=info)
+        self.assertEqual(response.status_code, 200)

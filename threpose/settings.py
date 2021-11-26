@@ -127,7 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # django-allauth config
-SITE_ID = 1
+SITE_ID = 2
 ACCOUNT_ADAPTER = 'users.adapter.ProfileAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'users.adapter.ProfileSocialAccountAdapter'
 ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/confirm-email/'
@@ -180,8 +180,8 @@ else:
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Upload folder for ckeditorupload
 CKEDITOR_UPLOAD_PATH = 'uploads/'
-
-
+CKEDITOR_ALLOW_NONIMAGE_FILES = False
+CKEDITOR_RESTRICT_BY_USER = True
 # Profile picture path
 PROFILE_PIC_LOCATION = os.path.join(MEDIA_ROOT, 'user', 'profile_picture')
 

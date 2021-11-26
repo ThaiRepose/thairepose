@@ -237,9 +237,13 @@ def delete_post(request, pk):
     return render(request, "trip/delete_plan.html", context)
 
 
-@login_required
 def like_comment_view(request):
     """Method that store user like in comment model"""
+    if not request.user.is_authenticated:
+        response = JsonResponse(
+            {"error": "You must login before use this function"})
+        response.status_code = 403
+        return response
     if request.method == 'POST':
         post = get_object_or_404(Review, id=request.POST.get('comment_id'))
         if post.like.filter(id=request.user.id).exists():
@@ -249,7 +253,6 @@ def like_comment_view(request):
         return JsonResponse({'result': post.total_like, 'id': request.POST.get('comment_id')})
 
 
-@login_required
 def like_post(request):
     """Method for store user like of each trip.
     Args:
@@ -257,6 +260,11 @@ def like_post(request):
     Return:
         HttpResponse: Redirect to page that link blog located.
     """
+    if not request.user.is_authenticated:
+        response = JsonResponse(
+            {"error": "You must login before use this function"})
+        response.status_code = 403
+        return response
     if request.method == 'POST':
         pk = request.POST.get('pk')
         post = get_object_or_404(TripPlan, id=pk)
@@ -499,7 +507,7 @@ def get_details_context(place_data: dict, backend_api_key: str, frontend_api_key
                 f"json?location={lat}%2C{lng}&radius=2000&key={backend_api_key}"
             response = requests.get(url)
             place_data = json.loads(response.content)
-            for place in place_data['results'][1:]:
+            for place in place_data['results'][1:10]:
                 if place['name'] == context['place_name']:
                     continue
                 if 'photos' not in place.keys():
@@ -626,6 +634,11 @@ def post_comment(request):
     Returns:
         http: html of comment
     """
+    if not request.user.is_authenticated:
+        response = JsonResponse(
+            {"error": "You must login before use this function"})
+        response.status_code = 403
+        return response
     if request.method == 'POST':
         pk = request.POST.get('pk')
         post = get_object_or_404(TripPlan, id=pk)
@@ -635,4 +648,4 @@ def post_comment(request):
         comment.body = request.POST.get('comment')
         comment.body = new_line_html(comment.body)
         comment.save()
-    return render(request, 'trip/single_comment.html', {'commend': comment})
+        return render(request, 'trip/single_comment.html', {'commend': comment})

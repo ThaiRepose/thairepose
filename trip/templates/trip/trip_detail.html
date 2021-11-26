@@ -298,8 +298,8 @@ $(document).ready(function(){
             success: function (json) {
                 document.getElementById("total-like-" + json['id']).innerHTML = json['result']
             },
-            error: function (xhr, errmsg, err) {
-                alert("you must login before use this feature")
+            error: function (data) {
+                alert(data.responseJSON.error);
             }
         });
     });
@@ -320,8 +320,8 @@ $(document).ready(function(){
             success: function (json) {
                 document.getElementById("post_total_like").innerHTML = json['post_result']
             },
-            error: function (xhr, errmsg, err) {
-                alert("you must login before use this feature")
+            error: function (data) {
+                alert(data.responseJSON.error);
             }
         });
     });
@@ -351,9 +351,8 @@ $(document).ready(function(){
                 text.style.height = "40px";
                 all_comment.scrollTop = all_comment.scrollHeight;
             },
-            error: function (xhr, errmsg, err) {
-                console.log("error")
-
+            error: function (data) {
+                alert(data.responseJSON.error);
             }
         });
     });

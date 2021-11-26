@@ -229,8 +229,10 @@ def delete_post(request, pk):
 
 def like_comment_view(request):
     """Method that store user like in comment model"""
-    if not request.user.is_authenticated():
-        return HttpResponseNotFound
+    if not request.user.is_authenticated:
+        response = JsonResponse({"error": "You must login before use this function"})
+        response.status_code = 403
+        return response
     if request.method == 'POST':
         post = get_object_or_404(Review, id=request.POST.get('comment_id'))
         if post.like.filter(id=request.user.id).exists():
@@ -247,8 +249,10 @@ def like_post(request):
     Return:
         HttpResponse: Redirect to page that link blog located.
     """
-    if not request.user.is_authenticated():
-        return HttpResponseNotFound
+    if not request.user.is_authenticated:
+        response = JsonResponse({"error": "You must login before use this function"})
+        response.status_code = 403
+        return response
     if request.method == 'POST':
         pk = request.POST.get('pk')
         post = get_object_or_404(TripPlan, id=pk)
@@ -611,6 +615,10 @@ def post_comment(request):
     Returns:
         http: html of comment
     """
+    if not request.user.is_authenticated:
+        response = JsonResponse({"error": "You must login before use this function"})
+        response.status_code = 403
+        return response
     if request.method == 'POST':
         pk = request.POST.get('pk')
         post = get_object_or_404(TripPlan, id=pk)

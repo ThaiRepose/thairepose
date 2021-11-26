@@ -83,17 +83,16 @@ def get_pic_profile_relate_path(pk, filename):
     return os.path.join('user', 'profile_picture', f'{str(pk)}_{filename}')
 
 
-def get_upload_pic_path(path):
+def get_upload_pic_path(filename):
     """Method for get path of Profile picture image.
 
     Args:
-        path(str): profile pic relative path.
+        filename(str): profile pic relative path.
 
     Returns:
         path(str): path.
     """
-    get_path = os.path.join(settings.PROFILE_PIC_LOCATION, path)
-    get_path = get_path.replace('\\', '/')
+    get_path = os.path.join(settings.MEDIA_ROOT, filename)    
     return get_path
 
 

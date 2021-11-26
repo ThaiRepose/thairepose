@@ -59,7 +59,7 @@ def edit_profile(request):
     Return:
         HTTPResponse: link of profile and content.
     """
-    n = Profile.objects.get(user__id=request.user.id)
+    profile_name = Profile.objects.get(user__id=request.user.id)
     profile = Profile.objects.get(user=request.user)
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=request.user)
@@ -67,10 +67,12 @@ def edit_profile(request):
             request.POST, request.FILES, instance=profile)
         if profile_form.is_valid():
             user_form.save()
+            if profile.profile_pic.name == profile_name.profile_pic.name:
+                return HttpResponseRedirect(reverse('profile'))
             if os.path.isfile(pic_profile_rename_path(request.user.pk)):
                 os.remove(pic_profile_rename_path(request.user.pk))
             else:
-                os.remove(get_upload_pic_path(n.profile_pic.name))
+                os.remove(get_upload_pic_path(profile_name.profile_pic.name))
             profile_form.save()
             filename = profile_form.save(commit=False).profile_pic
             name = filename.name.split('/')[-1]

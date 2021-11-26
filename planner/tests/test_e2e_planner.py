@@ -43,7 +43,7 @@ class E2ETestPlanner(StaticLiveServerTestCase):
 
         # Initialize webdriver
         options = Options()
-        # options.add_argument("--headless")
+        options.add_argument("--headless")
         self.browser = webdriver.Firefox(
             executable_path="/Users/tawaneiei/Desktop/KU/ISP/selenium-exercise/geckodriver", options=options)
         self.browser = login(self.browser, self.url+reverse("account_login"),

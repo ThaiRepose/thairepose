@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.urls import reverse
 from planner.models import Plan, MAX_DAYS_PER_PLAN
+import unittest
 
 
 def login(browser: webdriver, url: str, username: str, password: str) -> webdriver:
@@ -30,6 +31,7 @@ def login(browser: webdriver, url: str, username: str, password: str) -> webdriv
     return browser
 
 
+@unittest.skip("Skip E2E in Github Action")
 class E2ETestPlanner(StaticLiveServerTestCase):
     """Tests for Planner app."""
 

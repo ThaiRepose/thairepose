@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% load account %}
+{% load account socialaccount %}
+{% load widget_tweaks %}
+{% load static tailwind_tags %}
+
+{% block header %}
+  <title>ThaiRepose::{{ name }}</title>
+    <style>
+        body {
+            background: url("{% static '/images/bg-blur.jpg' %}") no-repeat fixed;
+            background-size: cover;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}" />
+    <link rel="stylesheet" href="https://npmcdn.com/flickity@2/dist/flickity.css" />
+{% endblock %}
+
+{% block main_content %}
+<div id="content" class="flex flex-grow items-center justify-center px-5 py-5 md:px-10 md:py-10 mb-20">
+  <div class="container mx-auto rounded-2xl lg:w-4/12" style="background-color: rgba(255,255,255,0.75);">
+      <!-- Row -->
+      <h1 class="flex justify-center text-2xl font-semibold mt-4">{% trans "This email is already register" %}</h1>
+
+      <p class="flex justify-center text-lg mx-8 mt-2">If you didn't create account. Please contact support.</p>
+      <div class="text-center text-lg mt-6 mb-2">Click here to go to <a class="text-blue-600" href="{% url 'account_login'%}">Login page</a></div>
+  </div>  
+</div>
+{% endblock %}

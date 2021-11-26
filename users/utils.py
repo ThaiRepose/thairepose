@@ -97,7 +97,7 @@ def get_upload_pic_path(path):
     return get_path
 
 
-def rename_file(pk, filename):
+def get_rename_file_path(pk, filename):
     """Method for get path of Profile picture image.
 
     Args:

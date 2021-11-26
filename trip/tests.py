@@ -11,7 +11,7 @@ from .views import restruct_detail_context_data
 from .views import resturct_to_place_detail
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from .models import Review, TripPlan, CategoryPlan
+from .models import Review, TripPlan, CategoryPlan, PlaceDetail, PlaceReview, PlaceReviewLike
 from django.db import models
 from .forms import TripPlanImageForm, TripPlanForm, ReviewForm
 from .views import add_post
@@ -219,7 +219,7 @@ class IndexViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_get_trip_queries(self):
-        """Test queries reponse form server."""
+        """Test queries response form server."""
         trip = TripPlan.objects.create(title='test', body='create_trip', author=self.user, duration=1, price=1, complete=True)
         trip.save()
         # input starting letters of trip.
@@ -228,6 +228,17 @@ class IndexViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content)['status'], "OK")
         self.assertEqual(len(json.loads(response.content)["results"]), 1)
+
+    def test_invalid_get_trip_queries(self):
+        """Test queries response form server with invalid payload."""
+        trip = TripPlan.objects.create(title='test', body='create_trip', author=self.user,
+                                       duration=1, price=1, complete=True)
+        trip.save()
+        # input starting letters of trip.
+        response = self.client.post(reverse("trip:get-trip-query"),
+                                    {"k": json.dumps("te")})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content)['status'], "BAD_REQUEST")
 
 
 class ReviewModelTests(TestCase):
@@ -481,3 +492,87 @@ class SeleniumTripPlan(LiveServerTestCase):
         """Reset all user."""
         User.objects.all().delete()
         return super().tearDown()
+
+
+class PlaceDetailModelTest(TestCase):
+    """Tests for PlaceDetail model."""
+
+    def setUp(self):
+        """Initialize user and place detail."""
+        self.reviewed_user_data = {"username": "Tester", "password": "ThaiRepose"}
+        self.reviewed_user = User.objects.create_user(username=self.reviewed_user_data['username'],
+                                                      password=self.reviewed_user_data['password'])
+        self.reviewed_user.save()
+        self.client = Client()
+        self.client.login(username=self.reviewed_user_data['username'],
+                          password=self.reviewed_user_data['password'])
+        self.blog = TripPlan.objects.create(title='test', body='create_trip', author=self.reviewed_user,
+                                            duration=1, price=1, complete=True)
+        self.blog.save()
+        self.place_id = "Qwerty123456"
+        self.place = PlaceDetail.objects.create(name="NewPlace", place_id=self.place_id)
+
+    def test_post_review(self):
+        """Test that user can review a place properly."""
+        review_text = "This is a good place!"
+        response = self.client.post(reverse("trip:place-review", args=[self.place_id]),
+                                    {"review": review_text})
+        self.assertEqual(response.status_code, 302)  # redirect to place detail page
+        # Check that review has been added to correct place.
+        self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+
+    def test_review_like(self):
+        """Test that user can like review for 1 unit."""
+        review_text = "This is a good place!"
+        self.client.post(reverse("trip:place-review", args=[self.place_id]),
+                         {"review": review_text})
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        response = self.client.post(reverse("trip:place-like", args=[self.place_id]),
+                         {"review_id": review.id})
+        self.assertEqual(response.status_code, 302)  # redirect to the detail page.
+        # get new review detail
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        self.assertEqual(review.likes, 1)
+        self.assertEqual(review.dislikes, 0)
+
+    def test_review_dislike(self):
+        """Test that user can dislike a review place for 1 unit."""
+        review_text = "This is a nice place!"
+        self.client.post(reverse("trip:place-review", args=[self.place_id]),
+                         {"review": review_text})
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        response = self.client.post(reverse("trip:place-dislike", args=[self.place_id]),
+                                    {"review_id": review.id})
+        self.assertEqual(response.status_code, 302)  # redirect to the detail page.
+        # get new review detail
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        self.assertEqual(review.dislikes, 1)
+        self.assertEqual(review.likes, 0)
+
+    def test_unlike(self):
+        """Test in case that user click like again, should remove like."""
+        review_text = "This is a nice place!"
+        self.client.post(reverse("trip:place-review", args=[self.place_id]),
+                         {"review": review_text})
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        self.client.post(reverse("trip:place-like", args=[self.place_id]),
+                         {"review_id": review.id})
+        self.client.post(reverse("trip:place-like", args=[self.place_id]),
+                         {"review_id": review.id})
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        self.assertEqual(review.dislikes, 0)
+        self.assertEqual(review.likes, 0)
+
+    def test_remove_dislike(self):
+        """Test in case that user click dislike again, should remove dislike."""
+        review_text = "This is a nice place!"
+        self.client.post(reverse("trip:place-review", args=[self.place_id]),
+                         {"review": review_text})
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        self.client.post(reverse("trip:place-dislike", args=[self.place_id]),
+                         {"review_id": review.id})
+        self.client.post(reverse("trip:place-dislike", args=[self.place_id]),
+                         {"review_id": review.id})
+        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        self.assertEqual(review.dislikes, 0)
+        self.assertEqual(review.likes, 0)

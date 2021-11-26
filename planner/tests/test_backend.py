@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
 
 from planner.tests import test_index
-from ..models import Plan, Place, MAX_DAYS_PER_PLAN
+from ..models import Plan, Place, MAX_DAYS_PER_PLAN, MAX_PLACES_PER_DAY
 from ..views import MAX_PLACE_PER_REQUEST
 
 

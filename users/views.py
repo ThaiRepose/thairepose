@@ -11,16 +11,6 @@ from .utils import get_upload_pic_path, pic_profile_path, pic_profile_rename_pat
 import os
 
 
-def home(request):
-    """Render home page."""
-    return render(request, "users/temp_home.html")
-
-
-def index(request):
-    """Render index page."""
-    return render(request, "users/index.html")
-
-
 @login_required
 def profile(request):
     """Render Profile page.

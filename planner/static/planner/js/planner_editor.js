@@ -138,7 +138,7 @@ function displayTime(directions) {
     arrival.innerText = getTimeFormat(time);
     const nextDeparture = document.getElementsByName('departure-' + stop)[0];
     nextDeparture.min = getTimeFormat(time);
-    if (createTime(departure.value) < time) {
+    if (createTime(nextDeparture.value) < time) {
       let departureDay = $(departure).parents("div[name='day-table']").index();
       let nextDepartureDay = $(nextDeparture).parents("div[name='day-table']").index();
       if (nextDepartureDay > departureDay) {

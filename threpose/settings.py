@@ -18,13 +18,14 @@ from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY', default='its-no-secret')
-
+DEFAULT_FROM_EMAIL = 'no-reply@thairepose.com'
+SERVER_MAIL = DEFAULT_FROM_EMAIL
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
@@ -42,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'users',
-    'ckeditor',
     'trip',
     'tailwind',
     'theme',
@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'search',
+    'ckeditor',
     'ckeditor_uploader',
     'mptt',
     'planner'
@@ -59,7 +60,7 @@ INSTALLED_APPS = [
 
 # Upload folder for ckeditorupload
 CKEDITOR_UPLOAD_PATH = "uploads/"
-
+CKEDITOR_RESTRICT_BY_USER = True
 # Config for Tailwind CSS
 TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
@@ -128,7 +129,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # django-allauth config
-SITE_ID = 2
+SITE_ID = config('SITE_ID', cast=int, default=2)
 ACCOUNT_ADAPTER = 'users.adapter.ProfileAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'users.adapter.ProfileSocialAccountAdapter'
 ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/confirm-email/'

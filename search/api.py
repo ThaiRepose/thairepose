@@ -3,14 +3,12 @@ import urllib.parse
 import requests
 import json
 import time
-
-from dotenv import load_dotenv
-load_dotenv()
+from decouple import config
 
 
 class GoogleAPI:
 
-    api_key = os.getenv("API_KEY")
+    api_key = config("BACKEND_API_KEY")
 
     def search_nearby(self, lat, lng, type):
         """Call search nearby place from google map API.
@@ -33,6 +31,7 @@ class GoogleAPI:
         payload = {}
         headers = {}
         response = requests.request("GET", url, headers=headers, data=payload)
+        print(response.content)
         return response.content
 
     def next_search_nearby(self, token: str):

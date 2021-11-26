@@ -1,11 +1,11 @@
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from django.utils import timezone
-from dotenv import load_dotenv
+from decouple import config
 import os
 import unittest
 from threpose.settings import BASE_DIR
-from .views import delete_post, get_details_context, trip_detail
+from .views import delete_post, get_details_context, new_line_html, trip_detail
 from .views import check_downloaded_image
 from .views import restruct_detail_context_data
 from .views import resturct_to_place_detail
@@ -16,6 +16,9 @@ from .models import Review, TripPlan, CategoryPlan
 from django.db import models
 from .forms import TripPlanImageForm, TripPlanForm, ReviewForm
 from .views import add_post
+from django.test import LiveServerTestCase
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 
 
 class PlaceDetailsViewTest(TestCase):
@@ -23,9 +26,8 @@ class PlaceDetailsViewTest(TestCase):
 
     def setUp(self):
         """Initialize API key from env."""
-        load_dotenv()
-        self.frontend_api_key = os.getenv('FRONTEND_API_KEY')
-        self.backend_api_key = os.getenv('BACKEND_API_KEY')
+        self.frontend_api_key = config('FRONTEND_API_KEY')
+        self.backend_api_key = config('BACKEND_API_KEY')
 
     def test_invalid_place_id(self):
         """Test viewing place details page with invalid place_id."""
@@ -48,7 +50,8 @@ class PlaceDetailsViewTest(TestCase):
                 'types': ['school']
             }
         }
-        context = get_details_context(mock_data, self.backend_api_key, self.frontend_api_key)
+        context = get_details_context(
+            mock_data, self.backend_api_key, self.frontend_api_key)
         self.assertEqual("Tawan Boonma", context['place_name'])
         self.assertEqual("191", context['phone'])
         self.assertEqual("tawanb.dev", context['website'])
@@ -67,7 +70,8 @@ class PlaceDetailsViewTest(TestCase):
                 'geometry': {'location': {'lat': 10, 'lng': 10}}
             }
         }
-        context = get_details_context(mock_data, self.backend_api_key, self.frontend_api_key)
+        context = get_details_context(
+            mock_data, self.backend_api_key, self.frontend_api_key)
         self.assertEqual("N/A", context['place_name'])
         self.assertEqual("N/A", context['phone'])
         self.assertEqual("N/A", context['website'])
@@ -79,8 +83,9 @@ class PlaceDetailsViewTest(TestCase):
 
     def test_empty_get_details_function(self):
         """Test for get_details_context() function with empty place_data."""
-        context = get_details_context({}, self.backend_api_key, self.frontend_api_key)
-        self.assertEqual({'api_key': None}, context)
+        context = get_details_context(
+            {}, self.backend_api_key, self.frontend_api_key)
+        self.assertEqual({'api_key': self.frontend_api_key}, context)
 
     @unittest.skip("Skip due to not provided API key.")
     def test_view_one_place(self):
@@ -189,7 +194,7 @@ class PlaceDetailsViewTest(TestCase):
             'rating': 4,
             'blank_rating': 1,
             'images': ['Aap_uECILxxdbdn'],
-            'reviews': [{'author': '- - SHJR', 'text': 'It was perfect'}],
+            'google_reviews': [{'author': '- - SHJR', 'text': 'It was perfect'}],
             'suggestions': [{'place_name': 'Ban', 'photo_ref': 'A', 'place_id': 'ChIJae'}],
             'website': 'threpose',
             'phone': '1111111'
@@ -256,6 +261,12 @@ class ReviewModelTests(TestCase):
         Review.objects.create(post=self.trip, name=self.user, body='review')
         TripPlan.objects.filter(id='1').delete()
         self.assertEqual(Review.objects.all().count(), 0)
+
+    def test_convert_string_to_html(self):
+        """Test convert newline python syntax to html syntax"""
+        expect = "hello<br>world"
+        input = "hello\nworld"
+        self.assertEqual(expect, new_line_html(input))
 
     def tearDown(self):
         """Remove all user and all trip plan"""
@@ -400,6 +411,7 @@ class DeletePostlTests(TestCase):
         self.client = Client()
         self.cat = CategoryPlan.objects.create(name='category1')
         self.user = User.objects.create(username='tester', password='tester')
+        self.user.active = True
         self.trip = TripPlan.objects.create()
         self.re = RequestFactory()
         return super().setUp()
@@ -415,4 +427,39 @@ class DeletePostlTests(TestCase):
         User.objects.all().delete()
         TripPlan.objects.all().delete()
         CategoryPlan.objects.all().delete()
+        return super().tearDown()
+
+
+@unittest.skip
+class SeleniumTripPlan(LiveServerTestCase):
+    """Classs for test selenium"""
+
+    def setUp(self) -> None:
+        """Set up user."""
+        self.user = User.objects.create(username='tester', password='tester')
+        self.user.active = True
+
+    def test_create_trip(self):
+        """Test user create trip."""
+        browser = webdriver.Chrome('selenium/chromedriver.exe')
+        browser.get("http://127.0.0.1:80/accounts/login")
+        input = browser.find_elements_by_tag_name("input")
+        username = input[1]
+        password = input[2]
+        username.send_keys('demo')
+        password.send_keys('pass12345')
+        login = browser.find_elements_by_tag_name("button")[1]
+        login.click()
+        browser.get("http://127.0.0.1:80/addpost/")
+        browser.find_element(By.NAME, "title").send_keys("test")
+        browser.find_element(By.NAME, "duration").send_keys(1)
+        browser.find_element(By.NAME, "price").send_keys(1)
+        button = browser.find_elements_by_tag_name("button")[3]
+        button.click()
+        assert 'test' in browser.page_source
+        assert '1' in browser.page_source
+
+    def tearDown(self) -> None:
+        """Reset all user."""
+        User.objects.all().delete()
         return super().tearDown()

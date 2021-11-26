@@ -4,7 +4,7 @@
     <title>ThaiRepose: edit post</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
-    
+
     .bg-page {
             background-image: url("{% static 'images/bg-blur.jpg' %}");
             background-repeat: no-repeat;
@@ -49,10 +49,10 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
           <div>
             <button class="w-full mt-4 px-4 py-2 font-bold text-white bg-black rounded-full hover:bg-black focus:outline-none focus:shadow-outline">Edit</button>
           </div>
-          
+
       </form>
       {% else %}
-      <script>alert('You are allow to access.')</script>
+      <script>alert('You are not allow to access.')</script>
       <META HTTP-EQUIV="Refresh" CONTENT="0 ; URL={% url 'trip:tripplan' %}">
       {% endif %}
   {% else %}

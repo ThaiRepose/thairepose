@@ -5,6 +5,7 @@ from django.urls import reverse
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.utils.deconstruct import deconstructible
 from django.conf import settings
+from mptt.models import MPTTModel, TreeForeignKey
 
 
 class CategoryPlan(models.Model):
@@ -91,7 +92,7 @@ class TripPlan(models.Model):
         return UploadImage.objects.filter(post=self)
 
 
-class Review(models.Model):
+class Review(MPTTModel):
     """Extended user model class that use for Review.
 
     Attributes:
@@ -103,6 +104,7 @@ class Review(models.Model):
 
     post = models.ForeignKey(
         TripPlan, related_name="review", on_delete=models.CASCADE)
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='children')
     name = models.ForeignKey(User, on_delete=models.CASCADE)
     body = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
@@ -134,3 +136,43 @@ class UploadImage(models.Model):
     post = models.ForeignKey(TripPlan, on_delete=models.CASCADE, null=True)
     image = models.ImageField(upload_to=UploadToPathAndRename(
         os.path.join(settings.MEDIA_ROOT, 'pic')))
+
+
+class PlaceDetail(models.Model):
+    """Model contains place details collected by user.
+
+    Attributes:
+        place_id: ID reference to Google Place.
+    """
+    name = models.TextField(default=None)
+    place_id = models.TextField(null=False, blank=False)
+
+    def __str__(self):
+        """Display name for this object."""
+        return self.name
+
+
+class PlaceReview(models.Model):
+    """Model about review information for a place."""
+
+    place = models.ForeignKey(PlaceDetail, on_delete=models.CASCADE)
+    review_text = models.TextField(null=False, blank=False)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    @property
+    def likes(self):
+        """Get amount of likes for this review."""
+        return PlaceReviewLike.objects.filter(review=self, like=True).count()
+
+    @property
+    def dislikes(self):
+        """Get amount of dislikes for this review."""
+        return PlaceReviewLike.objects.filter(review=self, like=False).count()
+
+
+class PlaceReviewLike(models.Model):
+    """Model for managing like/dislike for a place review."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    review = models.ForeignKey(PlaceReview, on_delete=models.CASCADE)
+    like = models.BooleanField(default=True)

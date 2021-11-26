@@ -1,8 +1,11 @@
+from django.contrib import auth
 from django.contrib.auth.models import User
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from allauth.account.decorators import verified_email_required
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
 import os
 from django.http.response import JsonResponse
@@ -11,13 +14,12 @@ import shutil
 import requests
 from threpose.settings import BASE_DIR, MEDIA_ROOT
 from src.caching.caching_gmap import APICaching
-from dotenv import load_dotenv
+from decouple import config
 from django.views.generic import ListView, UpdateView
 from requests.api import post
-from .models import TripPlan, Review, CategoryPlan, UploadImage
+from .models import TripPlan, Review, CategoryPlan, UploadImage, PlaceDetail, PlaceReview, PlaceReviewLike
 from .forms import TripPlanForm, TripPlanImageForm, ReviewForm
-from django.contrib.auth.decorators import login_required
-load_dotenv()
+from django.core.exceptions import ObjectDoesNotExist
 
 
 api_caching = APICaching()
@@ -30,8 +32,36 @@ PLACE_IMG_PATH = os.path.join(
 # View page
 def index(request):
     """Render Index page."""
-    api_key = os.getenv('FRONTEND_API_KEY')
-    return render(request, "trip/index.html", {'api_key': api_key})
+    api_key = config('FRONTEND_API_KEY')
+    # Get top like trip blogs.
+    top_trips = sorted(TripPlan.objects.filter(complete=True), key=lambda m: m.total_like, reverse=True)[:6]
+    return render(request, "trip/index.html", {'api_key': api_key, "top_trips": top_trips})
+
+
+@require_http_methods(["POST"])
+def get_trip_queries(request):
+    """Search for trip and return queries.
+
+    POST params:
+        keyword: keyword to search for trip plans.
+    """
+    if 'keyword' not in request.POST:
+        return JsonResponse({"status": "BAD_REQUEST"})
+    keyword = json.loads(request.POST['keyword'])
+    # get query that has title starts with keyword.
+    query_startswith = sorted(TripPlan.objects.filter(title__istartswith=keyword,
+                                                      complete=True),
+                              key=lambda m: m.total_like,
+                              reverse=True)[:3]
+    quantity_requested = 4 - len(query_startswith)  # define how much we need query left.
+    # get query that contains keyword.
+    query_contain = sorted(TripPlan.objects.filter(title__icontains=keyword,
+                                                   complete=True),
+                           key=lambda m: m.total_like,
+                           reverse=True)[:quantity_requested]
+    queries_combined = set(query_startswith + query_contain)  # list of query, type is list
+    queries = [{"id": query.id, "name": query.title} for query in queries_combined]  # prepare for context
+    return JsonResponse({"status": "OK", "results": queries})
 
 
 class AllTrip(ListView):
@@ -63,20 +93,20 @@ def trip_detail(request, pk):
     """
     post = get_object_or_404(TripPlan, id=pk)
     commend = Review.objects.filter(post=post)
-    if request.method == 'POST':
-        form = ReviewForm(request.POST)
-        if form.is_valid():
-            review_form = form.save(commit=False)
-            review_form.post = TripPlan.objects.filter(id=pk)[0]
-            review_form.name = request.user
-            review_form.save()
-            return HttpResponseRedirect(reverse('trip:tripdetail', args=[str(pk)]))
-    else:
-        form = ReviewForm()
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(commend, 8)
+    try:
+        comments = paginator.page(page)
+    except PageNotAnInteger:
+        comments = paginator.page(1)
+    except EmptyPage:
+        comments = paginator.page(paginator.num_pages)
+
     context = {
         'post': post,
         'commend': commend,
-        'review_form': form
+        'comments': comments
     }
     return render(request, 'trip/trip_detail.html', context)
 
@@ -139,7 +169,12 @@ def add_post(request):
                                                           'image_form': image_form})
         elif 'blog' in request.POST:
             if form.is_valid():
+                image_form = TripPlanImageForm(request.POST, request.FILES)
                 post_form = form.save(commit=False)
+                if post_form.body == '' or post_form.title is None or post_form.duration is None or post_form.price is None:
+                    post_form.save()
+                    return render(request, 'trip/add_blog.html', {'form': form,
+                                                                  'image_form': image_form, 'message': 'Need fill all fields'})
                 post_form.author = request.user
                 post_form.complete = True
                 post_form.save()
@@ -164,7 +199,8 @@ class EditPost(UpdateView):
 
     model = TripPlan
     template_name = "trip/update_plan.html"
-    fields = ['title', 'duration', 'price', 'body']
+    # fields = ['title', 'duration', 'price', 'body']
+    form_class = TripPlanForm
     context_object_name = 'post'
 
 
@@ -178,12 +214,13 @@ def delete_post(request, pk):
     """
     post = get_object_or_404(TripPlan, id=pk)
     if request.method == "POST":
-        image_path = os.path.join(MEDIA_ROOT, 'pic', str(pk))
-        if os.path.exists(image_path):
-            shutil.rmtree(image_path)
-        post.delete()
-        success_url = reverse_lazy('trip:tripplan')
-        return redirect(success_url)
+        if request.user.id == post.author.id:
+            image_path = os.path.join(MEDIA_ROOT, 'pic', str(pk))
+            if os.path.exists(image_path):
+                shutil.rmtree(image_path)
+            post.delete()
+            success_url = reverse_lazy('trip:tripplan')
+            return redirect(success_url)
     context = {
         "post": post
     }
@@ -212,7 +249,6 @@ def like_post(request):
     """
     if request.method == 'POST':
         pk = request.POST.get('pk')
-        print(pk)
         post = get_object_or_404(TripPlan, id=pk)
         if post.like.filter(id=request.user.id).exists():
             post.like.remove(request.user)
@@ -229,30 +265,149 @@ def place_info(request, place_id: str):
     Returns:
         HttpRequest: Return 200 if place_id is correct, and return 404 if invalid.
     """
-    load_dotenv()
-    backend_api_key = os.getenv('BACKEND_API_KEY')
-    frontend_api_key = os.getenv('FRONTEND_API_KEY')
-    if api_caching.get(f"{place_id}detailpage"):
+    backend_api_key = config('BACKEND_API_KEY')
+    frontend_api_key = config('FRONTEND_API_KEY')
+    if api_caching.get(f"{place_id[:50]}detailpage"):
         cache_data = json.loads(api_caching.get(
-            f"{place_id}detailpage"))['cache']
+            f"{place_id[:50]}detailpage"))['cache']
     else:
         url = f"https://maps.googleapis.com/maps/api/place/details/json?place_id={place_id}&key={backend_api_key}"
         response = requests.get(url)
         data = json.loads(response.content)
-        print(data)
         if data['status'] != "OK":
             return HttpResponseNotFound(f"<h1>Response error with place_id: {place_id}</h1>")
         context = get_details_context(data, backend_api_key, frontend_api_key)
         cache_data = restruct_detail_context_data(context)
-        api_caching.add(f"{place_id}detailpage", json.dumps(
+        api_caching.add(f"{place_id[:50]}detailpage", json.dumps(
             {'cache': cache_data}, indent=3).encode())
-
     context = resturct_to_place_detail(cache_data)
     context['blank_rating'] = range(round(context['blank_rating']))
     context['rating'] = range(round(context['rating']))
     context['api_key'] = frontend_api_key
     context = check_downloaded_image(context)
+
+    # Get review collected from our website
+    try:
+        place = PlaceDetail.objects.get(place_id=place_id)
+    except ObjectDoesNotExist:
+        place = PlaceDetail.objects.create(name=context['place_name'], place_id=place_id)
+        place.save()
+    reviews = PlaceReview.objects.filter(place=place)
+    if request.user.is_authenticated:
+        context['reviews_user_liked'] = PlaceReview.objects.filter(placereviewlike__like=True,
+                                                                   placereviewlike__user=request.user)
+        context['reviews_user_disliked'] = PlaceReview.objects.filter(placereviewlike__like=False,
+                                                                      placereviewlike__user=request.user)
+        try:
+            context['user_reviewed'] = PlaceReview.objects.get(place=place, author=request.user)
+            context['is_reviewed'] = True
+        except ObjectDoesNotExist:
+            context['is_reviewed'] = False
+        reviews = reviews.exclude(author=request.user)
+    context['reviews'] = reviews
     return render(request, "trip/place_details.html", context)
+
+
+@login_required(login_url='/accounts/login/')
+def place_like(request, place_id):
+    """Implement like review for user.
+
+    Args:
+        request: auto-generated by django.
+        place_id: place identity defined by Google.
+
+    POST payloads:
+        review_id: primary key of review.
+    """
+    if request.method != 'POST':
+        return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
+    user = request.user
+    review_id = request.POST['review_id']
+    try:
+        review = PlaceReview.objects.get(place__place_id=place_id, id=review_id)
+    except ObjectDoesNotExist:
+        return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
+    try:
+        review_respond = PlaceReviewLike.objects.get(review=review, user=user)
+        if review_respond.like:
+            review_respond.delete()
+        else:
+            review_respond.like = True
+            review_respond.save()
+    except ObjectDoesNotExist:
+        review_respond = PlaceReviewLike.objects.create(review=review, user=user, like=True)
+        review_respond.save()
+    return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
+
+
+@login_required(login_url='/accounts/login/')
+def place_dislike(request, place_id):
+    """Implement dislike review for user.
+
+    Args:
+        request: auto-generated by django.
+        place_id: place identity defined by Google.
+
+    POST payloads:
+        review_id: primary key of review.
+    """
+    if request.method != 'POST':
+        return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
+    user = request.user
+    review_id = request.POST['review_id']
+    try:
+        review = PlaceReview.objects.get(place__place_id=place_id, id=review_id)
+    except ObjectDoesNotExist:
+        return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
+    try:
+        review_respond = PlaceReviewLike.objects.get(review=review, user=user)
+        if not review_respond.like:
+            review_respond.delete()
+        else:
+            review_respond.like = False
+            review_respond.save()
+    except ObjectDoesNotExist:
+        review_respond = PlaceReviewLike.objects.create(review=review, user=user, like=False)
+        review_respond.save()
+    return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
+
+
+@login_required(login_url='/accounts/login/')
+def place_review(request, place_id):
+    """Create a place review for specified place.
+
+    Args:
+        request: auto-generated by django.
+        place_id: place identity defined by Google.
+
+    POST payloads:
+        review: review text for this user.
+    """
+    if request.method != 'POST':
+        return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
+    user = request.user
+    review_text = request.POST['review']
+    place = PlaceDetail.objects.get(place_id=place_id)
+    review = PlaceReview.objects.create(place=place, review_text=review_text, author=user)
+    review.save()
+    return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
+
+
+@login_required(login_url='/accounts/login/')
+def place_remove_review(request, place_id):
+    """Create a place review for specified place.
+
+    Args:
+        request: auto-generated by django.
+        place_id: place identity defined by Google.
+    """
+    if request.method != 'POST':
+        return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
+    user = request.user
+    place = PlaceDetail.objects.get(place_id=place_id)
+    review = PlaceReview.objects.get(place=place, author=user)
+    review.delete()
+    return HttpResponseRedirect(reverse("trip:place-detail", args=[place_id]))
 
 
 # Helper function
@@ -260,7 +415,7 @@ def get_details_context(place_data: dict, backend_api_key: str, frontend_api_key
     """Get context for place details page.
     Args:
         place_data: The data received from Google Cloud Platform.
-        backend_api_key:
+        backend_api_key: API key used in server.
         frontend_api_key: Exposed API key used to display images in website, restriction in GCP needed.
     Returns:
         context data needed for place details page.
@@ -327,7 +482,7 @@ def get_details_context(place_data: dict, backend_api_key: str, frontend_api_key
                 f"json?location={lat}%2C{lng}&radius=2000&key={backend_api_key}"
             response = requests.get(url)
             place_data = json.loads(response.content)
-            for place in place_data['results'][1:]:
+            for place in place_data['results'][1:10]:
                 if place['name'] == context['place_name']:
                     continue
                 if 'photos' not in place.keys():
@@ -417,7 +572,7 @@ def resturct_to_place_detail(context):
             "rating": <rating>,
             "blank_rating": <blank_rating>,
             "images": [],
-            "reviews": [],
+            "google_reviews": [],
             "suggestions": []
         }
     """
@@ -428,7 +583,7 @@ def resturct_to_place_detail(context):
         "rating": context[0]['rating'],
         "blank_rating": context[0]['blank_rating'],
         "images": [img for img in context[0]['photo_ref']],
-        "reviews": context[0]['reviews'],
+        "google_reviews": context[0]['reviews'],
         "suggestions": [place for place in context[1:]]
     }
     if 'website' in context[0]:
@@ -436,3 +591,31 @@ def resturct_to_place_detail(context):
     if 'phone' in context[0]:
         init_data["phone"] = context[0]['phone']
     return init_data
+
+
+def new_line_html(text):
+    out = ""
+    for idx in range(len(text)):
+        if text[idx] == '\n':
+            out += '<br>'
+        else:
+            out += text[idx]
+    return out
+
+
+def post_comment(request):
+    """Add comment to database and return html to render in front-end
+
+    Returns:
+        http: html of comment
+    """
+    if request.method == 'POST':
+        pk = request.POST.get('pk')
+        post = get_object_or_404(TripPlan, id=pk)
+        comment = Review()
+        comment.name = request.user
+        comment.post = post
+        comment.body = request.POST.get('comment')
+        comment.body = new_line_html(comment.body)
+        comment.save()
+    return render(request, 'trip/single_comment.html', {'commend': comment})

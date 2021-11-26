@@ -3,6 +3,8 @@ import os
 from django.conf import settings
 from django.core.files import File
 
+from threpose.settings import BASE_DIR
+
 
 def upload_profile_pic(user, image_url, filename, testing=False):
     """Upload profile picture to Profile model.
@@ -42,18 +44,6 @@ def pic_profile_relative_path():
     return os.path.join('user', 'profile_picture')
 
 
-def format_path(path):
-    """Change from absolute path to relative path.
-    Args:
-        path(str): string of path.
-    Return:
-        path(str): path .
-    """
-    if path[0] == '/':
-        return path[1:]
-    return path
-
-
 def pic_profile_rename_path(pk):
     """Method for get path of profile of each user.
 
@@ -77,12 +67,12 @@ def pic_profile_path(path):
     Returns:
         path(str): path.
     """
-    new_path = os.path.join(settings.MEDIA_ROOT, str(path))
+    new_path = os.path.join(settings.PROFILE_PIC_LOCATION, str(path))
     new_path = new_path.replace('\\', '/')
     return new_path
 
 
-def get_pic_profile_relate_path(pk):
+def get_pic_profile_relate_path(pk, filename):
     """Method for get path of Profile picture image.
 
     Args:
@@ -91,4 +81,18 @@ def get_pic_profile_relate_path(pk):
     Returns:
         path(str): path.
     """
-    return os.path.join('user', 'profile_picture', f'{str(pk)}_profile_picture.jpg')
+    return os.path.join(settings.PROFILE_PIC_LOCATION, f'{str(pk)}_{filename}')
+
+
+def get_upload_pic_path(path):
+    """Method for get path of Profile picture image.
+
+    Args:
+        path(str): profile pic relative path.
+
+    Returns:
+        path(str): path.
+    """
+    get_path = os.path.join(settings.PROFILE_PIC_LOCATION, path)
+    get_path = get_path.replace('\\', '/')
+    return get_path

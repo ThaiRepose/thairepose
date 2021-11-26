@@ -25,7 +25,7 @@ def upload_profile_pic(user, image_url, filename, testing=False):
             File(open(result[0], 'rb'))
         )
     except:
-        result = os.path.join(settings.PROFILE_PIC_LOCATION,
+        result = os.path.join(os.path.join('media', 'user', 'profile_picture'),
                               "blank-profile-picture.png")
         user.profile.profile_pic.save(
             filename,

@@ -46,9 +46,11 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
     <script type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=places"></script>
     <script>
+        function sleep(ms) {
+          return new Promise(resolve => setTimeout(resolve, ms));
+        }
         const place_service = new google.maps.places.PlacesService(document.createElement('div'));
         function getPlacePhoto(elemId, placeId) {
-          setTimeout(function() {
             place_service.getDetails({
             placeId: placeId,
             fields: ['place_id', 'photos']
@@ -58,7 +60,6 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
             let photoObj = document.getElementById(elemId);
             photoObj.setAttribute("src", result.photos[0].getUrl());
           })
-          }, 1000);
         }
 
         function get_next_list($token) {
@@ -84,7 +85,15 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
                 }, 2000);
             }
         }
-        async function addBoxPlace(place) {
+        let additionalToDownload = [];
+        {% for place in places %}
+          {% if not place.downloaded and place.photo_ref.0 %}
+            additionalToDownload.push({elem: "PlacePhoto-{{ forloop.counter }}", placeId: "{{ place.place_id }}"});
+            getPlacePhoto("PlacePhoto-{{ forloop.counter }}", "{{ place.place_id }}")
+          {% endif %}
+        {% endfor %}
+
+        function addBoxPlace(place) {
           let getPhoto = false;
           $new = $("#place_box").clone()
           if (place.downloaded){
@@ -105,14 +114,17 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
           
           $new.attr('href', url).end();
           $new.find('p').replaceWith(`<p class="font-bold text-xl mb-2">${place.place_name}</p>`).end().appendTo("#big_box");
-          if (getPhoto)
-            getPlacePhoto(`AdditionalPlacePhoto-${place.place_id}`, place.place_id);
+          if (getPhoto) {
+            additionalToDownload.push({elem: `AdditionalPlacePhoto-${place.place_id}`, placeId: place.place_id});
+          }
+        }
+        async function getAllAdditionalPhotos() {
+          for (let i = 0; i < additionalToDownload.length; i++) {
+            await sleep(1000);
+            getPlacePhoto(additionalToDownload[i].elem, additionalToDownload[i].placeId);
+          }
         }
 
-        {% for place in places %}
-          {% if not place.downloaded and place.photo_ref.0 %}
-            getPlacePhoto("PlacePhoto-{{ forloop.counter }}", "{{ place.place_id }}")
-          {% endif %}
-        {% endfor %}
+        getAllAdditionalPhotos();
     </script>
 {% endblock %}

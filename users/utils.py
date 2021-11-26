@@ -23,11 +23,11 @@ def upload_profile_pic(user, image_url, filename, testing=False):
             File(open(result[0], 'rb'))
         )
     except:
-        result = os.path.join(settings.PROFILE_PIC_LOCATION,
+        result = os.path.join(os.path.join('media', 'user', 'profile_picture'),
                               "blank-profile-picture.png")
         user.profile.profile_pic.save(
             filename,
-            File(open(result, 'rb'))
+            File(open(os.path.abspath(result), 'rb'))
         )
 
     user.profile.save()
@@ -39,22 +39,7 @@ def pic_profile_relative_path():
     Returns:
         str: relative path of profile pic
     """
-    path = settings.PROFILE_PIC_LOCATION.replace('\\', '/')
-    if path[0] == '/':
-        return path[1:]
-    return path
-
-
-def format_path(path):
-    """Change from absolute path to relative path.
-    Args:
-        path(str): string of path.
-    Return:
-        path(str): path .
-    """
-    if path[0] == '/':
-        return path[1:]
-    return path
+    return os.path.join('user', 'profile_picture')
 
 
 def pic_profile_rename_path(pk):
@@ -68,10 +53,7 @@ def pic_profile_rename_path(pk):
     """
     new_path = os.path.join(settings.PROFILE_PIC_LOCATION,
                             f'{str(pk)}_profile_picture.jpg')
-    path = new_path.replace('\\', '/')
-    if path[0] == '/':
-        return path[1:]
-    return path
+    return new_path
 
 
 def pic_profile_path(path):
@@ -84,7 +66,44 @@ def pic_profile_path(path):
         path(str): path.
     """
     new_path = os.path.join(settings.PROFILE_PIC_LOCATION, str(path))
-    path = new_path.replace('\\', '/')
-    if path[0] == '/':
-        return path[1:]
-    return path
+    new_path = new_path.replace('\\', '/')
+    return new_path
+
+
+def get_pic_profile_relate_path(pk, filename):
+    """Method for get path of Profile picture image.
+
+    Args:
+        pk(int): user id.
+        filename(str): filename of picture.
+
+    Returns:
+        path(str): path.
+    """
+    return os.path.join('user', 'profile_picture', f'{str(pk)}_{filename}')
+
+
+def get_upload_pic_path(filename):
+    """Method for get path of Profile picture image.
+
+    Args:
+        filename(str): profile pic relative path.
+
+    Returns:
+        path(str): path.
+    """
+    get_path = os.path.join(settings.MEDIA_ROOT, filename)
+    return get_path
+
+
+def get_rename_file_path(pk, filename):
+    """Method for get path of Profile picture image.
+
+    Args:
+        pk(int): user id.
+        filename(str): filename of picture.
+
+    Returns:
+        path(str): path.
+    """
+    return os.path.join(settings.PROFILE_PIC_LOCATION, f'{str(pk)}_{filename}')

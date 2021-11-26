@@ -129,7 +129,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # django-allauth config
-SITE_ID = 2
+SITE_ID = config('SITE_ID', cast=int, default=2)
 ACCOUNT_ADAPTER = 'users.adapter.ProfileAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'users.adapter.ProfileSocialAccountAdapter'
 ACCOUNT_SIGNUP_REDIRECT_URL = '/accounts/confirm-email/'

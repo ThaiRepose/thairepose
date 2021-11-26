@@ -232,18 +232,18 @@
           })
         }
 
-        function getSuggestionPhotos(placeId) {
-          for (let i=0; i<placeId.length; i++) {
+        async function getSuggestionPhotos(places) {
+          for (let i=0; i<places.length; i++) {
             place_service.getDetails({
-              placeId: placeId[i],
+              placeId: places[i].placeId,
               fields: ['place_id', 'photos']
             }, (result, status) => {
               if (status !== "OK")
                 return;
-              let photoObj = document.getElementById("suggestionPlacePhoto-" + (i + 1));
+              let photoObj = document.getElementById("suggestionPlacePhoto-" + places[i].index);
               photoObj.setAttribute("src", result.photos[0].getUrl());
             })
-            sleep(2000);
+            await sleep(1000);
           }
         }
         let photoNotDownloaded = [];
@@ -257,7 +257,7 @@
         let suggestionNotDownloaded = [];
         {% for place in suggestions %}
           {% if not place.downloaded %}
-            suggestionNotDownloaded.push("{{ place.place_id }}");
+            suggestionNotDownloaded.push({placeId: "{{ place.place_id }}", index: {{ forloop.counter }}});
           {% endif %}
         {% endfor %}
         if (suggestionNotDownloaded.length > 0)

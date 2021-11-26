@@ -3,8 +3,6 @@ import os
 from django.conf import settings
 from django.core.files import File
 
-from threpose.settings import BASE_DIR
-
 
 def upload_profile_pic(user, image_url, filename, testing=False):
     """Upload profile picture to Profile model.
@@ -77,11 +75,12 @@ def get_pic_profile_relate_path(pk, filename):
 
     Args:
         pk(int): user id.
+        filename(str): filename of picture.
 
     Returns:
         path(str): path.
     """
-    return os.path.join(settings.PROFILE_PIC_LOCATION, f'{str(pk)}_{filename}')
+    return os.path.join('user', 'profile_picture', f'{str(pk)}_{filename}')
 
 
 def get_upload_pic_path(path):
@@ -96,3 +95,16 @@ def get_upload_pic_path(path):
     get_path = os.path.join(settings.PROFILE_PIC_LOCATION, path)
     get_path = get_path.replace('\\', '/')
     return get_path
+
+
+def rename_file(pk, filename):
+    """Method for get path of Profile picture image.
+
+    Args:
+        pk(int): user id.
+        filename(str): filename of picture.
+
+    Returns:
+        path(str): path.
+    """
+    return os.path.join(settings.PROFILE_PIC_LOCATION, f'{str(pk)}_{filename}')

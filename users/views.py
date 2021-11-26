@@ -7,7 +7,7 @@ from django.contrib import messages
 from PIL import Image
 from .models import Profile
 from .forms import UserUpdateForm, ProfileUpdateForm
-from .utils import get_upload_pic_path, pic_profile_path, pic_profile_rename_path, get_pic_profile_relate_path
+from .utils import get_upload_pic_path, pic_profile_path, pic_profile_rename_path, get_pic_profile_relate_path, rename_file
 import os
 
 
@@ -75,7 +75,7 @@ def edit_profile(request):
             filename = profile_form.save(commit=False).profile_pic
             name = filename.name.split('/')[-1]
             os.rename(pic_profile_path(name),
-                      get_pic_profile_relate_path(request.user.pk, name))
+                      rename_file(request.user.pk, name))
             profile_form.save(commit=False).profile_pic = get_pic_profile_relate_path(
                 request.user.pk, name)
             profile_form.save()

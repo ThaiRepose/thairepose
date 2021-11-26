@@ -1,4 +1,4 @@
-from django.test import TestCase, RequestFactory
+from django.test import TestCase, RequestFactory, Client
 from django.urls import reverse
 from django.utils import timezone
 from decouple import config
@@ -11,7 +11,6 @@ from .views import restruct_detail_context_data
 from .views import resturct_to_place_detail
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from django.test import Client
 from .models import Review, TripPlan, CategoryPlan
 from django.db import models
 from .forms import TripPlanImageForm, TripPlanForm, ReviewForm
@@ -19,6 +18,7 @@ from .views import add_post
 from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+import json
 
 
 class PlaceDetailsViewTest(TestCase):
@@ -206,10 +206,28 @@ class PlaceDetailsViewTest(TestCase):
 class IndexViewTest(TestCase):
     """Test for index page."""
 
+    def setUp(self):
+        """Initialize user and trips."""
+        self.user = User.objects.create_user(username='tester', password='tester')
+        self.user.save()
+        self.client = Client()
+        self.client.login(username='tester', password='tester')
+
     def test_response(self):
         """Test response for directing index page."""
         response = self.client.get(reverse('trip:index'))
         self.assertEqual(response.status_code, 200)
+
+    def test_get_trip_queries(self):
+        """Test queries reponse form server."""
+        trip = TripPlan.objects.create(title='test', body='create_trip', author=self.user, duration=1, price=1, complete=True)
+        trip.save()
+        # input starting letters of trip.
+        response = self.client.post(reverse("trip:get-trip-query"),
+                                    {"keyword": json.dumps("te")})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content)['status'], "OK")
+        self.assertEqual(len(json.loads(response.content)["results"]), 1)
 
 
 class ReviewModelTests(TestCase):

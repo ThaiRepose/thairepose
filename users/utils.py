@@ -80,6 +80,7 @@ def pic_profile_path(path):
     new_path = os.path.join(settings.MEDIA_ROOT, str(path))
     return new_path
 
+
 def get_pic_profile_relate_path(pk):
     """Method for get path of Profile picture image.
 

@@ -263,7 +263,6 @@
 
         const callback = function (entries) {
           entries.forEach((entry) => {
-            console.log(entry);
 
             if (entry.isIntersecting) {
               entry.target.classList.add("animate-fadeIn");
@@ -298,8 +297,8 @@ $(document).ready(function(){
             success: function (json) {
                 document.getElementById("total-like-" + json['id']).innerHTML = json['result']
             },
-            error: function (xhr, errmsg, err) {
-
+            error: function (data) {
+                alert(data.responseJSON.error);
             }
         });
     });
@@ -320,8 +319,8 @@ $(document).ready(function(){
             success: function (json) {
                 document.getElementById("post_total_like").innerHTML = json['post_result']
             },
-            error: function (xhr, errmsg, err) {
-
+            error: function (data) {
+                alert(data.responseJSON.error);
             }
         });
     });
@@ -351,9 +350,8 @@ $(document).ready(function(){
                 text.style.height = "40px";
                 all_comment.scrollTop = all_comment.scrollHeight;
             },
-            error: function (xhr, errmsg, err) {
-                console.log("error")
-
+            error: function (data) {
+                alert(data.responseJSON.error);
             }
         });
     });

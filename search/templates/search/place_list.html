@@ -106,9 +106,10 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
           
           $new.attr('href', url).end();
           $new.find('p').replaceWith(`<p class="font-bold text-xl mb-2">${place.place_name}</p>`).end().appendTo("#big_box");
-          if (getPhoto)
+          if (getPhoto) {
             await sleep(1500);
             await getPlacePhoto(`AdditionalPlacePhoto-${place.place_id}`, place.place_id);
+          }
         }
 
         {% for place in places %}

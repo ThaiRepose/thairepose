@@ -476,10 +476,11 @@ class TestPostComment(TestCase):
         self.rf.POST = {'pk':1, 'comment':'123'}
         
     def test_post_comment(self):
+        """Test post comment success"""
         response = post_comment(self.rf)
         self.assertEqual(response.status_code, 200)
         
-    # def test_fail_post_comment(self):
-    #     self.rf.method = 'GET'
-    #     response = post_comment(self.rf)
-    #     print(response)
+    def test_fail_post_comment(self):
+        """Test post comment fail"""
+        self.rf.method = 'GET'
+        self.assertIsNone(post_comment(self.rf))

@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY', default='its-no-secret')
-DEFAULT_FROM_EMAIL='no-reply@thairepose.com'
-SERVER_MAIL=DEFAULT_FROM_EMAIL
-ACCOUNT_DEFAULT_HTTP_PROTOCOL='https'
+DEFAULT_FROM_EMAIL = 'no-reply@thairepose.com'
+SERVER_MAIL = DEFAULT_FROM_EMAIL
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 

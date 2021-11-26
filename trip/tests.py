@@ -1,3 +1,4 @@
+from django.http import response
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from django.utils import timezone
@@ -5,17 +6,13 @@ from decouple import config
 import os
 import unittest
 from threpose.settings import BASE_DIR
-from .views import delete_post, get_details_context, new_line_html, trip_detail
-from .views import check_downloaded_image
-from .views import restruct_detail_context_data
-from .views import resturct_to_place_detail
+from .views import delete_post, get_details_context, new_line_html, trip_detail, check_downloaded_image, restruct_detail_context_data, resturct_to_place_detail, add_post, post_comment
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.test import Client
 from .models import Review, TripPlan, CategoryPlan
 from django.db import models
 from .forms import TripPlanImageForm, TripPlanForm, ReviewForm
-from .views import add_post
 from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -463,3 +460,26 @@ class SeleniumTripPlan(LiveServerTestCase):
         """Reset all user."""
         User.objects.all().delete()
         return super().tearDown()
+
+
+class TestPostComment(TestCase):
+    """Class for test post comment"""
+    
+    def setUp(self) -> None:
+        self.user = User.objects.create(username='tester', password='tester')
+        post = TripPlan.objects.create()
+        post.save()
+        self.user.active = True
+        self.rf = RequestFactory()
+        self.rf.user = self.user
+        self.rf.method = 'POST'
+        self.rf.POST = {'pk':1, 'comment':'123'}
+        
+    def test_post_comment(self):
+        response = post_comment(self.rf)
+        self.assertEqual(response.status_code, 200)
+        
+    # def test_fail_post_comment(self):
+    #     self.rf.method = 'GET'
+    #     response = post_comment(self.rf)
+    #     print(response)

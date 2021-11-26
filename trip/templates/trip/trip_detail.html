@@ -299,7 +299,7 @@ $(document).ready(function(){
                 document.getElementById("total-like-" + json['id']).innerHTML = json['result']
             },
             error: function (xhr, errmsg, err) {
-
+                alert("you must login before use this feature")
             }
         });
     });
@@ -321,7 +321,7 @@ $(document).ready(function(){
                 document.getElementById("post_total_like").innerHTML = json['post_result']
             },
             error: function (xhr, errmsg, err) {
-
+                alert("you must login before use this feature")
             }
         });
     });

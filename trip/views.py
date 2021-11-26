@@ -227,9 +227,10 @@ def delete_post(request, pk):
     return render(request, "trip/delete_plan.html", context)
 
 
-@login_required
 def like_comment_view(request):
     """Method that store user like in comment model"""
+    if not request.user.is_authenticated():
+        return HttpResponseNotFound
     if request.method == 'POST':
         post = get_object_or_404(Review, id=request.POST.get('comment_id'))
         if post.like.filter(id=request.user.id).exists():
@@ -237,9 +238,8 @@ def like_comment_view(request):
         else:
             post.like.add(request.user)
         return JsonResponse({'result': post.total_like, 'id': request.POST.get('comment_id')})
+    
 
-
-@login_required
 def like_post(request):
     """Method for store user like of each trip.
     Args:
@@ -247,6 +247,8 @@ def like_post(request):
     Return:
         HttpResponse: Redirect to page that link blog located.
     """
+    if not request.user.is_authenticated():
+        return HttpResponseNotFound
     if request.method == 'POST':
         pk = request.POST.get('pk')
         post = get_object_or_404(TripPlan, id=pk)

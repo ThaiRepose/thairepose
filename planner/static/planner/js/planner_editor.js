@@ -111,21 +111,39 @@ function displayTime(directions) {
   if (directions === undefined) {
     return;
   }
+  let placeOccurredStart = {};
+  let placeOccurredStop = {};
   for (let i = 1; i < directions.geocoded_waypoints.length; i++) {
+    let startIdx = 0;
+    let stopIdx = 0;
+    if (directions.geocoded_waypoints[i - 1].place_id in placeOccurredStart) {
+      startIdx = placeOccurredStart[directions.geocoded_waypoints[i - 1].place_id];
+      placeOccurredStart[directions.geocoded_waypoints[i - 1].place_id] += 1;
+    } else {
+      placeOccurredStart[directions.geocoded_waypoints[i - 1].place_id] = 1;
+    }
+    if (directions.geocoded_waypoints[i].place_id in placeOccurredStop) {
+      stopIdx = placeOccurredStop[directions.geocoded_waypoints[i].place_id];
+      placeOccurredStop[directions.geocoded_waypoints[i].place_id] += 1;
+    } else {
+      placeOccurredStop[directions.geocoded_waypoints[i].place_id] = 1;
+    }
     const start = directions.geocoded_waypoints[i - 1].place_id;
     const stop = directions.geocoded_waypoints[i].place_id;
     // Compute second to be divided by 1 minute.
     let directionTime = (directions.routes[0].legs[i - 1].duration.value) / 60;
     directionTime = Math.ceil(directionTime) * 60;
-    const departure = document.getElementsByName('departure-' + start)[0];
-    let nextPlace = $(departure).parent().parent().next().children()[0];
+    console.log(startIdx);
+    const departure = document.getElementsByName('departure-' + start)[startIdx];
+    console.log(departure);
+    let nextPlace = $(departure).parent().parent().next().children()[stopIdx];
     let nextDay = false;
     if (nextPlace === undefined) {
       nextPlace = $(departure).parents('[name=\'day-table\']').next().next()
           .find(`td[name='arrival-${stop}']`)[0];
       nextDay = true;
     }
-    const arrival = document.getElementsByName('arrival-' + stop)[0];
+    const arrival = document.getElementsByName('arrival-' + stop)[stopIdx];
     if (nextPlace !== arrival) {
       continue;
     }
@@ -136,7 +154,7 @@ function displayTime(directions) {
     }
     arrival.setAttribute('value', time.toString());
     arrival.innerText = getTimeFormat(time);
-    const nextDeparture = document.getElementsByName('departure-' + stop)[0];
+    const nextDeparture = document.getElementsByName('departure-' + stop)[stopIdx];
     nextDeparture.min = getTimeFormat(time);
     if (createTime(nextDeparture.value) < time) {
       let departureDay = $(departure).parents("div[name='day-table']").index();

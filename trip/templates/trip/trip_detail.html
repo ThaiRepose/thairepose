@@ -5,8 +5,6 @@
 {% load socialaccount %}
 {% load widget_tweaks %}
 {% load static tailwind_tags %}
-
-
 {% block header %}
   <title>ThaiRepose::{{ name }}</title>
     <style>
@@ -26,13 +24,11 @@
         margin-left: +48px;
         /* will touch very left side */
         }
-
         .children .children form {
         margin-left: +96px;
         /* will touch very left side */
         }
     }
-
     </style>
     <link rel="stylesheet" href="{% static 'trip/css/container_blocks.css' %}" />
     <link rel="stylesheet" href="https://npmcdn.com/flickity@2/dist/flickity.css" />
@@ -96,7 +92,7 @@
                     <hr class="flex my-3 border-gray-400 w-11/12 mx-auto">
                     <div class="px-4 py-3 mx-4 mt-4 bg-white max-h-80">
                         <p class="text-xl font-bold">Writer information</p>
-                        <img class="mt-4 w-20 flex justify-center items-center mx-auto" style="border-radius: 50%;" src="{{user.profile.profile_pic.url}}"
+                        <img class="mt-4 w-20 flex justify-center items-center mx-auto" style="border-radius: 50%;" src="{{post.author.profile.profile_pic.url}}"
                         alt="Profile picture" />
                         <p class="mt-8 text-lg font-semibold">First name: <span class="font-medium">{{post.author.first_name}}</span></p>
                         <p class="text-lg font-semibold">Last name: <span class="font-medium">{{post.author.last_name}}</span></p>
@@ -145,7 +141,6 @@
         </div>
     </div>
 </div>
-
 {% comment %} <div>
     {% load mptt_tags %}
     <div id="{{ comment }}">
@@ -165,7 +160,6 @@
             {% endif %}
         {% endrecursetree %}
     </div>
-
 <div class="py-4">
     <nav aria-label="Page navigation example">
         {% if comments.has_other_pages %}
@@ -193,7 +187,6 @@
         {% endif %}
     </nav>
 </div>
-
 <p>---Add commend---</p>
 {% if user.is_authenticated %}
     <div id="myDIV" style="display:block;">
@@ -206,7 +199,6 @@
     </form>
   </div>
 {% endif %} {% endcomment %}
-
 <div id="overlay" class="absolute hidden h-full w-full justify-center items-center" style="background-color: rgba(0,0,0,0.5);">
     <div class="bg-gray-100 px-6 py-4 rounded-lg animate-fade-in-up">
         <h3 class="text-xl text-black mb-4">Confirm Delete?</h3>
@@ -229,43 +221,33 @@
         const delBtn = document.querySelector('#background-delete-button')
         const CancelBtn = document.querySelector('#cancel-btn')
         const content = document.querySelector('#main-content')
-
         const toggleModal = () => {
             overlay.classList.toggle("animate-fadeIn")
             overlay.classList.toggle('hidden')
             overlay.classList.toggle('flex')
             window.scrollTo(0, 0)
         }
-
         const ModalVisible = () => {
             overlay.classList.add("animate-fadeIn")
             overlay.classList.toggle('hidden')
             overlay.classList.toggle('flex')
             window.scrollTo(0, 0)
         }
-
         const ModalInvisible = () => {
             overlay.classList.remove("animate-fadeIn")
             overlay.classList.toggle('hidden')
             overlay.classList.toggle('flex')
         }
-
         const toggleOverFlow = () => {
             content.classList.toggle('overflow-hidden')
         }
-
         delBtn.addEventListener('click', ModalVisible)
-
         CancelBtn.addEventListener('click', ModalInvisible)
-
         delBtn.addEventListener('click', toggleOverFlow)
-
         CancelBtn.addEventListener('click', toggleOverFlow)
     })
-
         const callback = function (entries) {
           entries.forEach((entry) => {
-
             if (entry.isIntersecting) {
               entry.target.classList.add("animate-fadeIn");
             } else {
@@ -273,15 +255,12 @@
             }
           });
         };
-
         const observer = new IntersectionObserver(callback);
-
         const targets = document.querySelectorAll(".js-show-on-scroll");
         targets.forEach(function (target) {
           target.classList.add("opacity-0");
           observer.observe(target);
         });
-
 $(document).ready(function(){
     $(document).on('click', '#review-like-button', function (e) {
         e.preventDefault();
@@ -304,8 +283,6 @@ $(document).ready(function(){
             }
         });
     });
-
-
     $(document).on('click', '#post-like-button', function (e) {
         e.preventDefault();
         var pk = {{ post.pk|safe }};
@@ -326,8 +303,6 @@ $(document).ready(function(){
             }
         });
     });
-
-
     $(document).on('click', '#submit-comment-btn', function (e) {
         e.preventDefault();
         var pk = {{ post.pk|safe }};
@@ -384,13 +359,10 @@ $(document).ready(function(){
     }
   
     $('#myForm').trigger("reset");
-
-
     function auto_grow(element) {
         element.style.height = "20px";
         element.style.height = (element.scrollHeight)+"px";
     }
-
     function comment_valid(body){
         body = body.value;
         
@@ -406,6 +378,4 @@ $(document).ready(function(){
         return check;
     }
 </script>
-
-
 {% endblock %}

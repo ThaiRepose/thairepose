@@ -84,12 +84,17 @@
      **Warning: If you use Gmail you have to adjust to less secure**
    </details>
 
-7. Add Oauth API Key
-    Go to domain/admin/socialaccount/socialapp/ (local: http://127.0.0.1:8000/admin/socialaccount/socialapp/) 
-    - Add provider to Google.
-    - Add Client id and Secret key that retrieve form API owner.
+7. Add Oauth API Key in Admin page in social app (e.g. in local: http://127.0.0.1:8000/admin/socialaccount/socialapp/) 
+    - Add provider.
+    - Add client id and secret key that retrieve form API owner.
     - Add site to chosen sites.
 
+    <details>
+    <summary>Instruction of getting OAuth API Key:</summary>     
+    
+    - [For all provider](https://django-allauth.readthedocs.io/en/latest/providers.html)    
+    - [Another Example for Google](https://www.ibm.com/docs/en/app-connect/cloud?topic=gmail-connecting-google-application-by-providing-credentials-app-connect-use-basic-oauth)
+    </details>
 
 8. Install TailwindCSS framework.
 
@@ -104,7 +109,7 @@
 10. Run this command to migrate the database.
 
     ```
-    python manage.py migrate
+    python manage.py migrate --run-syncdb
     ```
 11. Start running the server by this command.
     ```

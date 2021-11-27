@@ -1,4 +1,12 @@
 /**
+ * Count occurrences in array.
+ * @params {array} arr - array contains values.
+ * @params {str} val - element to count.
+ * @returns {number} - occurrences of value in array.
+ */
+const countOccurrences = (arr, val) => arr.reduce((a, v) => (v === val ? a + 1 : a), 0);
+
+/**
  * Get any variable for current attribute of HTML tag.
  * If there are more than 1 tag, the value from first tag will be returned.
  * @param {string} path - Element selector by define id or class etc.
@@ -111,36 +119,28 @@ function displayTime(directions) {
   if (directions === undefined) {
     return;
   }
-  let placeOccurredStart = {};
-  let placeOccurredStop = {};
+  let placeOccurred = [];
   for (let i = 1; i < directions.geocoded_waypoints.length; i++) {
     let startIdx = 0;
     let stopIdx = 0;
-    if (directions.geocoded_waypoints[i - 1].place_id in placeOccurredStart) {
-      startIdx = placeOccurredStart[directions.geocoded_waypoints[i - 1].place_id];
-      placeOccurredStart[directions.geocoded_waypoints[i - 1].place_id] += 1;
-    } else {
-      placeOccurredStart[directions.geocoded_waypoints[i - 1].place_id] = 1;
+    if (countOccurrences(placeOccurred, directions.geocoded_waypoints[i - 1].place_id) > 0) {
+      startIdx = countOccurrences(placeOccurred, directions.geocoded_waypoints[i - 1].place_id);
     }
-    if (directions.geocoded_waypoints[i].place_id in placeOccurredStop) {
-      stopIdx = placeOccurredStop[directions.geocoded_waypoints[i].place_id];
-      placeOccurredStop[directions.geocoded_waypoints[i].place_id] += 1;
-    } else {
-      placeOccurredStop[directions.geocoded_waypoints[i].place_id] = 1;
+    placeOccurred.push(directions.geocoded_waypoints[i - 1].place_id);
+    if (countOccurrences(placeOccurred, directions.geocoded_waypoints[i].place_id) > 0) {
+      stopIdx = countOccurrences(placeOccurred, directions.geocoded_waypoints[i].place_id);
     }
     const start = directions.geocoded_waypoints[i - 1].place_id;
     const stop = directions.geocoded_waypoints[i].place_id;
     // Compute second to be divided by 1 minute.
     let directionTime = (directions.routes[0].legs[i - 1].duration.value) / 60;
     directionTime = Math.ceil(directionTime) * 60;
-    console.log(startIdx);
     const departure = document.getElementsByName('departure-' + start)[startIdx];
-    console.log(departure);
-    let nextPlace = $(departure).parent().parent().next().children()[stopIdx];
+    let nextPlace = $(departure).parents("tr").next().children()[0];
     let nextDay = false;
     if (nextPlace === undefined) {
       nextPlace = $(departure).parents('[name=\'day-table\']').next().next()
-          .find(`td[name='arrival-${stop}']`)[0];
+        .find(`td[name='arrival-${stop}']`)[0];
       nextDay = true;
     }
     const arrival = document.getElementsByName('arrival-' + stop)[stopIdx];

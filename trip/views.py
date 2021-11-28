@@ -208,7 +208,7 @@ def edit_post(request, pk):
     """Class for link html of edit post."""
     if request.method == 'POST':
         if 'imgpic' in request.POST:
-            post = get_object_or_404(TripPlan, author=request.user)
+            post = get_object_or_404(TripPlan, author=request.user, id=pk)
             form = TripPlanForm(request.POST, instance=post)
             image_form = TripPlanImageForm(request.POST, request.FILES)
             post_form = form.save(commit=False)
@@ -228,7 +228,7 @@ def edit_post(request, pk):
                                                                  'image_form': image_form, 'img_obj': all_img, 'new_img': list_img,
                                                                  'author': request.user, 'post': post})
         elif 'edit' in request.POST:
-            post = get_object_or_404(TripPlan, author=request.user)
+            post = get_object_or_404(TripPlan, author=request.user, id=pk)
             form = TripPlanForm(request.POST, instance=post)
             if form.is_valid():
                 all_img = UploadImage.objects.filter(post=post)

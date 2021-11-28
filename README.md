@@ -67,12 +67,12 @@
    HOSTS=localhost,127.0.0.1
    BACKEND_API_KEY=Your-Google-API-key-in-server-side
    FRONTEND_API_KEY=Your-Google-API-key-in-client-side
-   EMAIL_HOST_USER = email-for-send-verification-form 
-   EMAIL_HOST_PASSWORD = email-password
+   EMAIL_HOST_USER=email-for-send-verification-form 
+   EMAIL_HOST_PASSWORD=email-password
    EMAIL_PORT=Your-configured-email-port
    EMAIL_HOST=Your-email-provider-host
    EMAIL_USE_TLS=TLS-using-true-or-false
-   EMAIL_USE_SSL=-SSL-true-or-false
+   EMAIL_USE_SSL=SSL-using-true-or-false
    SITE_ID=1
    ```
    <details>
@@ -84,7 +84,30 @@
      **Warning: If you use Gmail you have to adjust to less secure**
    </details>
 
-7. Add Oauth API Key in Admin page in social app (e.g. in local: http://127.0.0.1:8000/admin/socialaccount/socialapp/) 
+7. Install TailwindCSS framework.
+
+   ```
+   python manage.py tailwind install
+   ```
+8. Build TailwindCSS frontend framework the get GUI.
+
+   ```
+   python manage.py tailwind build
+   ```
+9. Run this command to migrate the database.
+
+    ```
+    python manage.py migrate --run-syncdb
+    ```
+10. Start running caching system.
+    ```
+    tr-caching start
+    ```
+11. Start running the server by this command in another terminal.
+    ```
+    python manage.py runserver
+    ```
+12. Add Oauth API Key in Admin page in social app (e.g. in local: http://127.0.0.1:8000/admin/socialaccount/socialapp/) 
     - Add provider.
     - Add client id and secret key that retrieve form API owner.
     - Add site to chosen sites.
@@ -95,29 +118,6 @@
     - [For all provider](https://django-allauth.readthedocs.io/en/latest/providers.html)    
     - [Another Example for Google](https://www.ibm.com/docs/en/app-connect/cloud?topic=gmail-connecting-google-application-by-providing-credentials-app-connect-use-basic-oauth)
     </details>
-
-8. Install TailwindCSS framework.
-
-   ```
-   python manage.py tailwind install
-   ```
-9. Build TailwindCSS frontend framework the get GUI.
-
-   ```
-   python manage.py tailwind build
-   ```
-10. Run this command to migrate the database.
-
-    ```
-    python manage.py migrate --run-syncdb
-    ```
-11. Start running the server by this command.
-    ```
-    tr-caching start
-    python manage.py runserver
-    ```
-
-
 
 
 ## Team Members

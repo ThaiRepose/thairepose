@@ -7,7 +7,7 @@ from allauth.account.models import EmailAddress
 import os
 import unittest
 from threpose.settings import BASE_DIR
-from .views import delete_post, get_details_context, new_line_html, trip_detail, check_downloaded_image, restruct_detail_context_data
+from .views import delete_post, get_details_context, trip_detail, check_downloaded_image, restruct_detail_context_data
 from .views import resturct_to_place_detail, add_post, post_comment, like_comment_view, like_post
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
@@ -207,7 +207,8 @@ class IndexViewTest(TestCase):
 
     def setUp(self):
         """Initialize user and trips."""
-        self.user = User.objects.create_user(username='tester', password='tester')
+        self.user = User.objects.create_user(
+            username='tester', password='tester')
         self.user.save()
         self.client = Client()
         self.client.login(username='tester', password='tester')
@@ -219,7 +220,8 @@ class IndexViewTest(TestCase):
 
     def test_get_trip_queries(self):
         """Test queries response form server."""
-        trip = TripPlan.objects.create(title='test', body='create_trip', author=self.user, duration=1, price=1, complete=True)
+        trip = TripPlan.objects.create(
+            title='test', body='create_trip', author=self.user, duration=1, price=1, complete=True)
         trip.save()
         # input starting letters of trip.
         response = self.client.post(reverse("trip:get-trip-query"),
@@ -289,12 +291,6 @@ class ReviewModelTests(TestCase):
         Review.objects.create(post=self.trip, name=self.user, body='review')
         TripPlan.objects.filter(id='1').delete()
         self.assertEqual(Review.objects.all().count(), 0)
-
-    def test_convert_string_to_html(self):
-        """Test convert newline python syntax to html syntax"""
-        expect = "hello<br>world"
-        input = "hello\nworld"
-        self.assertEqual(expect, new_line_html(input))
 
     def tearDown(self):
         """Remove all user and all trip plan"""
@@ -498,7 +494,8 @@ class PlaceDetailModelTest(TestCase):
 
     def setUp(self):
         """Initialize user and place detail."""
-        self.reviewed_user_data = {"username": "Tester", "password": "ThaiRepose"}
+        self.reviewed_user_data = {
+            "username": "Tester", "password": "ThaiRepose"}
         self.reviewed_user = User.objects.create_user(username=self.reviewed_user_data['username'],
                                                       password=self.reviewed_user_data['password'])
         self.reviewed_user.save()
@@ -509,28 +506,34 @@ class PlaceDetailModelTest(TestCase):
                                             duration=1, price=1, complete=True)
         self.blog.save()
         self.place_id = "Qwerty123456"
-        self.place = PlaceDetail.objects.create(name="NewPlace", place_id=self.place_id)
+        self.place = PlaceDetail.objects.create(
+            name="NewPlace", place_id=self.place_id)
 
     def test_post_review(self):
         """Test that user can review a place properly."""
         review_text = "This is a good place!"
         response = self.client.post(reverse("trip:place-review", args=[self.place_id]),
                                     {"review": review_text})
-        self.assertEqual(response.status_code, 302)  # redirect to place detail page
+        # redirect to place detail page
+        self.assertEqual(response.status_code, 302)
         # Check that review has been added to correct place.
-        self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        self.place.placereview_set.get(
+            author=self.reviewed_user, place__place_id=self.place_id)
 
     def test_review_like(self):
         """Test that user can like review for 1 unit."""
         review_text = "This is a good place!"
         self.client.post(reverse("trip:place-review", args=[self.place_id]),
                          {"review": review_text})
-        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        review = self.place.placereview_set.get(
+            author=self.reviewed_user, place__place_id=self.place_id)
         response = self.client.post(reverse("trip:place-like", args=[self.place_id]),
                                     {"review_id": review.id})
-        self.assertEqual(response.status_code, 302)  # redirect to the detail page.
+        # redirect to the detail page.
+        self.assertEqual(response.status_code, 302)
         # get new review detail
-        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        review = self.place.placereview_set.get(
+            author=self.reviewed_user, place__place_id=self.place_id)
         self.assertEqual(review.likes, 1)
         self.assertEqual(review.dislikes, 0)
 
@@ -539,12 +542,15 @@ class PlaceDetailModelTest(TestCase):
         review_text = "This is a nice place!"
         self.client.post(reverse("trip:place-review", args=[self.place_id]),
                          {"review": review_text})
-        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        review = self.place.placereview_set.get(
+            author=self.reviewed_user, place__place_id=self.place_id)
         response = self.client.post(reverse("trip:place-dislike", args=[self.place_id]),
                                     {"review_id": review.id})
-        self.assertEqual(response.status_code, 302)  # redirect to the detail page.
+        # redirect to the detail page.
+        self.assertEqual(response.status_code, 302)
         # get new review detail
-        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        review = self.place.placereview_set.get(
+            author=self.reviewed_user, place__place_id=self.place_id)
         self.assertEqual(review.dislikes, 1)
         self.assertEqual(review.likes, 0)
 
@@ -553,12 +559,14 @@ class PlaceDetailModelTest(TestCase):
         review_text = "This is a nice place!"
         self.client.post(reverse("trip:place-review", args=[self.place_id]),
                          {"review": review_text})
-        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        review = self.place.placereview_set.get(
+            author=self.reviewed_user, place__place_id=self.place_id)
         self.client.post(reverse("trip:place-like", args=[self.place_id]),
                          {"review_id": review.id})
         self.client.post(reverse("trip:place-like", args=[self.place_id]),
                          {"review_id": review.id})
-        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        review = self.place.placereview_set.get(
+            author=self.reviewed_user, place__place_id=self.place_id)
         self.assertEqual(review.dislikes, 0)
         self.assertEqual(review.likes, 0)
 
@@ -567,12 +575,14 @@ class PlaceDetailModelTest(TestCase):
         review_text = "This is a nice place!"
         self.client.post(reverse("trip:place-review", args=[self.place_id]),
                          {"review": review_text})
-        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        review = self.place.placereview_set.get(
+            author=self.reviewed_user, place__place_id=self.place_id)
         self.client.post(reverse("trip:place-dislike", args=[self.place_id]),
                          {"review_id": review.id})
         self.client.post(reverse("trip:place-dislike", args=[self.place_id]),
                          {"review_id": review.id})
-        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        review = self.place.placereview_set.get(
+            author=self.reviewed_user, place__place_id=self.place_id)
         self.assertEqual(review.dislikes, 0)
         self.assertEqual(review.likes, 0)
 
@@ -581,7 +591,8 @@ class PlaceDetailModelTest(TestCase):
         review_text = "This is a good place!"
         self.client.post(reverse("trip:place-review", args=[self.place_id]),
                          {"review": review_text})
-        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        review = self.place.placereview_set.get(
+            author=self.reviewed_user, place__place_id=self.place_id)
         response1 = self.client.get(reverse("trip:place-dislike", args=[self.place_id]),
                                     {"review_id": review.id})
         response2 = self.client.get(reverse("trip:place-dislike", args=[self.place_id]),
@@ -589,7 +600,8 @@ class PlaceDetailModelTest(TestCase):
         # All response should return redirect
         self.assertEqual(response1.status_code, 302)
         self.assertEqual(response2.status_code, 302)
-        review = self.place.placereview_set.get(author=self.reviewed_user, place__place_id=self.place_id)
+        review = self.place.placereview_set.get(
+            author=self.reviewed_user, place__place_id=self.place_id)
         self.assertEqual(review.dislikes, 0)
         self.assertEqual(review.likes, 0)
 

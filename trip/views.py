@@ -225,8 +225,8 @@ def edit_post(request, pk):
                 image_form = TripPlanImageForm()
                 form = TripPlanForm(request.POST, instance=post)
                 return render(request, 'trip/update_plan.html', {'form': form,
-                                                                'image_form': image_form, 'img_obj': all_img, 'new_img': list_img,
-                                                                'author': request.user, 'post':post})
+                                                                 'image_form': image_form, 'img_obj': all_img, 'new_img': list_img,
+                                                                 'author': request.user, 'post': post})
         elif 'edit' in request.POST:
             post = get_object_or_404(TripPlan, author=request.user)
             form = TripPlanForm(request.POST, instance=post)
@@ -237,8 +237,8 @@ def edit_post(request, pk):
                 if post_form.body == '' or post_form.title is None or post_form.duration is None or post_form.price is None:
                     post_form.save()
                     return render(request, 'trip/update_plan.html', {'form': form,
-                                                                  'image_form': image_form, 'message': 'Need fill all fields',
-                                                                  'img_obj': all_img, 'author': request.user, 'post':post})
+                                                                     'image_form': image_form, 'message': 'Need fill all fields',
+                                                                     'img_obj': all_img, 'author': request.user, 'post': post})
                 post_form.author = request.user
                 post_form.save()
                 return HttpResponseRedirect(reverse('trip:tripdetail', args=[pk]))
@@ -246,7 +246,7 @@ def edit_post(request, pk):
     form = TripPlanForm(instance=blog)
     all_img = UploadImage.objects.filter(post=blog)
     image_form = TripPlanImageForm()
-    return render(request, 'trip/update_plan.html', {'form': form, 'image_form': image_form, 'img_obj': all_img, 'author': request.user, 'post':blog})
+    return render(request, 'trip/update_plan.html', {'form': form, 'image_form': image_form, 'img_obj': all_img, 'author': request.user, 'post': blog})
 
 
 @login_required

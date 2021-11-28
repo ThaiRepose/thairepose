@@ -366,7 +366,7 @@ $(document).ready(function(){
     function comment_valid(body){
         body = body.value;
         
-        if (body == ""){
+        if (! /\S/.test(body)){
             return false;
         }
         var check = false

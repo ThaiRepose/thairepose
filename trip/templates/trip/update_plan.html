@@ -14,6 +14,9 @@
     </style>
 {% endblock %}
 {% block main_content %}
+{% if message %}
+<script>alert('{{message}}')</script>
+{% endif %}
 <div class="bg-page flex-grow">
   <!-- Tailwind CSS -->
   <link href="https://unpkg.com/tailwindcss@^2.0/dist/tailwind.min.css" rel="stylesheet">
@@ -28,7 +31,7 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
         <img  width="50" height="50" src="{{ user.profile.profile_pic.url }}" style="border-radius: 50%;">
         <p class="pl-3 pt-1">{{ user.username }}</p>
       </div>
-      <form method="POST">
+      <form method="POST" enctype="multipart/form-data" action="{% url 'trip:editpost' post.pk%}">
           {% csrf_token %}
           {{ form.media }}
           <div class="flex flex-wrap -mx-3 mb-6">
@@ -47,10 +50,28 @@ box-shadow: 3px 8px 10px rgb(0 0 0 / 0.3);">
           </div>
           {{ form.body }}
           <div>
-            <button class="w-full mt-4 px-4 py-2 font-bold text-white bg-black rounded-full hover:bg-black focus:outline-none focus:shadow-outline">Edit</button>
+            <button type="submit" name="edit" class="w-full mt-4 px-4 py-2 font-bold text-white bg-black rounded-full hover:bg-black focus:outline-none focus:shadow-outline">Edit</button>
           </div>
-
+          <input name='image' type='file' multiple>
+          <button type="submit" name="imgpic">Upload</button>
       </form>
+      <div class="flex justify-between grid grid-cols-3 gap-y-3">
+        {% if new_img %}
+          <p class="font-bold text-center">New Image: </p>
+          {% for image in new_img %}
+            <img src="{{image.image.url}}" alt="connect" height="300", width="300">
+          {% endfor %}
+        {% endif %}
+        <br><br>
+      </div>
+      <div class="flex mt-4 grid grid-cols-3 gap-y-3">
+        {% if img_obj %}
+          <p class="font-bold text-center">All Image: </p>
+          {% for image in img_obj %}
+            <img src="{{image.image.url}}" alt="connect" height="300", width="300">
+          {% endfor %}
+        {% endif %}
+      </div>
       {% else %}
       <script>alert('You are not allow to access.')</script>
       <META HTTP-EQUIV="Refresh" CONTENT="0 ; URL={% url 'trip:tripplan' %}">

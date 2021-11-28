@@ -17,5 +17,5 @@
             - {{ commend.total_like }} {% endcomment %}
         </div>
     </div>
-    <p class="-mt-10 relative w-9/12">{{commend.body|safe}}</p>
+    <p class="-mt-10 relative w-9/12" style="white-space: pre-wrap;">{{commend.body|striptags}}</p>
 </div>

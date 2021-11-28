@@ -1,4 +1,12 @@
 /**
+ * Count occurrences in array.
+ * @params {array} arr - array contains values.
+ * @params {str} val - element to count.
+ * @returns {number} - occurrences of value in array.
+ */
+const countOccurrences = (arr, val) => arr.reduce((a, v) => (v === val ? a + 1 : a), 0);
+
+/**
  * Get any variable for current attribute of HTML tag.
  * If there are more than 1 tag, the value from first tag will be returned.
  * @param {string} path - Element selector by define id or class etc.
@@ -111,21 +119,31 @@ function displayTime(directions) {
   if (directions === undefined) {
     return;
   }
+  let placeOccurred = [];
   for (let i = 1; i < directions.geocoded_waypoints.length; i++) {
+    let startIdx = 0;
+    let stopIdx = 0;
+    if (countOccurrences(placeOccurred, directions.geocoded_waypoints[i - 1].place_id) > 0) {
+      startIdx = countOccurrences(placeOccurred, directions.geocoded_waypoints[i - 1].place_id);
+    }
+    placeOccurred.push(directions.geocoded_waypoints[i - 1].place_id);
+    if (countOccurrences(placeOccurred, directions.geocoded_waypoints[i].place_id) > 0) {
+      stopIdx = countOccurrences(placeOccurred, directions.geocoded_waypoints[i].place_id);
+    }
     const start = directions.geocoded_waypoints[i - 1].place_id;
     const stop = directions.geocoded_waypoints[i].place_id;
     // Compute second to be divided by 1 minute.
     let directionTime = (directions.routes[0].legs[i - 1].duration.value) / 60;
     directionTime = Math.ceil(directionTime) * 60;
-    const departure = document.getElementsByName('departure-' + start)[0];
-    let nextPlace = $(departure).parent().parent().next().children()[0];
+    const departure = document.getElementsByName('departure-' + start)[startIdx];
+    let nextPlace = $(departure).parents("tr").next().children()[0];
     let nextDay = false;
     if (nextPlace === undefined) {
       nextPlace = $(departure).parents('[name=\'day-table\']').next().next()
-          .find(`td[name='arrival-${stop}']`)[0];
+        .find(`td[name='arrival-${stop}']`)[0];
       nextDay = true;
     }
-    const arrival = document.getElementsByName('arrival-' + stop)[0];
+    const arrival = document.getElementsByName('arrival-' + stop)[stopIdx];
     if (nextPlace !== arrival) {
       continue;
     }
@@ -136,7 +154,7 @@ function displayTime(directions) {
     }
     arrival.setAttribute('value', time.toString());
     arrival.innerText = getTimeFormat(time);
-    const nextDeparture = document.getElementsByName('departure-' + stop)[0];
+    const nextDeparture = document.getElementsByName('departure-' + stop)[stopIdx];
     nextDeparture.min = getTimeFormat(time);
     if (createTime(nextDeparture.value) < time) {
       let departureDay = $(departure).parents("div[name='day-table']").index();

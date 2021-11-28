@@ -101,7 +101,7 @@
             </div>
             {% comment %} Lower block {% endcomment %}
             <div class="mx-4 mt-8 px-4 py-3 rounded-lg">
-                <p class="text-xl font-bold">Description</p>
+                <p class="text-xl font-bold" style="white-space: pre-wrap;">Description</p>
                 <p>{{ post.body|safe }}<p>
             </div>
             <hr class="flex my-6 border-gray-400 w-11/12 mx-auto">
@@ -127,7 +127,7 @@
                                 - {{ commend.total_like }} {% endcomment %}
                             </div>
                         </div>
-                        <p class="-mt-10 relative w-9/12">{{commend.body|safe}}</p>
+                        <p class="-mt-10 relative w-9/12" style="white-space: pre-wrap;">{{commend.body|striptags}}</p>
                     </div>
                 {% endfor %}
             </div>

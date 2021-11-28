@@ -4,14 +4,19 @@
 **ThaiRepose** website is a web application that helps to find areas that users want to travel and it can help people to make decisions for making trips. People who don't even have any experience planning a trip before, it can help them to easily plan a trip. ThaiRepose.com will be a community for people who love to travel.
 
 ## Project Documents
-- [Project Proposal](https://docs.google.com/document/d/1mOMiqBmQl6vW7RYVQD6Gk-mEcFnmdsmku2gpTglZRmE/edit?usp=sharing)
+- [Project Proposal](https://docs.google.com/document/d/1mOMiqBmQl6vW7RYVQD6Gk-mEcFnmdsmku2gpTglZRmE)
+- [Requirements](../../wiki/Requirements)    
+- [Vision Statement](../../wiki/Vision%20Statement)    
+- [Project checklist (Google Docs)](https://docs.google.com/document/d/12oLF6wH6xnCxpRtHZMbSnVHXy6lJ3YwSO2AbnYKVLAI/)    
+- [Code Checklist](../../wiki/Code%20Checklist)    
+- [Code Review Procedure](../../wiki/Code%20Review%20Procedure)
 
 ## Getting Started
 ### Requirements
 |Name  | Recommended version(s)|   
 |------|-----------------------|
-|Python | 3.7 or higher |
-|Django | 2.2 or higher |
+|Python | 3.9 or higher |
+|Django | 3 or higher |
 
 ### Install Packages
 1. Clone this project repository to your machine.
@@ -45,7 +50,7 @@
     pip install -r requirements.txt
     ```
    <details>
-    <summary>If you's using Windows</summary>
+    <summary>If you're using Windows</summary>
     Run this command to install caching system.
 
     ```
@@ -56,56 +61,63 @@
 
 6. Create `.env` file in the same level as manage.py and write down:
 
-       ```
-       DEBUG=True
-       SECRET_KEY=Your-Secret-Key
-       HOSTS=localhost,127.0.0.1
-       BACKEND_API_KEY=Your-Google-API-key-in-server-side
-       FRONTEND_API_KEY=Your-Google-API-key-in-client-side
-       EMAIL_HOST_USER = email-for-send-verification-form 
-       EMAIL_HOST_PASSWORD = email-password
-       EMAIL_PORT=Your-configured-email-port
-       EMAIL_HOST=Your-email-provider-host
-       EMAIL_USE_TLS=TLS-using-true-or-false
-       EMAIL_USE_SSL=-SSL-true-or-false
-       ```
-
-   (If you don't use gmail. Please change EMAIL_PORT and EMAIL_HOST in setting)
+   ```
+   DEBUG=True
+   SECRET_KEY=Your-Secret-Key
+   HOSTS=localhost,127.0.0.1
+   BACKEND_API_KEY=Your-Google-API-key-in-server-side
+   FRONTEND_API_KEY=Your-Google-API-key-in-client-side
+   EMAIL_HOST_USER=email-for-send-verification-form 
+   EMAIL_HOST_PASSWORD=email-password
+   EMAIL_PORT=Your-configured-email-port
+   EMAIL_HOST=Your-email-provider-host
+   EMAIL_USE_TLS=TLS-using-true-or-false
+   EMAIL_USE_SSL=SSL-using-true-or-false
+   SITE_ID=1
+   ```
+   <details>
+   <summary>Example email configuration:</summary>     
     
-   **Warning: For anyone who use macOS. It may have problem while import email with os.environ.get. please try another way to import it**
-    
-   **Warning: If you use Gmail you have to adjust to less secure**
+   - [Gmail](https://www.lifewire.com/what-are-the-gmail-smtp-settings-1170854)
+   - [Outlook](https://getmailspring.com/setup/access-hotmail-com-via-imap-smtp)
+   
+     **Warning: If you use Gmail you have to adjust to less secure**
+   </details>
 
-
-7. Add Oauth API Key
-    Go to domain/admin/socialaccount/socialapp/ (local: http://127.0.0.1:8000/admin/socialaccount/socialapp/) 
-    - Add provider to Google.
-    - Add Client id and Secret key that retrieve form API owner.
-    - Add site to chosen sites.
-
-
-8. Install TailwindCSS framework.
+7. Install TailwindCSS framework.
 
    ```
    python manage.py tailwind install
    ```
-9. Build TailwindCSS frontend framework the get GUI.
+8. Build TailwindCSS frontend framework the get GUI.
 
    ```
    python manage.py tailwind build
    ```
-10. Run this command to migrate the database.
+9. Run this command to migrate the database.
 
     ```
-    python manage.py migrate
+    python manage.py migrate --run-syncdb
     ```
-11. Start running the server by this command.
+10. Start running caching system.
     ```
     tr-caching start
+    ```
+11. Start running the server by this command in another terminal.
+    ```
     python manage.py runserver
     ```
+12. Add Oauth API Key in Admin page in social app (e.g. in local: http://127.0.0.1:8000/admin/socialaccount/socialapp/) 
+    - Add provider.
+    - Add client id and secret key that retrieve form API owner.
+    - Add site to chosen sites.
 
-
+    <details>
+    <summary>Instruction of getting OAuth API Key:</summary>     
+    
+    - [For all provider](https://django-allauth.readthedocs.io/en/latest/providers.html)    
+    - [Another Example for Google](https://www.ibm.com/docs/en/app-connect/cloud?topic=gmail-connecting-google-application-by-providing-credentials-app-connect-use-basic-oauth)
+    </details>
 
 
 ## Team Members

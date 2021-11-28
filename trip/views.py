@@ -204,14 +204,49 @@ def add_post(request):
     return render(request, 'trip/add_blog.html', {'form': form, 'image_form': image_form, 'img_obj': all_img})
 
 
-class EditPost(UpdateView):
+def edit_post(request, pk):
     """Class for link html of edit post."""
-
-    model = TripPlan
-    template_name = "trip/update_plan.html"
-    # fields = ['title', 'duration', 'price', 'body']
-    form_class = TripPlanForm
-    context_object_name = 'post'
+    if request.method == 'POST':
+        if 'imgpic' in request.POST:
+            post = get_object_or_404(TripPlan, author=request.user, id=pk)
+            form = TripPlanForm(request.POST, instance=post)
+            image_form = TripPlanImageForm(request.POST, request.FILES)
+            post_form = form.save(commit=False)
+            post_form.author = request.user
+            post_form.save()
+            if image_form.is_valid():
+                all_img = UploadImage.objects.filter(post=post)
+                image = request.FILES.getlist('image')
+                list_img = []
+                for img in image:
+                    img_obj = UploadImage.objects.create(post=post, image=img)
+                    img_obj.save()
+                    list_img.append(img_obj)
+                image_form = TripPlanImageForm()
+                form = TripPlanForm(request.POST, instance=post)
+                return render(request, 'trip/update_plan.html', {'form': form,
+                                                                 'image_form': image_form, 'img_obj': all_img, 'new_img': list_img,
+                                                                 'author': request.user, 'post': post})
+        elif 'edit' in request.POST:
+            post = get_object_or_404(TripPlan, author=request.user, id=pk)
+            form = TripPlanForm(request.POST, instance=post)
+            if form.is_valid():
+                all_img = UploadImage.objects.filter(post=post)
+                image_form = TripPlanImageForm()
+                post_form = form.save(commit=False)
+                if post_form.body == '' or post_form.title is None or post_form.duration is None or post_form.price is None:
+                    post_form.save()
+                    return render(request, 'trip/update_plan.html', {'form': form,
+                                                                     'image_form': image_form, 'message': 'Need fill all fields',
+                                                                     'img_obj': all_img, 'author': request.user, 'post': post})
+                post_form.author = request.user
+                post_form.save()
+                return HttpResponseRedirect(reverse('trip:tripdetail', args=[pk]))
+    blog = get_object_or_404(TripPlan, id=pk)
+    form = TripPlanForm(instance=blog)
+    all_img = UploadImage.objects.filter(post=blog)
+    image_form = TripPlanImageForm()
+    return render(request, 'trip/update_plan.html', {'form': form, 'image_form': image_form, 'img_obj': all_img, 'author': request.user, 'post': blog})
 
 
 @login_required

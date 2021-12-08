@@ -10,6 +10,7 @@
 - [Project checklist (Google Docs)](https://docs.google.com/document/d/12oLF6wH6xnCxpRtHZMbSnVHXy6lJ3YwSO2AbnYKVLAI/)    
 - [Code Checklist](../../wiki/Code%20Checklist)    
 - [Code Review Procedure](../../wiki/Code%20Review%20Procedure)
+- [Final Presentation slide](https://docs.google.com/presentation/d/17DhKn9v1_Z8-Y42ZlklcQsP6VWc2__LadO0pAYsPKhg)
 
 ## Getting Started
 ### Requirements
